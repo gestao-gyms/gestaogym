@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TITAN GYM OS | Smart Fitness Cockpit & Control iD</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Flatpickr Dark Mode -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
+</head>
+<body>
+
+    <!-- ==============================================================
+         TELA DE LOGIN (ULTRA-LEVE E RÁPIDA)
+         ============================================================== -->
+    <div id="tela-login" class="login-screen">
+        <div class="gym-bg-watermark">IRON • SWEAT • DATA</div>
+        <div class="fluid-bg fluid-volt"></div>
+        <div class="fluid-bg fluid-cyan"></div>
+
+        <div class="login-wrapper">
+            <div class="glass-panel login-box">
+                <div class="brand-badge-large">
+                    <span class="material-icons-round">fitness_center</span>
+                </div>
+                <h2 class="brand-title">TITAN <span class="text-volt">GYM OS</span></h2>
+                <p class="brand-subtitle">PERFORMANCE COCKPIT &bull; CONTROL iD READY</p>
+
+                <div class="login-form">
+                    <div>
+                        <label class="field-label">OPERADOR DE RECEPÇÃO / GESTOR</label>
+                        <input type="text" id="login-user" value="ricardo" autocomplete="off" class="premium-input text-center" placeholder="Utilizador">
+                    </div>
+                    <div>
+                        <label class="field-label">SENHA DE OPERAÇÃO</label>
+                        <input type="password" id="login-senha" value="1234" autocomplete="off" class="premium-input text-center" placeholder="••••" onkeypress="if(event.key === 'Enter') fazerLogin()">
+                    </div>
+                    <button class="btn-volt w-100" onclick="fazerLogin()">
+                        INICIAR TURNO NA ACADEMIA <span class="material-icons-round">bolt</span>
+                    </button>
+                    <p id="login-erro" class="error-msg"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-footer">
+            <p>ECOSSISTEMA DE ALTA VELOCIDADE PARA GESTÃO FITNESS</p>
+            <div class="hardware-badges">
+                <span><i class="material-icons-round text-volt">face</i> Control iD iDFace</span>
+                <span><i class="material-icons-round text-cyan">dialpad</i> Check-in PIN Digital</span>
+                <span><i class="material-icons-round text-purple">receipt_long</i> Cupom Térmico 80mm</span>
+                <span><i class="material-icons-round text-volt">qr_code_2</i> Checkout PIX Integrado</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="gym-bg-watermark">TITAN FITNESS</div>
+    <div class="fluid-bg fluid-volt"></div>
+    <div class="fluid-bg fluid-cyan"></div>
+
+    <!-- ==============================================================
+         CONTAINER PRINCIPAL (60 FPS LOCKED)
+         ============================================================== -->
+    <div class="app-container" id="app-main" style="display: none;">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar glass-panel">
+            <div>
+                <div class="user-profile">
+                    <div class="profile-left">
+                        <div class="avatar-wrapper glow-hover" onclick="document.getElementById('input-foto-perfil').click()" title="Trocar Foto do Operador">
+                            <div id="ui-avatar" class="glow-avatar">RL</div>
+                            <div class="camera-badge">
+                                <span class="material-icons-round">photo_camera</span>
+                            </div>
+                        </div>
+                        <input type="file" id="input-foto-perfil" accept="image/*" style="display: none;" onchange="processarNovaFotoPerfil(event)">
+                        <div>
+                            <h3 id="ui-nome" class="operator-name">Ricardo Lima</h3>
+                            <p id="ui-role" class="operator-role">RECEPÇÃO & CEO</p>
+                        </div>
+                    </div>
+                    <button class="btn-icon-danger" onclick="abrirModalFechoTurno()" title="Auditar Caixa e Encerrar Turno">
+                        <span class="material-icons-round">power_settings_new</span>
+                    </button>
+                </div>
+
+                <div class="menu-section">
+                    <p class="menu-label">OPERAÇÃO DE PISO & CATRACA</p>
+                    
+                    <a href="#" id="nav-recepcao" class="menu-item active" onclick="navegarPara('recepcao')">
+                        <span class="material-icons-round text-volt">sensor_occupied</span>
+                        Pós-Catraca & Live
+                        <span class="badge-live">LIVE</span>
+                    </a>
+
+                    <a href="#" id="nav-alunos" class="menu-item" onclick="navegarPara('alunos')">
+                        <span class="material-icons-round text-cyan">groups</span>
+                        Alunos & Matrículas
+                        <span id="badge-total-alunos" class="badge-count">0</span>
+                    </a>
+
+                    <a href="#" id="nav-treinos" class="menu-item" onclick="navegarPara('treinos')">
+                        <span class="material-icons-round" style="color: #f43f5e;">fitness_center</span>
+                        Fichas & Protocolos
+                    </a>
+
+                    <p class="menu-label" style="margin-top: 20px;">DIRETORIA & ENGENHARIA</p>
+
+                    <a href="#" id="nav-ceo" class="menu-item" onclick="solicitarAcessoCEO()">
+                        <span class="material-icons-round text-yellow">lock</span>
+                        CEO & Forecast 30d
+                        <span class="badge-lock">PIN</span>
+                    </a>
+
+                    <a href="#" id="nav-documentos" class="menu-item" onclick="navegarPara('documentos')">
+                        <span class="material-icons-round text-cyan">folder_special</span>
+                        Documentos & Cofre
+                        <span id="badge-total-docs" class="badge-count">4</span>
+                    </a>
+
+                    <a href="#" id="nav-hardware" class="menu-item" onclick="navegarPara('hardware')">
+                        <span class="material-icons-round text-purple">tune</span>
+                        Módulos & Configurações
+                    </a>
+                </div>
+
+                <!-- NOVO: PREENCHE O ESPAÇO VAZIO DA SIDEBAR ESQUERDA COM AMBIENTE GYM -->
+                <div class="sidebar-gym-pulse">
+                    <div class="gym-pulse-header">
+                        <span class="material-icons-round text-volt" style="font-size: 15px;">vital_signs</span>
+                        <span>STATUS DO SALÃO AGORA</span>
+                    </div>
+                    <div class="gym-pulse-grid">
+                        <div class="pulse-mini-card">
+                            <span class="pulse-mini-label">TREINO DO DIA</span>
+                            <strong class="text-cyan">Força & Hipertrofia</strong>
+                        </div>
+                        <div class="pulse-mini-card">
+                            <span class="pulse-mini-label">EQUIPAMENTOS</span>
+                            <strong class="text-volt">100% Operantes</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+     
+
+            <!-- MONITOR DE LOTAÇÃO EM TEMPO REAL -->
+            <div class="sidebar-footer">
+                <div class="hardware-status-box">
+                    <div class="hw-header">
+                        <span>LOTAÇÃO DOS ESPAÇOS</span>
+                        <span class="hw-online" id="lotacao-status-geral">● CONFORTÁVEL</span>
+                    </div>
+                    
+                    <div class="zone-capacity-item">
+                        <div class="zone-row">
+                            <span>🏋️ Musculação</span>
+                            <strong id="txt-lot-musculacao">0 / 25</strong>
+                        </div>
+                        <div class="zone-bar-bg"><div id="bar-lot-musculacao" class="zone-bar-fill fill-volt" style="width: 0%;"></div></div>
+                    </div>
+
+                    <div class="zone-capacity-item">
+                        <div class="zone-row">
+                            <span>🔥 Aulões / Dança</span>
+                            <strong id="txt-lot-auloes">0 / 20</strong>
+                        </div>
+                        <div class="zone-bar-bg"><div id="bar-lot-auloes" class="zone-bar-fill fill-cyan" style="width: 0%;"></div></div>
+                    </div>
+
+                    <div class="zone-capacity-item" id="widget-lotacao-pilates">
+                        <div class="zone-row">
+                            <span>🧘‍♀️ Pilates (Parceiro)</span>
+                            <strong id="txt-lot-pilates">0 / 5</strong>
+                        </div>
+                        <div class="zone-bar-bg"><div id="bar-lot-pilates" class="zone-bar-fill fill-purple" style="width: 0%;"></div></div>
+                    </div>
+                </div>
+
+                <div class="dev-signature" onclick="window.open('https://wa.me/5571986030162', '_blank')">
+                    <div class="signature-glow"></div>
+                    <span class="sig-sub">ARCHITECTURE BY</span>
+                    <span class="sig-name">RICARDO LIMA</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ÁREA CENTRAL MULTI-TELAS -->
+        <main class="main-content">
+
+            <!-- ==========================================================
+                 TELA 1: RECEPÇÃO PÓS-CATRACA (LIMPA, RÁPIDA E FOCADA)
+                 ========================================================== -->
+            <section id="view-recepcao" class="spa-view active-view">
+                
+                <header class="balcao-topbar">
+                    <div class="topbar-left">
+                        <div class="live-pill" id="pill-status-catraca-topo">
+                            <span class="pulse-dot" id="dot-status-catraca"></span> <span id="txt-status-catraca-topo">CATRACA CONTROL iD OPERACIONAL &bull; FLUXO LIVRE</span>
+                        </div>
+                        <h1>Monitor de <span class="text-volt">Passagem & Recepção</span></h1>
+                    </div>
+
+                    <!-- BUSCA INSTANTÂNEA ZERO-LAG -->
+                    <div class="quick-search-bar">
+                        <span class="material-icons-round text-cyan">search</span>
+                        <input type="text" id="input-busca-rapida-balcao" oninput="buscarAlunoRapidoBalcao(this.value)" placeholder="Pesquisar atleta na recepção (Nome ou Matrícula)...">
+                        <div id="dropdown-busca-balcao" class="quick-search-results"></div>
+                    </div>
+
+                    <!-- AÇÕES DE TOPO: CHECK-IN PIN, SIMULAR LEITURA E PAUSAR CATRACA -->
+                    <div class="topbar-actions">
+                        <button class="btn-outline-cyan" onclick="abrirModalKeypad()" title="Digitar código de acesso">
+                            <span class="material-icons-round">dialpad</span> PIN
+                        </button>
+                        <button class="btn-simular-passagem" onclick="simularBipCatraca('aleatorio')" title="Simula aluno passando na catraca antes da recepção">
+                            <span class="material-icons-round">face_retouching_natural</span> SIMULAR PASSAGEM
+                        </button>
+                        <button id="btn-topo-pausar-catraca" class="btn-pausar-catraca" onclick="alternarPausaCatracaGeral()" title="Trava a catraca imediatamente para ninguém entrar">
+                            <span class="material-icons-round">lock</span> PAUSAR CATRACA
+                        </button>
+                        <button class="btn-outline-cyan" onclick="toggleTVMode()" title="Modo Monitor Tela Cheia">
+                            <span class="material-icons-round">tv</span>
+                        </button>
+                    </div>
+                </header>
+
+                <!-- AVISO QUANDO A CATRACA ESTIVER PAUSADA PELA RECEPÇÃO -->
+                <div id="banner-catraca-pausada" class="catraca-paused-alert" style="display: none;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="material-icons-round">front_hand</span>
+                        <strong>CATRACA PAUSADA PELA RECEPÇÃO:</strong> Nenhuma entrada biométrica ou por PIN está autorizada no momento.
+                    </div>
+                    <button class="btn-volt-sm" onclick="alternarPausaCatracaGeral()">DESTRAVAR CATRACA AGORA</button>
+                </div>
+
+                <!-- GRID DO BALCÃO -->
+                <div class="balcao-grid">
+
+                    <!-- COLUNA ESQUERDA: VISOR DO ATLETA QUE ACABOU DE PASSAR NA CATRACA -->
+                    <div class="catraca-spotlight-container">
+                        
+                        <div id="spotlight-card" class="glass-card spotlight-card status-liberado">
+                            <div class="spotlight-top-bar">
+                                <span class="hardware-tag"><i class="material-icons-round">sensor_door</i> MONITOR PÓS-CATRACA &bull; <span id="spotlight-zona-tag">ESPAÇO: MUSCULAÇÃO</span></span>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span id="badge-aniversariante" class="bday-pill" style="display: none;">🎂 ANIVERSARIANTE DO MÊS!</span>
+                                    <span id="spotlight-hora" class="spotlight-clock">PRONTO</span>
+                                </div>
+                            </div>
+
+                            <div class="spotlight-body">
+                                <!-- FOTO DO ATLETA + CONTADOR DE TREINOS NO MÊS -->
+                                <div class="spotlight-photo-wrap" onclick="editarAlunoDoVisor()" style="cursor: pointer;" title="Clique para editar foto ou cadastro">
+                                    <div id="spotlight-avatar" class="spotlight-avatar">
+                                        <span class="material-icons-round">fitness_center</span>
+                                    </div>
+                                    <div id="spotlight-streak-badge" class="metodo-badge">🔥 14 TREINOS</div>
+                                </div>
+
+                                <!-- DADOS ESSENCIAIS E LIMPOS (SEM CPF E SEM POLUIÇÃO) -->
+                                <div class="spotlight-info">
+                                    <div id="spotlight-status-banner" class="status-banner banner-liberado">
+                                        <span class="material-icons-round" id="spotlight-status-icon">verified</span>
+                                        <span id="spotlight-status-text">PASSAGEM LIBERADA NA CATRACA</span>
+                                    </div>
+
+                                    <h2 id="spotlight-nome" class="spotlight-student-name">AGUARDANDO PASSAGEM NA CATRACA</h2>
+                                    <p id="spotlight-sub" class="spotlight-student-plan">Plano Mensal &bull; Modalidade: Musculação</p>
+
+                                    <!-- 3 CARTÕES ESSENCIAIS -->
+                                    <div class="spotlight-metrics">
+                                        <div class="spot-metric-box">
+                                            <span class="spot-label">VENCIMENTO DO PLANO</span>
+                                            <strong id="spotlight-vencimento" class="spot-value">--/--/----</strong>
+                                        </div>
+                                        <div class="spot-metric-box">
+                                            <span class="spot-label">STATUS NA CATRACA</span>
+                                            <strong id="spotlight-dias" class="spot-value text-volt">Liberado</strong>
+                                        </div>
+                                        <div class="spot-metric-box">
+                                            <span class="spot-label">RISCO DE DESISTÊNCIA</span>
+                                            <strong id="spotlight-desistencia" class="spot-value text-cyan">Baixo (Assíduo)</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- NOVO: PAINEL DE TELEMETRIA MUSCULAR & META FITNESS (PREENCHE O VAZIO DO CARD ESQUERDO!) -->
+                            <div class="gym-muscle-cockpit">
+                                <div class="muscle-cockpit-left">
+                                    <div class="muscle-header-row">
+                                        <span class="spot-label" style="margin: 0;"><i class="material-icons-round text-volt" style="font-size: 13px; vertical-align: middle;">fitness_center</i> GRUPAMENTO MUSCULAR & FOCO DO DIA</span>
+                                        <span id="visor-laudo-badge" class="laudo-ok-pill">🩺 Atestado / PAR-Q: Vigente</span>
+                                    </div>
+                                    <div class="muscle-chips-grid" id="visor-muscle-chips">
+                                        <div class="muscle-chip active-muscle" onclick="selecionarMusculoVisor(this, 'Peitoral & Tríceps')">💪 Peitoral & Tríceps</div>
+                                        <div class="muscle-chip" onclick="selecionarMusculoVisor(this, 'Dorsal & Bíceps')">🦍 Dorsal & Bíceps</div>
+                                        <div class="muscle-chip" onclick="selecionarMusculoVisor(this, 'Quadríceps & Glúteo')">🦵 Inferiores & Glúteo</div>
+                                        <div class="muscle-chip" onclick="selecionarMusculoVisor(this, 'Cardio HIT & Core')">🔥 Cardio HIT & Core</div>
+                                    </div>
+                                </div>
+
+                                <div class="muscle-cockpit-right">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                        <span class="spot-label" style="margin: 0;">META MENSAL (20 TREINOS)</span>
+                                        <strong id="visor-meta-pct" class="text-volt" style="font-size: 12px;">70%</strong>
+                                    </div>
+                                    <div class="zone-bar-bg" style="height: 8px; margin-bottom: 8px;">
+                                        <div id="visor-meta-bar" class="zone-bar-fill fill-volt" style="width: 70%;"></div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted);">
+                                        <span id="visor-kcal-est">⚡ ~4.200 kcal queimadas</span>
+                                        <strong id="visor-foco-atual" class="text-cyan">Foco: Peitoral & Tríceps</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FAIXA VISUAL LIMPA: PRESENÇA NA SEMANA + FERRAMENTAS DE BALCÃO -->
+                            <div class="clean-reception-strip">
+                                <!-- Linha superior limpa: Frequência Semanal Visual + Nota Rápida de Recepção -->
+                                <div class="strip-top-row">
+                                    <div class="week-attendance-box">
+                                        <span class="spot-label">PRESENÇA NA SEMANA</span>
+                                        <div class="week-days-pills" id="visor-semana-pills">
+                                            <span class="day-pill active">SEG</span>
+                                            <span class="day-pill active">TER</span>
+                                            <span class="day-pill">QUA</span>
+                                            <span class="day-pill active">QUI</span>
+                                            <span class="day-pill active">SEX</span>
+                                            <span class="day-pill">SÁB</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="quick-note-box">
+                                        <span class="spot-label">OBSERVAÇÃO RÁPIDA DE RECEPÇÃO (ARMÁRIO / LEMBRETE)</span>
+                                        <div style="display: flex; gap: 6px;">
+                                            <input type="text" id="visor-nota-rapida" class="premium-input" placeholder="Ex: Levou chave do armário #08 / Avisar sobre avaliação..." style="padding: 6px 10px; font-size: 11px;">
+                                            <button class="btn-volt-sm" onclick="salvarNotaRapidaVisor()" title="Guardar observação no cadastro do aluno">SALVAR</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Linha inferior: Botões rápidos (Convénio, Pré-Treino e Água ficam ocultos por padrão e nunca encavalam!) -->
+                                <div class="hud-quick-bar">
+                                    <button class="btn-hud btn-hud-whats" onclick="dispararWhatsAppAluno()">
+                                        <span class="material-icons-round">chat</span> ENVIAR WHATSAPP
+                                    </button>
+
+                                    <button class="btn-hud btn-hud-ferias" onclick="abrirModalFerias()">
+                                        <span class="material-icons-round">flight_takeoff</span> DAR FÉRIAS
+                                    </button>
+
+                                    <button class="btn-hud btn-hud-upsell" id="mod-visor-upsell" onclick="abrirModalRenovacaoRapida()">
+                                        <span class="material-icons-round">workspace_premium</span> <span id="hud-upsell-msg">UPGRADE ANUAL BLACK</span>
+                                    </button>
+
+                                    <!-- DESATIVADOS POR PADRÃO (PODEM SER LIGADOS NAS CONFIGURAÇÕES SEM BUGAR) -->
+                                    <button class="btn-hud btn-hud-convenio" id="mod-btn-convenio" style="display: none;" onclick="registrarCheckinConvenio()">
+                                        <span class="material-icons-round">confirmation_number</span> VALIDAR CONVÊNIO
+                                    </button>
+
+                                    <button class="btn-hud btn-hud-pdv" id="mod-btn-pdv1" style="display: none;" onclick="vendaRapidaBalcao('Dose Pré-Treino / Whey', 12.00)">
+                                        <span class="material-icons-round">bolt</span> + PRÉ-TREINO (R$12)
+                                    </button>
+
+                                    <button class="btn-hud btn-hud-pdv" id="mod-btn-pdv2" style="display: none;" onclick="vendaRapidaBalcao('Água / Isotónico', 5.00)">
+                                        <span class="material-icons-round">water_drop</span> + ÁGUA (R$5)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 3 AÇÕES PRINCIPAIS DO ALUNO BIPADO (AGORA COM EDITAR CADASTRO DIRETO!) -->
+                            <div class="spotlight-action-bar">
+                                <button class="btn-spot-action btn-spot-volt" onclick="abrirModalRenovacaoRapida()">
+                                    <span class="material-icons-round">qr_code_2</span> RENOVAR PLANO (PIX / CUPOM)
+                                </button>
+                                <button class="btn-spot-action btn-spot-cyan" onclick="abrirTreinoDoAlunoAtual()">
+                                    <span class="material-icons-round">fitness_center</span> VER FICHA DE TREINO
+                                </button>
+                                <button class="btn-spot-action btn-spot-purple" onclick="editarAlunoDoVisor()">
+                                    <span class="material-icons-round">manage_accounts</span> EDITAR CADASTRO DO ATLETA
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3 COMANDOS DE CONTROLE DA CATRACA E BALCÃO -->
+                        <div class="quick-desk-commands">
+                            <div class="glass-card cmd-card glow-hover" onclick="abrirModalVisitante()">
+                                <div class="cmd-icon bg-cyan-soft"><span class="material-icons-round text-cyan">directions_run</span></div>
+                                <div>
+                                    <h4>Diária / Aula Experimental</h4>
+                                    <p>Libera visitante na catraca para Musculação, Aulão ou Pilates</p>
+                                </div>
+                            </div>
+
+                            <div class="glass-card cmd-card glow-hover" onclick="acionarGiroManualCatraca()">
+                                <div class="cmd-icon bg-volt-soft"><span class="material-icons-round text-volt">sensor_door</span></div>
+                                <div>
+                                    <h4>Abrir Catraca (Giro Manual)</h4>
+                                    <p>Destrava o braço da catraca para entrada autorizada pela recepção</p>
+                                </div>
+                            </div>
+
+                            <div class="glass-card cmd-card glow-hover" onclick="abrirModalCadastroAluno()">
+                                <div class="cmd-icon bg-purple-soft"><span class="material-icons-round text-purple">person_add</span></div>
+                                <div>
+                                    <h4>Matricular Novo Atleta</h4>
+                                    <p>Cadastra aluno e libera passagem imediata na catraca</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- COLUNA DIREITA: REGISTRO DE PASSAGENS PELA CATRACA -->
+                    <div class="glass-card live-feed-column">
+                        <div class="feed-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="material-icons-round text-volt">bolt</span>
+                                <h3>Passagens na Catraca Hoje</h3>
+                            </div>
+                            <div class="feed-counters">
+                                <span class="pill-ok" id="count-liberados-hoje">0 Entraram</span>
+                                <span class="pill-err" id="count-bloqueados-hoje">0 Retidos</span>
+                            </div>
+                        </div>
+
+                        <div class="simulator-bar">
+                            <select id="select-simular-aluno" class="premium-input" style="padding: 8px 12px; font-size: 11px;"></select>
+                            <button class="btn-volt-sm" onclick="simularBipCatraca('selecionado')" title="Simular este aluno passando na catraca">
+                                <span class="material-icons-round" style="font-size: 15px;">sensors</span> PASSAR NA CATRACA
+                            </button>
+                        </div>
+
+                        <div id="lista-giros-recepcao" class="feed-list"></div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ==========================================================
+                 TELA 2: GESTÃO DE ALUNOS & MATRÍCULAS
+                 ========================================================== -->
+            <section id="view-alunos" class="spa-view">
+                <header class="balcao-topbar">
+                    <div>
+                        <div class="live-pill"><span class="pulse-dot"></span> GESTÃO DE ATLETAS, ANIVERSARIANTES E RETENÇÃO</div>
+                        <h1>Base de Alunos & <span class="text-cyan">Matrículas</span></h1>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="filtro-texto-alunos" oninput="renderizarTabelaAlunos()" class="premium-input" placeholder="Buscar por nome, CPF ou objetivo..." style="width: 250px;">
+                        <select id="filtro-status-alunos" onchange="renderizarTabelaAlunos()" class="premium-input" style="width: 185px;">
+                            <option value="todos">Todos os Alunos</option>
+                            <option value="ativo">✅ Liberados na Catraca</option>
+                            <option value="alerta">⚠️ Vencendo em 5 dias</option>
+                            <option value="vencido">🚫 Retidos na Catraca</option>
+                            <option value="aniversariantes">🎂 Aniversariantes do Mês</option>
+                        </select>
+                        <button class="btn-volt" onclick="abrirModalCadastroAluno()">
+                            <span class="material-icons-round">person_add</span> NOVA MATRÍCULA
+                        </button>
+                    </div>
+                </header>
+
+                <div class="glass-card table-container">
+                    <div id="grid-alunos-crm" class="crm-students-grid"></div>
+                </div>
+            </section>
+
+            <!-- ==========================================================
+                 TELA 3: PRESCRIÇÃO DE TREINOS
+                 ========================================================== -->
+            <section id="view-treinos" class="spa-view">
+                <header class="balcao-topbar">
+                    <div>
+                        <div class="live-pill" style="color: #f43f5e; border-color: rgba(244,63,94,0.3); background: rgba(244,63,94,0.1);">
+                            <span class="material-icons-round" style="font-size: 13px;">fitness_center</span> ENGENHARIA DE TREINAMENTO E PERIODIZAÇÃO
+                        </div>
+                        <h1>Prescrição de <span style="color: #f43f5e;">Fichas & Treinos</span></h1>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="btn-exportar-treino-whats" class="btn-hud-whats" style="padding: 9px 14px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; border: 1px solid #10b981;" onclick="enviarTreinoPorWhatsApp()">
+                            <span class="material-icons-round" style="font-size: 16px;">send</span> ENVIAR NO WHATSAPP DO ALUNO
+                        </button>
+                        <button class="btn-outline-cyan" onclick="imprimirTreinoTermico80mm()">
+                            <span class="material-icons-round">receipt</span> CUPOM DE TREINO (80mm)
+                        </button>
+                        <button class="btn-volt" onclick="exportarFichaTreinoPDF()">
+                            <span class="material-icons-round">picture_as_pdf</span> FICHA OFICIAL (PDF A4)
+                        </button>
+                    </div>
+                </header>
+
+                <div class="treinos-layout">
+                    <div class="glass-card" style="display: flex; flex-direction: column; gap: 14px;">
+                        <h3 class="section-subtitle"><span class="material-icons-round text-volt">person_search</span> 1. Selecionar Atleta</h3>
+                        <select id="select-aluno-treino" onchange="carregarTreinoView()" class="premium-input"></select>
+
+                        <h3 class="section-subtitle" style="margin-top: 4px;"><span class="material-icons-round text-cyan">fitness_center</span> 2. Adicionar Exercício</h3>
+                        <div>
+                            <label class="field-label">DIVISÃO DO PROTOCOLO</label>
+                            <select id="treino-divisao" class="premium-input">
+                                <option value="Treino A - Peito, Ombro e Tríceps">Treino A - Peito, Ombro e Tríceps</option>
+                                <option value="Treino B - Dorsal, Trapézio e Bíceps">Treino B - Dorsal, Trapézio e Bíceps</option>
+                                <option value="Treino C - Inferiores Completo (Quadríceps/Glúteo)">Treino C - Inferiores Completo</option>
+                                <option value="Treino D - Posterior, Glúteo e Panturrilha">Treino D - Posterior e Glúteo</option>
+                                <option value="Aulão Funcional / Cardio HIT">Aulão Funcional / Cardio HIT</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="field-label">NOME DO EXERCÍCIO</label>
+                            <input type="text" id="treino-exercicio" list="lista-exercicios-sugeridos" class="premium-input" placeholder="Ex: Agachamento Livre com Barra">
+                            <datalist id="lista-exercicios-sugeridos">
+                                <option value="Agachamento Livre com Elevação de Calcanhar">
+                                <option value="Supino Reto / Inclinado com Halteres">
+                                <option value="Puxada Alta Frente (Lat Pulldown)">
+                                <option value="Elevação Pélvica (Hip Thrust)">
+                                <option value="Cadeira Abdutora / Adutora">
+                                <option value="Leg Press 45° Pesado">
+                                <option value="Stiff com Barra / Halteres">
+                                <option value="Desenvolvimento com Halteres">
+                                <option value="Tríceps Corda na Polia Alta">
+                                <option value="Rosca Direta Barra W">
+                                <option value="Esteira Ergométrica (Cardio Final)">
+                            </datalist>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                            <div>
+                                <label class="field-label">SÉRIES x REPS</label>
+                                <input type="text" id="treino-series" value="4x 10-12" class="premium-input text-center">
+                            </div>
+                            <div>
+                                <label class="field-label">CARGA / NOTA</label>
+                                <input type="text" id="treino-carga" placeholder="Progressiva" class="premium-input text-center">
+                            </div>
+                            <div>
+                                <label class="field-label">DESCANSO</label>
+                                <input type="text" id="treino-descanso" value="60s a 90s" class="premium-input text-center">
+                            </div>
+                        </div>
+
+                        <button class="btn-volt w-100" onclick="adicionarExercicioFicha()">
+                            <span class="material-icons-round">add_circle</span> INSERIR EXERCÍCIO NA FICHA
+                        </button>
+                    </div>
+
+                    <div class="glass-card" style="display: flex; flex-direction: column; min-height: 0;">
+                        <div class="feed-header">
+                            <h3 id="titulo-ficha-ativa">Ficha de Treinamento Atual</h3>
+                            <span id="badge-qtd-exercicios" class="pill-ok">0 Exercícios</span>
+                        </div>
+                        <div id="container-exercicios-ficha" class="feed-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================================
+                 TELA 4: DIRETORIA CEO & FORECAST DE 30 DIAS
+                 ========================================================== -->
+            <section id="view-ceo" class="spa-view">
+                <header class="balcao-topbar">
+                    <div>
+                        <div class="live-pill" style="color: var(--neon-yellow); border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.1);">
+                            <span class="material-icons-round" style="font-size: 13px;">verified_user</span> PAINEL FINANCEIRO E PREVISIBILIDADE DE CAIXA
+                        </div>
+                        <h1>Diretoria, Receita & <span class="text-volt">Forecast 30 Dias</span></h1>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-outline-cyan" onclick="alternarBlurFinanceiro()">
+                            <span class="material-icons-round">visibility_off</span> OCULTAR VALORES (BLUR)
+                        </button>
+                        <button class="btn-volt" onclick="abrirModalLancamentoCaixa()">
+                            <span class="material-icons-round">add_card</span> NOVO LANÇAMENTO NO CAIXA
+                        </button>
+                        <button class="btn-spot-action btn-spot-purple" style="padding: 10px 18px; border-radius: 10px;" onclick="abrirModalRelatorioCEO()">
+                            <span class="material-icons-round">picture_as_pdf</span> EMITIR RELATÓRIO EXECUTIVO (PDF)
+                        </button>
+                    </div>
+                </header>
+
+                <div class="ceo-kpi-grid valores-sensitivos">
+                    <div class="glass-card glow-hover">
+                        <span class="spot-label">RECEITA RECORRENTE ATIVA (MRR)</span>
+                        <h2 id="ceo-mrr" class="ceo-big-number text-volt">R$ 0,00</h2>
+                        <span class="ceo-sub">Contratos vigentes em dia</span>
+                    </div>
+                    <div class="glass-card glow-hover">
+                        <span class="spot-label">SALDO LÍQUIDO EM CAIXA HOJE</span>
+                        <h2 id="ceo-caixa-liquido" class="ceo-big-number text-cyan">R$ 0,00</h2>
+                        <span class="ceo-sub">Entradas recebidas - Custos</span>
+                    </div>
+                    <div class="glass-card glow-hover" style="border-color: rgba(168,85,247,0.4);">
+                        <span class="spot-label">FORECAST 30 DIAS (PROJEÇÃO)</span>
+                        <h2 id="ceo-forecast-30d" class="ceo-big-number text-purple">R$ 0,00</h2>
+                        <span class="ceo-sub" id="ceo-forecast-sub">Renovações previstas nos próx. 30d</span>
+                    </div>
+                    <div class="glass-card glow-hover">
+                        <span class="spot-label">LIBERADOS vs RETIDOS NA CATRACA</span>
+                        <h2 id="ceo-ativos-ratio" class="ceo-big-number" style="color: white;">0 / 0</h2>
+                        <span class="ceo-sub" id="ceo-ticket-medio">Ticket Médio: R$ 0,00</span>
+                    </div>
+                </div>
+
+                <div class="ceo-bottom-grid valores-sensitivos">
+                    <div class="glass-card" style="display: flex; flex-direction: column; min-height: 0;">
+                        <div class="feed-header">
+                            <h3><span class="material-icons-round text-purple" style="vertical-align: middle;">stacked_line_chart</span> Fluxo Horário na Catraca</h3>
+                            <span class="pill-ok">Horário Nobre: 18h - 20h</span>
+                        </div>
+                        <div style="flex: 1; position: relative; min-height: 170px;">
+                            <canvas id="graficoCeoFluxo"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="display: flex; flex-direction: column; min-height: 0;">
+                        <div class="feed-header">
+                            <h3><span class="material-icons-round text-volt" style="vertical-align: middle;">account_balance_wallet</span> Livro Caixa Auditado</h3>
+                        </div>
+                        <div id="lista-caixa-ceo" class="feed-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================================
+                 NOVA TELA: CENTRAL DE DOCUMENTOS, LAUDOS & COFRE FITNESS
+                 ========================================================== -->
+            <section id="view-documentos" class="spa-view">
+                <header class="balcao-topbar">
+                    <div>
+                        <div class="live-pill">
+                            <span class="pulse-dot"></span> GESTÃO DE LAUDOS MÉDICOS, CONTRATOS E AUDITORIA
+                        </div>
+                        <h1>Central de Documentos & <span class="text-cyan">Cofre Fitness</span></h1>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="file" id="input-upload-doc-gym" accept=".pdf,image/*" style="display: none;" onchange="processarUploadDocGym(event)">
+                        <button class="btn-outline-cyan" onclick="abrirModalNovoContratoParceiro()">
+                            <span class="material-icons-round">handshake</span> NOVO ACORDO / PARCEIRO
+                        </button>
+                        <button class="btn-volt" onclick="document.getElementById('input-upload-doc-gym').click()">
+                            <span class="material-icons-round">cloud_upload</span> ANEXAR LAUDO / DOCUMENTO
+                        </button>
+                    </div>
+                </header>
+
+                <!-- 4 PASTAS INTELIGENTES GYM (FILTRAM OS ARQUIVOS COM 1 CLIQUE) -->
+                <div class="gym-folders-grid">
+                    <div class="glass-card gym-folder-card active-folder" id="folder-atestado" onclick="selecionarPastaGym('atestado')">
+                        <div class="folder-top">
+                            <div class="cmd-icon bg-volt-soft"><span class="material-icons-round text-volt">medical_information</span></div>
+                            <span class="pill-ok" id="count-folder-atestado">0 Arq.</span>
+                        </div>
+                        <h4>Atestados & PAR-Q</h4>
+                        <p>Laudos cardiológicos, aptidão física e liberações médicas de atletas</p>
+                    </div>
+
+                    <div class="glass-card gym-folder-card" id="folder-cref" onclick="selecionarPastaGym('cref')">
+                        <div class="folder-top">
+                            <div class="cmd-icon bg-cyan-soft"><span class="material-icons-round text-cyan">verified_user</span></div>
+                            <span class="pill-ok" id="count-folder-cref">0 Arq.</span>
+                        </div>
+                        <h4>CREF, Alvarás & Legal</h4>
+                        <p>Registros do Conselho de Educação Física, Bombeiros (AVCB) e Vigilância</p>
+                    </div>
+
+                    <div class="glass-card gym-folder-card" id="folder-pilates" onclick="selecionarPastaGym('pilates')">
+                        <div class="folder-top">
+                            <div class="cmd-icon bg-purple-soft"><span class="material-icons-round text-purple">self_improvement</span></div>
+                            <span class="pill-ok" id="count-folder-pilates">0 Arq.</span>
+                        </div>
+                        <h4>Pilates & Parceiros B2B</h4>
+                        <p>Contratos do Studio Pilates parceiro, personal trainers e fornecedores</p>
+                    </div>
+
+                    <div class="glass-card gym-folder-card" id="folder-manutencao" onclick="selecionarPastaGym('manutencao')">
+                        <div class="folder-top">
+                            <div class="cmd-icon" style="background: rgba(255,184,0,0.15); border: 1px solid rgba(255,184,0,0.3);"><span class="material-icons-round text-yellow">build_circle</span></div>
+                            <span class="pill-ok" id="count-folder-manutencao">0 Arq.</span>
+                        </div>
+                        <h4>Manutenção & Garantias</h4>
+                        <p>Revisões de esteiras, cabos de aço, notas fiscais de anilhas e máquinas</p>
+                    </div>
+                </div>
+
+                <!-- CORPO DIVIDIDO: ARQUIVOS DA PASTA SELECIONADA (ESQUERDA) + COFRE DE DOSSIÊS HASH (DIREITA) -->
+                <div class="ceo-bottom-grid">
+                    <!-- Coluna Esquerda: Lista de Documentos da Pasta -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; min-height: 0;">
+                        <div class="feed-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="material-icons-round text-cyan">folder_open</span>
+                                <h3 id="titulo-pasta-ativa">Pasta: Atestados Médicos & PAR-Q</h3>
+                            </div>
+                            <input type="text" id="busca-doc-gym" oninput="renderizarCentralDocumentosGym()" class="premium-input" placeholder="Filtrar documento..." style="width: 200px; padding: 6px 10px; font-size: 11px;">
+                        </div>
+                        <div id="lista-arquivos-gym" class="feed-list"></div>
+                    </div>
+
+                    <!-- Coluna Direita: Cofre Criptográfico de Relatórios CEO Selados -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; min-height: 0; border-color: rgba(168,85,247,0.35);">
+                        <div class="feed-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="material-icons-round text-purple">enhanced_encryption</span>
+                                <h3>Cofre de Dossiês Selados (Hash)</h3>
+                            </div>
+                            <span class="badge-lock" style="color: var(--neon-purple); border-color: var(--neon-purple); background: rgba(168,85,247,0.15);">IMUTÁVEL</span>
+                        </div>
+                        <div id="lista-cofre-gym" class="feed-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================================
+                 TELA 5: CENTRAL DE MÓDULOS SAAS + HARDWARE
+                 ========================================================== -->
+            <section id="view-hardware" class="spa-view">
+                <header class="balcao-topbar">
+                    <div>
+                        <div class="live-pill"><span class="pulse-dot"></span> PERSONALIZAÇÃO WHITE-LABEL E HARDWARE</div>
+                        <h1>Módulos do Sistema, <span class="text-cyan">Lotação & Catraca</span></h1>
+                    </div>
+                    <button class="btn-volt" onclick="salvarConfigHardware()">
+                        <span class="material-icons-round">save</span> SALVAR TODAS AS CONFIGURAÇÕES
+                    </button>
+                </header>
+
+                <div class="hardware-grid">
+                    
+                    <div class="glass-card hw-config-card" style="overflow-y: auto;">
+                        <div class="hw-card-title">
+                            <span class="material-icons-round text-volt">toggle_on</span>
+                            <div>
+                                <h3>Chaves de Módulos SaaS (Ativar / Desativar)</h3>
+                                <p>Convénios e PDV de Bebidas já vêm desativados por padrão. Ative apenas o que desejar.</p>
+                            </div>
+                        </div>
+
+                        <div class="modules-toggle-list">
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>🔊 Voz Neural + Bip Sonoro da Catraca</strong>
+                                    <span>Emite som de catraca e dá boas-vindas ao atleta na passagem</span>
+                                </div>
+                                <input type="checkbox" id="flag-voz" class="neon-switch" onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>💡 Botão de Recomendação Comercial (Upsell Anual)</strong>
+                                    <span>Exibe atalho de upgrade para alunos do plano Mensal</span>
+                                </div>
+                                <input type="checkbox" id="flag-upsell" class="neon-switch" onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>🧘‍♀️ Módulo Studio Pilates (Empresa Parceira)</strong>
+                                    <span>Exibe barra de lotação para o espaço de Pilates</span>
+                                </div>
+                                <input type="checkbox" id="flag-pilates" class="neon-switch" onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>📲 Exportar Ficha de Treino p/ WhatsApp</strong>
+                                    <span>Habilita o envio da ficha de treino formatada direto no WhatsApp</span>
+                                </div>
+                                <input type="checkbox" id="flag-export-whats" class="neon-switch" onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>🥤 PDV Express no Balcão (Pré-Treino / Água)</strong>
+                                    <span>Desativado por padrão. Ative se a academia vender bebidas/doses</span>
+                                </div>
+                                <input type="checkbox" id="flag-pdv" class="neon-switch" onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>🎟️ Check-in de Convénios (Gympass / Wellhub / TotalPass)</strong>
+                                    <span>Desativado por padrão. Ative se a academia aceitar convénios</span>
+                                </div>
+                                <input type="checkbox" id="flag-convenios" class="neon-switch" onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>📋 Termo Jurídico PAR-Q no Comprovante</strong>
+                                    <span>Imprime declaração de aptidão física no cupom de matrícula</span>
+                                </div>
+                                <input type="checkbox" id="flag-parq" class="neon-switch" onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>🎨 Ícone Fitness Desportivo (Quando sem foto)</strong>
+                                    <span>Usa haltere neon quando o aluno ainda não tem foto de rosto</span>
+                                </div>
+                                <input type="checkbox" id="flag-avatar-vip" class="neon-switch" onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row" style="border-color: rgba(245,158,11,0.35);">
+                                <div>
+                                    <strong class="text-yellow">🚀 Modo Auto-Pitch (Piloto Automático de Vendas)</strong>
+                                    <span>Simula alunos passando na catraca a cada 8s para apresentação</span>
+                                </div>
+                                <input type="checkbox" id="flag-autopitch" class="neon-switch" onchange="alternarAutoPitch(this.checked)">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="glass-card hw-config-card" style="overflow-y: auto;">
+                        <div class="hw-card-title">
+                            <span class="material-icons-round text-cyan">settings_input_component</span>
+                            <div>
+                                <h3>Capacidade dos Espaços, Planos & Control iD</h3>
+                                <p>Ajuste os limites máximos de alunos por ambiente e valores comerciais.</p>
+                            </div>
+                        </div>
+
+                        <div class="hw-form-grid">
+                            <div>
+                                <label class="field-label">MÁX. ALUNOS MUSCULAÇÃO</label>
+                                <input type="number" id="hw-max-musculacao" class="premium-input" value="25">
+                            </div>
+                            <div>
+                                <label class="field-label">MÁX. ALUNOS AULÕES / DANÇA</label>
+                                <input type="number" id="hw-max-auloes" class="premium-input" value="20">
+                            </div>
+                            <div>
+                                <label class="field-label">MÁX. STUDIO PILATES (PARCEIRO)</label>
+                                <input type="number" id="hw-max-pilates" class="premium-input" value="5">
+                            </div>
+                            <div>
+                                <label class="field-label">TOLERÂNCIA VENCIMENTO (DIAS)</label>
+                                <input type="number" id="hw-tolerancia" class="premium-input" value="3">
+                            </div>
+
+                            <div>
+                                <label class="field-label">NOME DA ACADEMIA NO CUPOM</label>
+                                <input type="text" id="hw-nome-academia" class="premium-input" value="TITAN FITNESS CENTER">
+                            </div>
+                            <div>
+                                <label class="field-label">IP CATRACA CONTROL iD (FUTURO)</label>
+                                <input type="text" id="hw-ip-catraca" class="premium-input" value="192.168.0.129">
+                            </div>
+
+                            <div>
+                                <label class="field-label">PLANO MENSAL (R$)</label>
+                                <input type="number" id="hw-preco-mensal" class="premium-input" value="119.90" step="0.01">
+                            </div>
+                            <div>
+                                <label class="field-label">TRIMESTRAL (R$) / ANUAL (R$)</label>
+                                <div style="display: flex; gap: 6px;">
+                                    <input type="number" id="hw-preco-trimestral" class="premium-input" value="99.90" step="0.01">
+                                    <input type="number" id="hw-preco-anual" class="premium-input" value="89.90" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: auto; padding-top: 12px;">
+                            <button class="btn-outline-cyan w-100" onclick="testarImpressoraTermica()">
+                                <span class="material-icons-round">receipt_long</span> TESTAR CUPOM 80mm
+                            </button>
+                            <button class="btn-volt w-100" onclick="exportarBackupSistema()">
+                                <span class="material-icons-round">download</span> BACKUP (.JSON)
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ==============================================================
+         MODAL 1: MATRÍCULA E EDIÇÃO DE CADASTRO DO ATLETA
+         ============================================================== -->
+    <div id="modal-aluno" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-lg">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-icons-round text-volt">how_to_reg</span>
+                    <h2 id="modal-aluno-titulo">Ficha de Matrícula & Cadastro do Atleta</h2>
+                </div>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+
+            <div class="modal-body-scroll">
+                <input type="hidden" id="cad-id">
+
+                <div class="biometria-capture-box">
+                    <div class="bio-preview-circle" id="box-foto-preview" onclick="document.getElementById('input-file-aluno').click()" style="cursor: pointer;">
+                        <span id="bio-icon-placeholder" class="material-icons-round">add_a_photo</span>
+                        <img id="bio-img-preview" src="" style="display: none;">
+                        <video id="webcam-video" autoplay playsinline style="display: none;"></video>
+                    </div>
+                    <div class="bio-controls">
+                        <h4>Foto de Identificação na Catraca</h4>
+                        <p>Selecione uma foto do dispositivo (ou use webcam quando disponível).</p>
+                        <div style="display: flex; gap: 8px; margin-top: 8px;">
+                            <button type="button" class="btn-volt-sm" onclick="document.getElementById('input-file-aluno').click()">
+                                <span class="material-icons-round" style="font-size: 15px;">folder_open</span> ESCOLHER FOTO DO DISPOSITIVO
+                            </button>
+                            <button type="button" class="btn-outline-cyan" style="padding: 6px 12px; font-size: 11px;" onclick="iniciarWebcamCadastro()">
+                                <span class="material-icons-round" style="font-size: 15px;">videocam</span> WEBCAM (OPCIONAL)
+                            </button>
+                            <button type="button" class="btn-volt-sm" id="btn-bater-foto" style="display: none; background: #ef4444; color: white;" onclick="capturarFrameWebcam()">
+                                CAPTURAR
+                            </button>
+                            <input type="file" id="input-file-aluno" accept="image/*" style="display: none;" onchange="carregarFotoArquivoAluno(event)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div style="grid-column: 1 / -1;">
+                        <label class="field-label">NOME COMPLETO DO ATLETA</label>
+                        <input type="text" id="cad-nome" class="premium-input" placeholder="Ex: LANA DEL REY">
+                    </div>
+                    <div>
+                        <label class="field-label">CPF (USO INTERNO / OCULTO NO BALCÃO)</label>
+                        <input type="text" id="cad-cpf" oninput="mascaraCPF(this)" maxlength="14" class="premium-input" placeholder="000.000.000-00">
+                    </div>
+                    <div>
+                        <label class="field-label">WHATSAPP</label>
+                        <input type="text" id="cad-whats" oninput="mascaraTelefone(this)" maxlength="15" class="premium-input" placeholder="(71) 99999-9999">
+                    </div>
+                    <div>
+                        <label class="field-label">DATA DE NASCIMENTO (ALERTA DE ANIVERSÁRIO)</label>
+                        <input type="text" id="cad-nascimento" class="premium-input flatpickr-input" placeholder="Selecione...">
+                    </div>
+                    <div>
+                        <label class="field-label">ESPAÇO / MODALIDADE PRINCIPAL</label>
+                        <select id="cad-espaco" class="premium-input">
+                            <option value="Musculação">🏋️ Musculação</option>
+                            <option value="Aulões">🔥 Aulões / Dança / Funcional</option>
+                            <option value="Pilates">🧘‍♀️ Studio Pilates (Parceiro)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">PLANO ESCOLHIDO</label>
+                        <select id="cad-plano" onchange="atualizarValorPlanoCadastro()" class="premium-input">
+                            <option value="Mensal">Plano Mensal</option>
+                            <option value="Trimestral">Plano Trimestral VIP</option>
+                            <option value="Anual Black">Plano Anual Black</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">VALOR DA MENSALIDADE (R$)</label>
+                        <input type="number" id="cad-valor" step="0.01" class="premium-input text-volt">
+                    </div>
+                    <div>
+                        <label class="field-label">VENCIMENTO DA MATRÍCULA</label>
+                        <input type="text" id="cad-vencimento" class="premium-input flatpickr-input">
+                    </div>
+                    <div>
+                        <label class="field-label">OBJETIVO PRINCIPAL</label>
+                        <select id="cad-objetivo" class="premium-input">
+                            <option value="Hipertrofia">Hipertrofia Muscular</option>
+                            <option value="Emagrecimento">Emagrecimento & Definição</option>
+                            <option value="Condicionamento">Saúde & Condicionamento</option>
+                            <option value="Força / Performance">Força / Powerlifting</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="fecharTodosModais()">CANCELAR</button>
+                <button class="btn-volt" onclick="salvarAlunoCRM()">
+                    SALVAR ALTERAÇÕES NO CADASTRO <span class="material-icons-round">verified</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================================
+         MODAL 2: RENOVAÇÃO & CHECKOUT COM QR CODE PIX VISUAL
+         ============================================================== -->
+    <div id="modal-renovacao" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-md">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-icons-round text-volt">qr_code_scanner</span>
+                    <h2 id="titulo-modal-checkout">Checkout & Liberação de Catraca</h2>
+                </div>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+
+            <div class="modal-body-scroll" style="display: flex; flex-direction: column; gap: 14px;">
+                <input type="hidden" id="checkout-aluno-id">
+                <input type="hidden" id="checkout-tipo-operacao" value="renovacao">
+
+                <div id="box-nome-visitante" style="display: none;">
+                    <div class="form-grid-2">
+                        <div>
+                            <label class="field-label">NOME DO VISITANTE</label>
+                            <input type="text" id="checkout-visitante-nome" class="premium-input" placeholder="Ex: PEDRO ALVES">
+                        </div>
+                        <div>
+                            <label class="field-label">ESPAÇO DA DIÁRIA</label>
+                            <select id="checkout-visitante-espaco" class="premium-input">
+                                <option value="Musculação">🏋️ Musculação</option>
+                                <option value="Aulões">🔥 Aulões</option>
+                                <option value="Pilates">🧘‍♀️ Pilates</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="box-resumo-aluno-checkout" class="checkout-student-banner">
+                    <strong id="checkout-aluno-nome">NOME DO ALUNO</strong>
+                    <span id="checkout-aluno-status">Plano Mensal</span>
+                </div>
+
+                <div class="form-grid-2">
+                    <div>
+                        <label class="field-label">MODALIDADE DE RENOVAÇÃO</label>
+                        <select id="checkout-plano" onchange="atualizarValorCheckout()" class="premium-input">
+                            <option value="Mensal">Renovação Mensal (+30 dias)</option>
+                            <option value="Trimestral">Renovação Trimestral (+90 dias)</option>
+                            <option value="Anual Black">Renovação Anual Black (+365 dias)</option>
+                            <option value="Diária Visitante">Diária / Aula Avulsa (Hoje)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">VALOR TOTAL A RECEBER (R$)</label>
+                        <input type="number" id="checkout-valor" step="0.01" class="premium-input text-volt" style="font-size: 16px; font-weight: 900;">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="field-label">MÉTODO DE RECEBIMENTO</label>
+                    <div class="payment-methods-grid">
+                        <label class="pay-option"><input type="radio" name="metodo_pagto" value="PIX" checked onchange="alternarExibicaoPixQR(true)"> <span>⚡ PIX QR</span></label>
+                        <label class="pay-option"><input type="radio" name="metodo_pagto" value="CARTÃO" onchange="alternarExibicaoPixQR(false)"> <span>💳 Cartão</span></label>
+                        <label class="pay-option"><input type="radio" name="metodo_pagto" value="DINHEIRO" onchange="alternarExibicaoPixQR(false)"> <span>💵 Espécie</span></label>
+                    </div>
+                </div>
+
+                <div id="box-qrcode-pix" class="pix-qr-container">
+                    <div class="qr-fake-matrix">
+                        <span class="material-icons-round">qr_code_2</span>
+                    </div>
+                    <div>
+                        <strong class="text-volt" style="font-size: 12px; display: block;">QR CODE PIX PRONTO PARA LEITURA</strong>
+                        <p style="font-size: 10px; color: var(--text-muted); margin: 3px 0 6px 0;">Peça para o atleta apontar a câmara do telemóvel ou confirme abaixo.</p>
+                        <span class="pix-copy-badge" onclick="mostrarToast('Chave PIX copiada!', 'success')">📋 Copiar Chave PIX da Academia</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="fecharTodosModais()">CANCELAR</button>
+                <button class="btn-volt" onclick="confirmarPagamentoEGerarCupom()">
+                    CONFIRMAR E LIBERAR CATRACA <span class="material-icons-round">print</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: CONGELAMENTO DE FÉRIAS -->
+    <div id="modal-ferias" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-sm">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons-round text-cyan">flight_takeoff</span>
+                    <h2>Congelamento de Férias</h2>
+                </div>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+            <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+                <p style="font-size: 11px; color: var(--text-muted);">Escolha quantos dias deseja acrescentar ao vencimento de <strong id="ferias-nome-aluno" style="color: white;">ALUNO</strong>:</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                    <button type="button" class="btn-outline-cyan" onclick="document.getElementById('input-dias-ferias').value = 7">+7d</button>
+                    <button type="button" class="btn-outline-cyan" onclick="document.getElementById('input-dias-ferias').value = 15">+15d</button>
+                    <button type="button" class="btn-outline-cyan" onclick="document.getElementById('input-dias-ferias').value = 20">+20d</button>
+                    <button type="button" class="btn-outline-cyan" onclick="document.getElementById('input-dias-ferias').value = 30">+30d</button>
+                </div>
+
+                <div>
+                    <label class="field-label">OU DIGITE A QUANTIDADE EXATA DE DIAS</label>
+                    <input type="number" id="input-dias-ferias" class="premium-input text-center" value="7" min="1" max="180" style="font-size: 18px; font-weight: 900;">
+                </div>
+
+                <button class="btn-volt w-100" onclick="confirmarCongelamentoFerias()">
+                    APLICAR DIAS DE FÉRIAS <span class="material-icons-round">check_circle</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: TECLADO NUMÉRICO DE CHECK-IN -->
+    <div id="modal-keypad" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-sm text-center">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons-round text-volt">dialpad</span>
+                    <h2>Check-in na Catraca (PIN / CPF)</h2>
+                </div>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+            <div style="padding: 20px;">
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Digite a matrícula (ex: 101) ou primeiros números do CPF:</p>
+                <input type="text" id="keypad-display" class="premium-input text-center" placeholder="---" readonly style="font-size: 24px; font-weight: 900; letter-spacing: 4px; margin-bottom: 14px; color: var(--neon-volt);">
+                
+                <div class="numpad-grid">
+                    <button onclick="digitarKeypad('1')">1</button>
+                    <button onclick="digitarKeypad('2')">2</button>
+                    <button onclick="digitarKeypad('3')">3</button>
+                    <button onclick="digitarKeypad('4')">4</button>
+                    <button onclick="digitarKeypad('5')">5</button>
+                    <button onclick="digitarKeypad('6')">6</button>
+                    <button onclick="digitarKeypad('7')">7</button>
+                    <button onclick="digitarKeypad('8')">8</button>
+                    <button onclick="digitarKeypad('9')">9</button>
+                    <button onclick="limparKeypad()" class="text-red">C</button>
+                    <button onclick="digitarKeypad('0')">0</button>
+                    <button onclick="confirmarCheckinKeypad()" class="btn-numpad-ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: FECHO DE TURNO CEGO -->
+    <div id="modal-fecho-turno" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-md">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons-round text-yellow">fact_check</span>
+                    <h2>Auditoria e Fechamento de Turno</h2>
+                </div>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+            <div style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                <p style="font-size: 11px; color: var(--text-muted);">Resumo financeiro e operacional registado durante este turno:</p>
+                <div id="resumo-fecho-turno-box" style="background: rgba(0,0,0,0.45); border: 1px solid var(--border-glass); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 12px;"></div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-outline-cyan w-100" onclick="imprimirRelatorioTurno80mm()">
+                        <span class="material-icons-round">print</span> IMPRIMIR FECHO (80mm)
+                    </button>
+                    <button class="btn-spot-red w-100" style="padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 900;" onclick="fazerLogout()">
+                        ENCERRAR E SAIR <span class="material-icons-round" style="font-size: 16px; vertical-align: middle;">logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: BOBINA TÉRMICA 80mm -->
+    <div id="modal-cupom-termico" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-sm" style="align-items: center;">
+            <div class="modal-header w-100">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons-round text-cyan">receipt</span>
+                    <h2>Cupom Térmico (80mm)</h2>
+                </div>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+
+            <div id="area-impressao-termica" class="thermal-receipt-paper">
+                <div class="receipt-center">
+                    <strong id="cupom-academia-nome" style="font-size: 15px;">TITAN FITNESS CENTER</strong>
+                    <p>PERFORMANCE & WELLNESS OS</p>
+                    <p>----------------------------------------</p>
+                    <strong id="cupom-titulo-doc">COMPROVANTE OFICIAL</strong>
+                    <p>----------------------------------------</p>
+                </div>
+                <div class="receipt-lines" id="cupom-corpo-linhas"></div>
+                <div id="cupom-bloco-parq" style="display: none; border-top: 1px dashed #0f172a; margin-top: 8px; padding-top: 6px; font-size: 9px; text-align: justify;">
+                    <strong>TERMO PAR-Q (APTIDÃO FÍSICA):</strong> Declaro estar clinicamente apto para a prática de atividades físicas, isentando a academia de responsabilidades sobre condições pré-existentes omitidas.<br><br>
+                    Assinatura: ___________________________
+                </div>
+                <div class="receipt-center" style="margin-top: 10px;">
+                    <p>----------------------------------------</p>
+                    <strong class="receipt-status-box" id="cupom-status-catraca">✓ PASSAGEM LIBERADA NA CATRACA</strong>
+                    <p style="font-size: 9px; margin-top: 6px;" id="cupom-hash">AUT: 0x98F2A1</p>
+                    <p style="font-size: 9px;" id="cupom-datahora"></p>
+                    <p style="margin-top: 6px; font-weight: bold;">BOM TREINO!</p>
+                </div>
+            </div>
+
+            <div class="modal-footer w-100" style="margin-top: 15px;">
+                <button class="btn-cancel" onclick="fecharTodosModais()">FECHAR</button>
+                <button class="btn-volt" onclick="window.print()">
+                    IMPRIMIR AGORA <span class="material-icons-round">local_printshop</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: PIN DO CEO -->
+    <div id="modal-pin-ceo" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-sm text-center" style="padding: 30px;">
+            <div class="brand-badge-large" style="margin: 0 auto 15px auto; width: 52px; height: 52px;">
+                <span class="material-icons-round">lock</span>
+            </div>
+            <h3>Acesso Restrito à Diretoria</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 18px 0;">Digite o PIN gerencial para visualizar o faturamento e o Forecast de 30 dias (Padrão: <strong>1234</strong>).</p>
+            <input type="password" id="input-pin-ceo" class="premium-input text-center" placeholder="••••" style="font-size: 20px; letter-spacing: 6px; margin-bottom: 15px;" onkeypress="if(event.key === 'Enter') validarPinCEO()">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-cancel w-100" onclick="fecharTodosModais()">VOLTAR</button>
+                <button class="btn-volt w-100" onclick="validarPinCEO()">DESBLOQUEAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 8: LANÇAMENTO AVULSO NO CAIXA -->
+    <div id="modal-caixa" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-sm">
+            <div class="modal-header">
+                <h2>Lançar Movimentação no Caixa</h2>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+            <div style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                <div>
+                    <label class="field-label">DESCRIÇÃO</label>
+                    <input type="text" id="caixa-desc" class="premium-input" placeholder="Ex: Repasse Pilates / Conta Energia">
+                </div>
+                <div>
+                    <label class="field-label">VALOR (R$)</label>
+                    <input type="number" id="caixa-valor" step="0.01" class="premium-input" placeholder="0,00">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                    <button class="btn-volt w-100" onclick="salvarLancamentoCaixa('receita')">+ ENTRADA</button>
+                    <button class="btn-spot-red w-100" style="padding: 12px; border-radius: 8px; border: 1px solid #ef4444; cursor: pointer; font-weight: 800;" onclick="salvarLancamentoCaixa('despesa')">- SAÍDA / CUSTO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMPLATE A4 ESCONDIDO PARA FICHA DE TREINO PDF -->
+    <div id="template-ficha-pdf" style="display: none; background: #ffffff; color: #0f172a; padding: 35px; font-family: 'Inter', sans-serif; width: 750px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px;">
+            <div>
+                <h1 style="margin: 0; font-size: 24px; font-weight: 900; color: #0f172a;" id="pdf-academia-titulo">TITAN FITNESS CENTER</h1>
+                <span style="font-size: 10px; font-weight: 800; color: #059669; letter-spacing: 1.5px;">PRESCRIÇÃO OFICIAL DE TREINAMENTO INDIVIDUALIZADO</span>
+            </div>
+            <div style="text-align: right;">
+                <strong id="pdf-treino-aluno" style="font-size: 15px; display: block; color: #0f172a;">ALUNO</strong>
+                <span id="pdf-treino-objetivo" style="font-size: 11px; color: #475569; font-weight: 700;">Objetivo: Hipertrofia</span>
+            </div>
+        </div>
+        <div id="pdf-treino-corpo" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <div style="margin-top: 35px; padding-top: 12px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: space-between; font-size: 10px; color: #64748b;">
+            <span>Documento homologado via TITAN GYM OS</span>
+            <span id="pdf-treino-data"></span>
+        </div>
+    </div>
+
+    <!-- ==============================================================
+         MODAL 9: CONFIGURADOR DO RELATÓRIO EXECUTIVO CEO (PDF)
+         ============================================================== -->
+    <div id="modal-relatorio-ceo" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-md">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-icons-round text-purple">auto_graph</span>
+                    <h2>Emissão de Boletim Executivo & Forecast</h2>
+                </div>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+
+            <div class="modal-body-scroll" style="display: flex; flex-direction: column; gap: 14px;">
+                <div style="background: rgba(0, 245, 155, 0.06); border: 1px solid rgba(0, 245, 155, 0.3); padding: 12px 14px; border-radius: 10px; display: flex; align-items: center; gap: 12px;">
+                    <span class="material-icons-round text-volt" style="font-size: 24px;">verified_user</span>
+                    <div>
+                        <strong style="color: white; font-size: 12px; display: block;">Documento Oficial Auditado (Padrão A4)</strong>
+                        <span style="color: var(--neon-volt); font-size: 10px; font-weight: 800; letter-spacing: 0.5px;">SELO CRIPTOGRÁFICO HASH &bull; ZERO QUEBRA DE PÁGINA</span>
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div>
+                        <label class="field-label">COMPETÊNCIA / REFERÊNCIA</label>
+                        <input type="text" id="rel-ceo-competencia" class="premium-input" value="Outubro / 2026">
+                    </div>
+                    <div>
+                        <label class="field-label">DESTINATÁRIO / CONSELHO</label>
+                        <input type="text" id="rel-ceo-destinatario" class="premium-input" value="Diretoria & Sócios">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="field-label">MÓDULOS INCLUÍDOS NO DOSSIÊ PDF</label>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+                        <label class="module-switch-row" style="padding: 8px 12px;">
+                            <div>
+                                <strong style="font-size: 11px;">🏋️ Matriz por Espaço (Musculação, Aulões e Pilates) + Planos</strong>
+                                <span style="font-size: 9px;">Detalhamento de MRR, ocupação e participação na receita</span>
+                            </div>
+                            <input type="checkbox" id="rel-inc-espacos" class="neon-switch" checked>
+                        </label>
+
+                        <label class="module-switch-row" style="padding: 8px 12px;">
+                            <div>
+                                <strong style="font-size: 11px;">🎯 Radar de Retenção, Vencimentos & Inadimplência</strong>
+                                <span style="font-size: 9px;">Lista de atletas retidos na catraca e renovações previstas (Forecast 30d)</span>
+                            </div>
+                            <input type="checkbox" id="rel-inc-retencao" class="neon-switch" checked>
+                        </label>
+
+                        <label class="module-switch-row" style="padding: 8px 12px;">
+                            <div>
+                                <strong style="font-size: 11px;">💰 Extrato Auditado do Livro Caixa (PIX, Cartão, Espécie e Custos)</strong>
+                                <span style="font-size: 9px;">Todas as entradas e despesas lançadas com balanço líquido</span>
+                            </div>
+                            <input type="checkbox" id="rel-inc-caixa" class="neon-switch" checked>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="field-label">PARECER / OBSERVAÇÕES DA DIRETORIA (OPCIONAL)</label>
+                    <textarea id="rel-ceo-obs" class="premium-input" rows="2" placeholder="Ex: Meta de crescimento atingida no plano Anual Black; previsto repasse do Studio Pilates dia 25..." style="resize: none;"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="fecharTodosModais()">CANCELAR</button>
+                <button id="btn-gerar-pdf-ceo" class="btn-volt" onclick="gerarRelatorioExecutivoPDF()">
+                    COMPILAR E BAIXAR PDF OFICIAL <span class="material-icons-round">download</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================================
+         TEMPLATE A4 OFICIAL DO RELATÓRIO EXECUTIVO CEO & FORECAST (ESCONDIDO)
+         ============================================================== -->
+    <div id="relatorio-ceo-pdf-template" style="display: none; background: #ffffff; color: #0f172a; padding: 36px 40px; box-sizing: border-box; font-family: 'Inter', sans-serif; position: relative; overflow: hidden; width: 760px; margin: 0 auto;">
+        
+        <!-- MARCA D'ÁGUA EXECUTIVA -->
+        <div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-32deg); font-size: 64px; color: rgba(15, 23, 42, 0.025); font-weight: 900; white-space: nowrap; pointer-events: none; z-index: 0; user-select: none;">
+            CONFIDENCIAL &bull; DIRETORIA
+        </div>
+
+        <div style="position: relative; z-index: 1;">
+            
+            <!-- CABEÇALHO CORPORATIVO -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f172a; padding-bottom: 18px; margin-bottom: 22px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 44px; height: 44px; background: #0f172a; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <span class="material-icons-round" style="color: #10b981; font-size: 24px;">fitness_center</span>
+                    </div>
+                    <div>
+                        <h1 id="pdf-ceo-academia" style="color: #0f172a; margin: 0; font-size: 20px; font-weight: 900; letter-spacing: -0.5px;">TITAN FITNESS CENTER</h1>
+                        <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                            <span style="color: #475569; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px;">Dossiê Executivo de Governança, Receita & Forecast</span>
+                            <span style="color: #059669; border: 1px solid #10b981; padding: 1px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; background: #ecfdf5;">✓ AUDITADO</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: right; background: #f8fafc; padding: 8px 14px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <strong id="pdf-ceo-destinatario" style="display: block; font-size: 12px; color: #0f172a; font-weight: 900; text-transform: uppercase;">DIRETORIA & SÓCIOS</strong>
+                    <span id="pdf-ceo-competencia" style="color: #475569; font-size: 10px; font-weight: 700;">Competência: Outubro / 2026</span>
+                </div>
+            </div>
+
+            <!-- PARECER ANALÍTICO IA -->
+            <div style="border-left: 4px solid #10b981; padding: 12px 16px; margin-bottom: 24px; background: #f8fafc; border-radius: 0 8px 8px 0; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                    <span class="material-icons-round" style="color: #059669; font-size: 16px;">psychology</span>
+                    <strong style="font-size: 10px; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: 1px;">Diagnóstico Executivo & Inteligência Preditiva (TITAN AI)</strong>
+                </div>
+                <p id="pdf-ceo-parecer-ia" style="margin: 0; font-size: 10.5px; color: #334155; line-height: 1.55;"></p>
+            </div>
+
+            <!-- 4 KPIS PRINCIPAIS -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 26px;">
+                <div style="padding: 12px 14px; border: 1px solid #e2e8f0; border-left: 4px solid #10b981; border-radius: 8px; background: #ffffff;">
+                    <span style="font-size: 8px; color: #64748b; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 4px;">Receita Recorrente (MRR)</span>
+                    <strong id="pdf-kpi-mrr" style="font-size: 18px; font-weight: 900; color: #0f172a; display: block;">R$ 0,00</strong>
+                    <span id="pdf-kpi-ticket" style="font-size: 8.5px; color: #059669; font-weight: 700;">Ticket Médio: R$ 0,00</span>
+                </div>
+                <div style="padding: 12px 14px; border: 1px solid #e2e8f0; border-left: 4px solid #0284c7; border-radius: 8px; background: #ffffff;">
+                    <span style="font-size: 8px; color: #64748b; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 4px;">Saldo Líquido Caixa</span>
+                    <strong id="pdf-kpi-saldo" style="font-size: 18px; font-weight: 900; color: #0f172a; display: block;">R$ 0,00</strong>
+                    <span id="pdf-kpi-entradas-saidas" style="font-size: 8.5px; color: #475569; font-weight: 700;">Balanço Realizado</span>
+                </div>
+                <div style="padding: 12px 14px; border: 1px solid #e2e8f0; border-left: 4px solid #7e22ce; border-radius: 8px; background: #ffffff;">
+                    <span style="font-size: 8px; color: #64748b; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 4px;">Forecast (Próx. 30 Dias)</span>
+                    <strong id="pdf-kpi-forecast" style="font-size: 18px; font-weight: 900; color: #7e22ce; display: block;">R$ 0,00</strong>
+                    <span id="pdf-kpi-forecast-qtd" style="font-size: 8.5px; color: #64748b; font-weight: 700;">0 renovações previstas</span>
+                </div>
+                <div style="padding: 12px 14px; border: 1px solid #e2e8f0; border-left: 4px solid #f59e0b; border-radius: 8px; background: #ffffff;">
+                    <span style="font-size: 8px; color: #64748b; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 4px;">Saúde da Base (Catraca)</span>
+                    <strong id="pdf-kpi-base" style="font-size: 18px; font-weight: 900; color: #0f172a; display: block;">0 Ativos / 0 Ret.</strong>
+                    <span id="pdf-kpi-inadimplencia" style="font-size: 8.5px; color: #dc2626; font-weight: 700;">Inadimplência: 0%</span>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 1: MATRIZ DE RECEITA E LOTAÇÃO POR ESPAÇO E PLANOS -->
+            <div id="pdf-secao-espacos" style="margin-bottom: 26px; page-break-inside: avoid;">
+                <div style="background: #0f172a; color: #ffffff; padding: 9px 14px; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">1. Matriz de Receita Recorrente & Ocupação por Modalidade</span>
+                    <span style="font-size: 9px; color: #10b981; font-weight: 800;">CENTRO DE CUSTO & CAPACIDADE</span>
+                </div>
+                <div style="border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; font-size: 10.5px;">
+                    <div style="display: flex; background: #f1f5f9; border-bottom: 1px solid #cbd5e1; font-weight: 800; color: #475569; font-size: 9px; text-transform: uppercase;">
+                        <div style="width: 34%; padding: 8px 12px;">Espaço / Modalidade</div>
+                        <div style="width: 18%; padding: 8px 12px; text-align: center;">Atletas Ativos</div>
+                        <div style="width: 22%; padding: 8px 12px; text-align: center;">Lotação Hoje / Limite</div>
+                        <div style="width: 26%; padding: 8px 12px; text-align: right;">Faturamento (MRR)</div>
+                    </div>
+                    <div id="pdf-tabela-espacos"></div>
+                </div>
+
+                <!-- Sub-barra de distribuição por Planos -->
+                <div id="pdf-resumo-planos" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;"></div>
+            </div>
+
+            <!-- SEÇÃO 2: RADAR DE RETENÇÃO, FORECAST & RECUPERAÇÃO DE INADIMPLENTES -->
+            <div id="pdf-secao-retencao" style="margin-bottom: 26px; page-break-inside: avoid;">
+                <div style="background: #1e293b; color: #ffffff; padding: 9px 14px; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">2. Radar Nominal de Retenção, Forecast & Controle de Catraca</span>
+                    <span style="font-size: 9px; color: #38bdf8; font-weight: 800;">GOVERNANÇA DE CLIENTES</span>
+                </div>
+                <div style="border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; font-size: 10px;">
+                    <div style="display: flex; background: #f1f5f9; border-bottom: 1px solid #cbd5e1; font-weight: 800; color: #475569; font-size: 8.5px; text-transform: uppercase;">
+                        <div style="width: 32%; padding: 8px 12px;">Atleta Matriculado</div>
+                        <div style="width: 20%; padding: 8px 12px;">Modalidade & Plano</div>
+                        <div style="width: 16%; padding: 8px 12px; text-align: center;">Freq. Mensal</div>
+                        <div style="width: 16%; padding: 8px 12px; text-align: center;">Vencimento</div>
+                        <div style="width: 16%; padding: 8px 12px; text-align: right;">Status / Valor</div>
+                    </div>
+                    <div id="pdf-tabela-retencao"></div>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 3: LIVRO CAIXA AUDITADO E MEIOS DE PAGAMENTO -->
+            <div id="pdf-secao-caixa" style="margin-bottom: 24px; page-break-inside: avoid;">
+                <div style="background: #0f172a; color: #ffffff; padding: 9px 14px; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">3. Auditoria do Livro Caixa & Meios de Recebimento</span>
+                    <span id="pdf-resumo-meios-pagto" style="font-size: 9px; color: #cbd5e1; font-weight: 700;">PIX | Cartão | Espécie</span>
+                </div>
+                <div style="border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; font-size: 10px;">
+                    <div id="pdf-tabela-caixa"></div>
+                </div>
+            </div>
+
+            <!-- BLOCO DE OBSERVAÇÕES DA DIRETORIA -->
+            <div id="pdf-bloco-obs-ceo" style="display: none; margin-bottom: 24px; padding: 12px 16px; border-left: 3px solid #7e22ce; background: #faf5ff; border-radius: 0 6px 6px 0; page-break-inside: avoid;">
+                <strong style="display: block; font-size: 9.5px; color: #581c87; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Notas Executivas & Diretrizes da Gestão:</strong>
+                <p id="pdf-texto-obs-ceo" style="margin: 0; font-size: 10.5px; color: #3b0764; line-height: 1.5;"></p>
+            </div>
+
+            <!-- QUADRO DE FECHAMENTO LÍQUIDO E ASSINATURA CRIPTOGRÁFICA -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; margin-top: 30px; padding-top: 18px; border-top: 2px solid #e2e8f0; page-break-inside: avoid;">
+                <div style="flex: 1; text-align: center;">
+                    <div style="border-top: 1px solid #94a3b8; padding-top: 8px; margin-bottom: 2px;"></div>
+                    <strong style="display: block; font-size: 9.5px; color: #0f172a;">DIRETORIA EXECUTIVA / GESTÃO</strong>
+                    <span style="font-size: 8.5px; color: #64748b;" id="pdf-assinatura-academia">TITAN FITNESS CENTER</span>
+                </div>
+
+                <div style="flex: 1.3; text-align: center; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                    <span style="display: block; font-size: 8px; color: #475569; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px;">Autenticação Criptográfica</span>
+                    <strong id="pdf-ceo-hash" style="font-family: 'Courier New', monospace; font-size: 10.5px; color: #0f172a; display: block;">HASH: 0x---</strong>
+                    <span id="pdf-ceo-timestamp" style="font-size: 8px; color: #64748b; display: block; margin-top: 3px;">Emitido em --/--/----</span>
+                </div>
+
+                <div style="flex: 1.1; background: #0f172a; color: white; padding: 12px 16px; border-radius: 8px; text-align: right;">
+                    <span style="font-size: 8px; color: #94a3b8; font-weight: 800; letter-spacing: 1px; display: block;">PROJEÇÃO CAIXA + FORECAST 30D</span>
+                    <strong id="pdf-ceo-total-projetado" style="font-size: 18px; font-weight: 900; color: #10b981;">R$ 0,00</strong>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- MODAL 10: CADASTRAR DOCUMENTO / LAUDO / CONTRATO PARCEIRO -->
+    <div id="modal-doc-gym" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-md">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-icons-round text-cyan">post_add</span>
+                    <h2>Homologar Documento / Acordo Fitness</h2>
+                </div>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+            <div class="modal-body-scroll" style="display: flex; flex-direction: column; gap: 12px;">
+                <div>
+                    <label class="field-label">TÍTULO DO DOCUMENTO / ATLETA / PARCEIRO</label>
+                    <input type="text" id="doc-gym-titulo" class="premium-input" placeholder="Ex: Atestado Cardiológico - Lucas Mendes / Contrato Studio Pilates">
+                </div>
+                <div class="form-grid-2">
+                    <div>
+                        <label class="field-label">PASTA DE DESTINO</label>
+                        <select id="doc-gym-pasta" class="premium-input">
+                            <option value="atestado">🩺 Atestados & PAR-Q</option>
+                            <option value="cref">🏛️ CREF, Alvarás & Legal</option>
+                            <option value="pilates">🧘‍♀️ Pilates & Parceiros B2B</option>
+                            <option value="manutencao">🔧 Manutenção de Equipamentos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">VALIDADE / VENCIMENTO</label>
+                        <input type="text" id="doc-gym-validade" class="premium-input flatpickr-input" placeholder="Selecione...">
+                    </div>
+                </div>
+                <div>
+                    <label class="field-label">RESPONSÁVEL / OBSERVAÇÃO TÉCNICA</label>
+                    <input type="text" id="doc-gym-resp" class="premium-input" placeholder="Ex: Dr. Marcos (CRM 1420) / Revisão Cabos Polia Cross-Over">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="fecharTodosModais()">CANCELAR</button>
+                <button class="btn-volt" onclick="salvarNovoDocManualGym()">
+                    ARQUIVAR NO SISTEMA <span class="material-icons-round">verified</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
