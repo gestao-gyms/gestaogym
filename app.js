@@ -1266,39 +1266,32 @@ function imprimirRelatorioTurno80mm() {
 }
 
 // ==============================================================
-// 12. TELA 5: CHAVES CONFIGURÁVEIS COM TRAVA DE EXPANSÃO FUTURA
+// 12. TELA 5: CHAVES CONFIGURÁVEIS, PAR-Q JURÍDICO E TRAVA LARANJA
 // ==============================================================
 function carregarInputsConfiguracoes() {
     const f = CONFIG_HW.flags;
     const setCheck = (id, val) => { const el = document.getElementById(id); if (el) el.checked = !!val; };
 
     setCheck('flag-voz', f.voz);
-    setCheck('flag-pdv', f.pdv);
-    setCheck('flag-convenios', f.convenios);
-    setCheck('flag-upsell', f.upsell);
     setCheck('flag-pilates', f.pilates);
     setCheck('flag-export-whats', f.exportWhats);
     setCheck('flag-parq', f.parq);
-    setCheck('flag-avatar-vip', f.avatarVip);
-    setCheck('flag-autopitch', f.autoPitch);
+    setCheck('flag-chat', f.chat ?? true);
+    setCheck('flag-upsell', f.upsell);
+    setCheck('flag-pdv', f.pdv);
+    setCheck('flag-convenios', f.convenios);
 
-    // Aplica o bloqueio visual elegante nos módulos futuros para impedir ativação acidental
     if (TRAVAR_MODULOS_FUTUROS) {
         IDS_MODULOS_TRAVADOS.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
                 el.checked = false;
                 el.disabled = true;
-                const row = el.closest('.module-switch-row');
-                if (row && !row.querySelector('.badge-roadmap-lock')) {
-                    const st = row.querySelector('strong');
-                    if (st) st.innerHTML += ` <span class="badge-roadmap-lock">🔒 EXPANSÃO FUTURA</span>`;
-                }
             }
         });
     }
 
-    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; };
     setVal('hw-max-musculacao', CONFIG_HW.lotacaoMax['Musculação'] || 25);
     setVal('hw-max-auloes', CONFIG_HW.lotacaoMax['Aulões'] || 20);
     setVal('hw-max-pilates', CONFIG_HW.lotacaoMax['Pilates'] || 5);
@@ -1308,6 +1301,10 @@ function carregarInputsConfiguracoes() {
     setVal('hw-preco-mensal', CONFIG_HW.precos['Mensal']);
     setVal('hw-preco-trimestral', CONFIG_HW.precos['Trimestral']);
     setVal('hw-preco-anual', CONFIG_HW.precos['Anual Black']);
+    setVal('hw-preco-diaria', CONFIG_HW.precos['Diária Visitante'] || 25.00);
+    setVal('hw-pin-ceo', CONFIG_HW.pinCEO || '1234');
+    setVal('hw-meta-receita', CONFIG_HW.metaMensal || 25000);
+    setVal('hw-chave-pix', CONFIG_HW.chavePix || 'pix@titanfitness.com.br');
 }
 
 function aplicarFlagsModulos(exibirAviso = true) {
@@ -1315,14 +1312,13 @@ function aplicarFlagsModulos(exibirAviso = true) {
 
     CONFIG_HW.flags = {
         voz: getCheck('flag-voz'),
-        pdv: TRAVAR_MODULOS_FUTUROS ? false : getCheck('flag-pdv'),
-        convenios: TRAVAR_MODULOS_FUTUROS ? false : getCheck('flag-convenios'),
-        upsell: getCheck('flag-upsell'),
         pilates: getCheck('flag-pilates'),
         exportWhats: getCheck('flag-export-whats'),
-        parq: TRAVAR_MODULOS_FUTUROS ? false : getCheck('flag-parq'),
-        avatarVip: getCheck('flag-avatar-vip'),
-        autoPitch: getCheck('flag-autopitch')
+        parq: getCheck('flag-parq'),
+        chat: getCheck('flag-chat'),
+        upsell: TRAVAR_MODULOS_FUTUROS ? false : getCheck('flag-upsell'),
+        pdv: TRAVAR_MODULOS_FUTUROS ? false : getCheck('flag-pdv'),
+        convenios: TRAVAR_MODULOS_FUTUROS ? false : getCheck('flag-convenios')
     };
 
     const f = CONFIG_HW.flags;
@@ -1334,37 +1330,39 @@ function aplicarFlagsModulos(exibirAviso = true) {
     setDisp('mod-visor-upsell', f.upsell);
     setDisp('widget-lotacao-pilates', f.pilates, 'block');
     setDisp('btn-exportar-treino-whats', f.exportWhats);
+    setDisp('titan-chat-wrapper', f.chat, 'block');
+
+    // Atualiza o selo visual do PAR-Q na tela de recepção
+    const badgeLaudo = document.getElementById('visor-laudo-badge');
+    if (badgeLaudo) {
+        badgeLaudo.style.display = f.parq ? 'inline-block' : 'none';
+        badgeLaudo.innerText = f.parq ? '📋 Termo PAR-Q: Ativo & Homologado' : '';
+    }
 
     salvarLocal();
     if (exibirAviso) mostrarToast("Módulos atualizados em tempo real!", "success");
 }
 
-function alternarAutoPitch(ativo) {
-    aplicarFlagsModulos(false);
-    if (timerAutoPitch) clearInterval(timerAutoPitch);
-    if (ativo) {
-        timerAutoPitch = setInterval(() => simularBipCatraca('aleatorio'), 8000);
-        mostrarToast("Modo Auto-Pitch Ativado! Simulando passagens a cada 8s.", "success");
-    } else {
-        mostrarToast("Modo Auto-Pitch Desativado.", "warning");
-    }
-}
-
 function salvarConfigHardware() {
-    CONFIG_HW.lotacaoMax['Musculação'] = parseInt(document.getElementById('hw-max-musculacao').value) || 25;
-    CONFIG_HW.lotacaoMax['Aulões'] = parseInt(document.getElementById('hw-max-auloes').value) || 20;
-    CONFIG_HW.lotacaoMax['Pilates'] = parseInt(document.getElementById('hw-max-pilates').value) || 5;
-    CONFIG_HW.tolerancia = parseInt(document.getElementById('hw-tolerancia').value) || 3;
-    CONFIG_HW.nomeAcademia = document.getElementById('hw-nome-academia').value.trim() || 'TITAN FITNESS CENTER';
-    CONFIG_HW.ipCatraca = document.getElementById('hw-ip-catraca').value.trim() || '192.168.0.129';
-    CONFIG_HW.precos['Mensal'] = parseFloat(document.getElementById('hw-preco-mensal').value) || 119.90;
-    CONFIG_HW.precos['Trimestral'] = parseFloat(document.getElementById('hw-preco-trimestral').value) || 99.90;
-    CONFIG_HW.precos['Anual Black'] = parseFloat(document.getElementById('hw-preco-anual').value) || 89.90;
+    CONFIG_HW.lotacaoMax['Musculação'] = parseInt(document.getElementById('hw-max-musculacao')?.value) || 25;
+    CONFIG_HW.lotacaoMax['Aulões'] = parseInt(document.getElementById('hw-max-auloes')?.value) || 20;
+    CONFIG_HW.lotacaoMax['Pilates'] = parseInt(document.getElementById('hw-max-pilates')?.value) || 5;
+    CONFIG_HW.tolerancia = parseInt(document.getElementById('hw-tolerancia')?.value) || 3;
+    CONFIG_HW.nomeAcademia = document.getElementById('hw-nome-academia')?.value.trim() || 'TITAN FITNESS CENTER';
+    CONFIG_HW.ipCatraca = document.getElementById('hw-ip-catraca')?.value.trim() || '192.168.0.129';
+    CONFIG_HW.precos['Mensal'] = parseFloat(document.getElementById('hw-preco-mensal')?.value) || 119.90;
+    CONFIG_HW.precos['Trimestral'] = parseFloat(document.getElementById('hw-preco-trimestral')?.value) || 99.90;
+    CONFIG_HW.precos['Anual Black'] = parseFloat(document.getElementById('hw-preco-anual')?.value) || 89.90;
+    CONFIG_HW.precos['Diária Visitante'] = parseFloat(document.getElementById('hw-preco-diaria')?.value) || 25.00;
+    CONFIG_HW.pinCEO = document.getElementById('hw-pin-ceo')?.value.trim() || '1234';
+    CONFIG_HW.metaMensal = parseFloat(document.getElementById('hw-meta-receita')?.value) || 25000;
+    CONFIG_HW.chavePix = document.getElementById('hw-chave-pix')?.value.trim() || 'pix@titanfitness.com.br';
 
     aplicarFlagsModulos(false);
     atualizarLotacaoEspacos();
-    mostrarToast("Limites de lotação, planos e módulos salvos!", "success");
+    mostrarToast("Parâmetros de Planos, Lotação e Automações salvos!", "success");
 }
+
 
 function exportarBackupSistema() {
     const a = document.createElement('a');
@@ -1989,3 +1987,1982 @@ setTimeout(() => {
     }
     if (alunoNoVisorAtual) exibirAlunoNoVisorSpotlight(alunoNoVisorAtual, false);
 }, 200);
+
+// ==============================================================
+// 15. MOTOR DO TITAN CHAT FLUTUANTE (RÁDIO PISO + TITAN IA CEO)
+// ==============================================================
+let canalChatAtual = 'piso';
+let MENSAGENS_CHAT = {
+    piso: [
+        { autor: 'Prof. Gabriel (Salão Musculação)', texto: 'Recepção, aparelho Cross-Over liberado e revisado! 💪', tipo: 'incoming', hora: '18:10' },
+        { autor: 'Profª. Camila (Studio Pilates)', texto: 'Turma das 18h finalizada com 5/5 alunos presentes.', tipo: 'incoming', hora: '18:35' }
+    ],
+    ia: [
+        { autor: '🤖 Titan AI Copiloto', texto: 'Olá Ricardo! Sou o cérebro financeiro e operacional da academia. Pergunte sobre "caixa", "inadimplentes", "lotação" ou "meta"!', tipo: 'incoming', hora: 'Agora' }
+    ]
+};
+
+window.alternarJanelaChat = function() {
+    const win = document.getElementById('titan-chat-window');
+    const badge = document.getElementById('chat-unread-badge');
+    if (!win) return;
+    win.classList.toggle('open');
+    if (win.classList.contains('open')) {
+        if (badge) badge.style.display = 'none';
+        renderizarMensagensChat();
+        document.getElementById('titan-chat-input')?.focus();
+    }
+};
+
+window.trocarCanalChat = function(canal) {
+    canalChatAtual = canal;
+    document.getElementById('tab-chat-piso')?.classList.toggle('active', canal === 'piso');
+    document.getElementById('tab-chat-ia')?.classList.toggle('active', canal === 'ia');
+    renderizarMensagensChat();
+};
+
+function renderizarMensagensChat() {
+    const area = document.getElementById('titan-chat-messages');
+    if (!area) return;
+    area.innerHTML = '';
+    (MENSAGENS_CHAT[canalChatAtual] || []).forEach(m => {
+        area.innerHTML += `
+            <div class="chat-bubble ${m.tipo}">
+                <strong>${m.autor} &bull; ${m.hora}</strong>
+                <span>${m.texto}</span>
+            </div>
+        `;
+    });
+    area.scrollTop = area.scrollHeight;
+}
+
+window.enviarAtalhoChat = function(textoPronto) {
+    const input = document.getElementById('titan-chat-input');
+    if (input) {
+        input.value = textoPronto;
+        enviarMensagemChat();
+    }
+};
+
+window.enviarMensagemChat = function() {
+    const input = document.getElementById('titan-chat-input');
+    if (!input) return;
+    const txt = input.value.trim();
+    if (!txt) return;
+
+    const hora = new Date().toTimeString().substring(0, 5);
+    MENSAGENS_CHAT[canalChatAtual].push({
+        autor: 'Você (Recepção / CEO)',
+        texto: txt,
+        tipo: 'outgoing',
+        hora
+    });
+    input.value = '';
+    renderizarMensagensChat();
+
+    // Resposta Inteligente Automática (Se estiver na aba IA ou no Rádio Piso)
+    setTimeout(() => {
+        if (canalChatAtual === 'ia' || txt.toLowerCase().includes('resumo') || txt.toLowerCase().includes('caixa')) {
+            let ativos = 0, retidos = 0, mrr = 0;
+            ALUNOS.forEach(a => {
+                if (calcularStatusMatricula(a).status === 'vencido') retidos++;
+                else { ativos++; mrr += parseFloat(a.valor_mensalidade) || 0; }
+            });
+            let saldo = CAIXA.reduce((acc, c) => acc + (parseFloat(c.valor) || 0), 0);
+            const respIA = `📊 Status em Tempo Real: Temos ${ativos} atletas ativos (MRR de R$ ${mrr.toFixed(2)}), ${retidos} retido(s) na catraca e R$ ${saldo.toFixed(2)} líquidos em caixa hoje.`;
+            MENSAGENS_CHAT[canalChatAtual].push({
+                autor: '🤖 Titan AI Copiloto',
+                texto: respIA,
+                tipo: 'incoming',
+                hora: new Date().toTimeString().substring(0, 5)
+            });
+        } else {
+            MENSAGENS_CHAT.piso.push({
+                autor: 'Prof. Gabriel (Salão Musculação)',
+                texto: 'Ciente, recepção! Já estou indo atender o atleta no piso. 👍',
+                tipo: 'incoming',
+                hora: new Date().toTimeString().substring(0, 5)
+            });
+        }
+        renderizarMensagensChat();
+    }, 550);
+};
+
+// Conecta o Interruptor #flag-chat nas Configurações
+const aplicarFlagsAntigoChat = aplicarFlagsModulos;
+aplicarFlagsModulos = function(exibirAviso = true) {
+    aplicarFlagsAntigoChat(exibirAviso);
+    const chkChat = document.getElementById('flag-chat');
+    const chatWrap = document.getElementById('titan-chat-wrapper');
+    if (chkChat && chatWrap) {
+        CONFIG_HW.flags.chat = chkChat.checked;
+        chatWrap.style.display = chkChat.checked ? 'block' : 'none';
+        salvarLocal();
+    }
+};
+
+// ==============================================================
+// 16. CONEXÃO AUTOMÁTICA DO TERMO JURÍDICO PAR-Q E PIN CUSTOMIZÁVEL
+// ==============================================================
+validarPinCEO = function() {
+    const pinDigitado = document.getElementById('input-pin-ceo')?.value;
+    const pinCorreto = CONFIG_HW.pinCEO || '1234';
+    if (pinDigitado === pinCorreto) {
+        ceoDesbloqueado = true;
+        fecharTodosModais();
+        navegarPara('ceo');
+        mostrarToast("Painel Executivo e Forecast 30d Desbloqueados!", "success");
+    } else {
+        mostrarToast("PIN incorreto!", "error");
+    }
+};
+
+const salvarAlunoOriginalParq = salvarAlunoCRM;
+salvarAlunoCRM = function() {
+    const isNovoCadastro = !document.getElementById('cad-id')?.value;
+    const nomeAtleta = document.getElementById('cad-nome')?.value.trim().toUpperCase();
+    const planoAtleta = document.getElementById('cad-plano')?.value || 'Mensal';
+    const espacoAtleta = document.getElementById('cad-espaco')?.value || 'Musculação';
+    const valorAtleta = parseFloat(document.getElementById('cad-valor')?.value) || 119.90;
+    const vencAtleta = document.getElementById('cad-vencimento')?.value || gerarDataOffset(30);
+
+    salvarAlunoOriginalParq();
+
+    // Se for matrícula nova e o Termo Jurídico PAR-Q estiver ativo:
+    if (isNovoCadastro && nomeAtleta && CONFIG_HW.flags.parq) {
+        if (typeof DOCUMENTOS_GYM !== 'undefined') {
+            DOCUMENTOS_GYM.unshift({
+                id: Date.now(),
+                pasta: 'atestado',
+                titulo: `TERMO JURÍDICO PAR-Q HOMOLOGADO - ${nomeAtleta}`,
+                responsavel: `Declaração Legal de Aptidão Física (${espacoAtleta} • ${planoAtleta})`,
+                validade: gerarDataOffset(365),
+                data_upload: new Date().toLocaleDateString('pt-BR'),
+                arquivo_base64: ''
+            });
+            if (typeof salvarDocsECofreLocal === 'function') salvarDocsECofreLocal();
+        }
+        // Emite imediatamente o comprovante com a cláusula jurídica PAR-Q para assinatura
+        exibirCupomTermicoNaTela(nomeAtleta, `${planoAtleta} (${espacoAtleta})`, valorAtleta, 'MATRÍCULA + PAR-Q', vencAtleta);
+    }
+};
+
+// ==============================================================
+// 17. MULTI-TAGS COLORIDAS, PRESENÇA SEMANAL AUTOMÁTICA E SUPABASE ID SYNC
+// ==============================================================
+let corTagSelecionada = 'volt';
+let indiceTagEmEdicao = null;
+
+// Inclui 'flag-musculos' na lista de módulos travados de expansão futura
+if (typeof IDS_MODULOS_TRAVADOS !== 'undefined' && !IDS_MODULOS_TRAVADOS.includes('flag-musculos')) {
+    IDS_MODULOS_TRAVADOS.push('flag-musculos');
+}
+
+// Sincroniza o atleta automaticamente com a tabela 'alunos' do Supabase
+async function sincronizarAlunoSupabase(aluno) {
+    if (!window.supabaseApp || !aluno) return;
+    try {
+        const payload = {
+            id: aluno.id,
+            nome: aluno.nome,
+            cpf: aluno.cpf || '',
+            whatsapp: aluno.whatsapp || '',
+            plano: aluno.plano || 'Mensal',
+            valor_mensalidade: parseFloat(aluno.valor_mensalidade) || 119.90,
+            vencimento: aluno.vencimento,
+            objetivo: aluno.objetivo || 'Hipertrofia',
+            foto_base64: aluno.foto_base64 || null,
+            treino_json: aluno.treino_json || []
+        };
+        await window.supabaseApp.from('alunos').upsert([payload], { onConflict: 'id' });
+    } catch (e) {
+        // Continua operando sem interromper em caso de tabela offline
+    }
+}
+
+window.atualizarContadorTag = function(inputEl) {
+    const countEl = document.getElementById('tag-char-count');
+    if (countEl && inputEl) {
+        countEl.innerText = `${inputEl.value.length}/22`;
+    }
+};
+
+window.selecionarCorTag = function(dotEl) {
+    document.querySelectorAll('.tag-color-picker .color-dot').forEach(d => d.classList.remove('active'));
+    dotEl.classList.add('active');
+    corTagSelecionada = dotEl.getAttribute('data-color') || 'volt';
+};
+
+window.focarEditorTagVisor = function(idxTag = null) {
+    const input = document.getElementById('visor-nota-rapida');
+    const selIcone = document.getElementById('tag-icone-select');
+    const box = document.getElementById('box-editor-tags');
+    if (!input || !alunoNoVisorAtual) return;
+
+    garantirArrayTags(alunoNoVisorAtual);
+
+    if (idxTag !== null && alunoNoVisorAtual.tags_custom[idxTag]) {
+        indiceTagEmEdicao = idxTag;
+        const tag = alunoNoVisorAtual.tags_custom[idxTag];
+        input.value = tag.texto;
+        if (selIcone) selIcone.value = tag.icone || '🔑';
+        corTagSelecionada = tag.cor || 'volt';
+        document.querySelectorAll('.tag-color-picker .color-dot').forEach(d => {
+            d.classList.toggle('active', d.getAttribute('data-color') === corTagSelecionada);
+        });
+    } else {
+        indiceTagEmEdicao = null;
+        input.value = '';
+    }
+
+    atualizarContadorTag(input);
+    input.focus();
+    if (box) {
+        box.style.borderColor = 'var(--neon-volt)';
+        setTimeout(() => { box.style.borderColor = 'rgba(255,255,255,0.08)'; }, 1200);
+    }
+};
+
+function garantirArrayTags(aluno) {
+    if (!Array.isArray(aluno.tags_custom)) {
+        aluno.tags_custom = [];
+        if (aluno.nota_rapida && aluno.nota_rapida.trim() !== '') {
+            // Converte nota antiga para o novo formato de tags com limite de 22 chars
+            aluno.tags_custom.push({
+                icone: '🔑',
+                texto: aluno.nota_rapida.substring(0, 22),
+                cor: 'yellow'
+            });
+        } else {
+            aluno.tags_custom.push({
+                icone: '🔥',
+                texto: `Foco ${aluno.objetivo || 'Hipertrofia'}`.substring(0, 22),
+                cor: 'cyan'
+            });
+        }
+    }
+}
+
+window.removerTagAtleta = function(event, idx) {
+    event.stopPropagation();
+    if (!alunoNoVisorAtual) return;
+    garantirArrayTags(alunoNoVisorAtual);
+    alunoNoVisorAtual.tags_custom.splice(idx, 1);
+    indiceTagEmEdicao = null;
+    salvarLocal();
+    exibirAlunoNoVisorSpotlight(alunoNoVisorAtual, false);
+    mostrarToast("Tag removida do perfil.", "warning");
+};
+
+// Substitui salvarNotaRapidaVisor para suportar Multi-Tags Coloridas com Ícone e Limite de 22 Caracteres
+window.salvarNotaRapidaVisor = function() {
+    if (!alunoNoVisorAtual) return;
+    const input = document.getElementById('visor-nota-rapida');
+    const selIcone = document.getElementById('tag-icone-select');
+    if (!input) return;
+
+    const textoLimpo = input.value.trim().substring(0, 22);
+    if (!textoLimpo) return mostrarToast("Digite um texto curto (até 22 letras) para a Tag!", "warning");
+
+    garantirArrayTags(alunoNoVisorAtual);
+    const novaTag = {
+        icone: selIcone ? selIcone.value : '🔑',
+        texto: textoLimpo,
+        cor: corTagSelecionada || 'volt'
+    };
+
+    if (indiceTagEmEdicao !== null && alunoNoVisorAtual.tags_custom[indiceTagEmEdicao]) {
+        alunoNoVisorAtual.tags_custom[indiceTagEmEdicao] = novaTag;
+        indiceTagEmEdicao = null;
+        mostrarToast("Tag atualizada com sucesso!", "success");
+    } else {
+        if (alunoNoVisorAtual.tags_custom.length >= 4) {
+            alunoNoVisorAtual.tags_custom.shift(); // Mantém no máximo 4 tags para nunca poluir a tela
+        }
+        alunoNoVisorAtual.tags_custom.push(novaTag);
+        mostrarToast("Nova Tag colorida fixada no atleta!", "success");
+    }
+
+    input.value = '';
+    atualizarContadorTag(input);
+    salvarLocal();
+    sincronizarAlunoSupabase(alunoNoVisorAtual);
+    exibirAlunoNoVisorSpotlight(alunoNoVisorAtual, false);
+};
+
+// Substitui renderizarPillsSemanaVisor para 100% Automático (Verde = Veio na Catraca | Vermelho = Faltou)
+window.renderizarPillsSemanaVisor = function(aluno) {
+    const container = document.getElementById('visor-semana-pills');
+    if (!container || !aluno) return;
+
+    const nomesDias = ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+    const dias = Array.isArray(aluno.dias_semana) ? aluno.dias_semana : [true, true, false, true, true, false];
+    
+    // Dia da semana atual (0 = Seg, 1 = Ter, ..., 5 = Sáb)
+    const jsDay = new Date().getDay(); 
+    const hojeIdx = jsDay === 0 ? 5 : jsDay - 1;
+
+    const pills = container.querySelectorAll('.day-pill');
+    pills.forEach((pill, idx) => {
+        pill.className = 'day-pill';
+        if (dias[idx]) {
+            pill.classList.add('day-present');
+            pill.innerText = `✓ ${nomesDias[idx]}`;
+        } else if (idx < hojeIdx) {
+            pill.classList.add('day-absent');
+            pill.innerText = `✕ ${nomesDias[idx]}`;
+        } else {
+            pill.classList.add('day-future');
+            pill.innerText = nomesDias[idx];
+        }
+    });
+};
+
+// Envolve exibirAlunoNoVisorSpotlight para renderizar a Classificação do ID, as Multi-Tags e o Deck Holográfico
+const exibirVisorBaseRefinado = exibirAlunoNoVisorSpotlight;
+exibirAlunoNoVisorSpotlight = function(aluno, registrarGiro = true) {
+    exibirVisorBaseRefinado(aluno, registrarGiro);
+    if (!aluno) return;
+
+    // 1. Classificação Inteligente do ID do Aluno (Black VIP / Prime / Standard)
+    const elTierId = document.getElementById('spotlight-tier-id');
+    if (elTierId) {
+        const idFormatado = String(aluno.id).slice(-4).padStart(4, '0');
+        if (aluno.plano === 'Anual Black') {
+            elTierId.innerText = `🏆 ID #${idFormatado} • BLACK VIP`;
+            elTierId.style.borderColor = 'var(--neon-volt)';
+            elTierId.style.color = 'var(--neon-volt)';
+        } else if (aluno.plano === 'Trimestral') {
+            elTierId.innerText = `⚡ ID #${idFormatado} • PRIME`;
+            elTierId.style.borderColor = 'var(--neon-cyan)';
+            elTierId.style.color = 'var(--neon-cyan)';
+        } else {
+            elTierId.innerText = `🛡️ ID #${idFormatado} • STANDARD`;
+            elTierId.style.borderColor = 'var(--neon-purple)';
+            elTierId.style.color = '#e9d5ff';
+        }
+    }
+
+    // 2. Limpa a linha de plano (sem repetir o ID ou a nota antiga) e renderiza as Multi-Tags com Canetinha
+    const elSub = document.getElementById('spotlight-sub');
+    if (elSub) {
+        elSub.innerHTML = `Plano <strong>${aluno.plano}</strong> &bull; ${aluno.espaco || 'Musculação'}`;
+    }
+
+    garantirArrayTags(aluno);
+    const contTags = document.getElementById('visor-tags-container');
+    if (contTags) {
+        contTags.innerHTML = '';
+        aluno.tags_custom.forEach((t, idx) => {
+            contTags.innerHTML += `
+                <span class="custom-student-tag tag-color-${t.cor || 'volt'}" onclick="focarEditorTagVisor(${idx})" title="Clique para editar esta tag">
+                    <span>${t.icone || '🔑'} ${t.texto}</span>
+                    <span class="material-icons-round tag-edit-pencil">edit</span>
+                    <span class="tag-del-btn" onclick="removerTagAtleta(event, ${idx})" title="Remover tag">&times;</span>
+                </span>
+            `;
+        });
+    }
+
+    // 3. Limpa o input do criador de tags para estar pronto para nova tag
+    const inputNota = document.getElementById('visor-nota-rapida');
+    if (inputNota && indiceTagEmEdicao === null) {
+        inputNota.value = '';
+        atualizarContadorTag(inputNota);
+    }
+
+    // 4. Atualiza os Dias da Semana Automáticos e a Caloria da Turma no Deck Holográfico
+    renderizarPillsSemanaVisor(aluno);
+    const kcalTurmaEl = document.getElementById('arena-kcal-hoje');
+    if (kcalTurmaEl) {
+        const totalPresentes = GIROS_CATRACA.filter(g => g.status_acesso === 'LIBERADO').length;
+        kcalTurmaEl.innerText = `~${(totalPresentes * 380).toLocaleString('pt-BR')} kcal na Turma`;
+    }
+
+    if (registrarGiro) {
+        sincronizarAlunoSupabase(aluno);
+    }
+};
+
+// Reaplica a visualização inicial imediatamente
+setTimeout(() => {
+    if (alunoNoVisorAtual) exibirAlunoNoVisorSpotlight(alunoNoVisorAtual, false);
+}, 150);
+
+// ==============================================================
+// 18. SELETORES NEON CUSTOMIZADOS + FEED DE PASSAGENS COM VENCIMENTO
+// ==============================================================
+let filtroPassagensAtivo = 'todos';
+
+// 1. Seletor Customizado de Ícones da Tag
+window.toggleMenuIconesTag = function(event) {
+    event.stopPropagation();
+    document.getElementById('lista-custom-simulador')?.classList.remove('open');
+    document.getElementById('menu-icones-tag')?.classList.toggle('open');
+};
+
+window.escolherIconeTag = function(icone, labelTexto) {
+    const input = document.getElementById('tag-icone-select');
+    const disp = document.getElementById('tag-icone-display');
+    if (input) input.value = icone;
+    if (disp) disp.innerText = labelTexto;
+    document.getElementById('menu-icones-tag')?.classList.remove('open');
+};
+
+// 2. Seletor Customizado de Atletas (Substitui o select azul do Windows)
+window.toggleDropdownSimulador = function(event) {
+    event.stopPropagation();
+    document.getElementById('menu-icones-tag')?.classList.remove('open');
+    const menu = document.getElementById('lista-custom-simulador');
+    if (menu) {
+        popularMenuCustomSimulador();
+        menu.classList.toggle('open');
+    }
+};
+
+function popularMenuCustomSimulador() {
+    const menu = document.getElementById('lista-custom-simulador');
+    const hiddenSelect = document.getElementById('select-simular-aluno');
+    if (!menu || !ALUNOS.length) return;
+
+    const idAtual = hiddenSelect?.value || ALUNOS[0].id;
+    menu.innerHTML = '';
+
+    ALUNOS.forEach(a => {
+        const info = calcularStatusMatricula(a);
+        const cor = info.status === 'vencido' ? 'var(--neon-red)' : (info.status === 'alerta' ? 'var(--neon-yellow)' : 'var(--neon-volt)');
+        const vencBr = a.vencimento ? a.vencimento.split('-').reverse().join('/') : '--';
+
+        menu.innerHTML += `
+            <div class="sim-option-item" onclick="selecionarAtletaSimulador(${a.id})">
+                <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                    <span style="width:8px; height:8px; border-radius:50%; background:${cor}; flex-shrink:0;"></span>
+                    <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <strong style="color:white; font-size:11px;">${a.nome}</strong>
+                        <span style="color:var(--text-muted); font-size:9.5px; display:block;">${a.espaco || 'Musculação'} &bull; Venc: ${vencBr}</span>
+                    </div>
+                </div>
+                <span style="font-size:9px; font-weight:900; color:${cor}; padding-left:6px;">${info.texto.toUpperCase()}</span>
+            </div>
+        `;
+    });
+
+    const selecionado = ALUNOS.find(x => x.id == idAtual) || ALUNOS[0];
+    atualizarTextoTriggerSimulador(selecionado);
+}
+
+function atualizarTextoTriggerSimulador(aluno) {
+    if (!aluno) return;
+    const info = calcularStatusMatricula(aluno);
+    const cor = info.status === 'vencido' ? 'var(--neon-red)' : (info.status === 'alerta' ? 'var(--neon-yellow)' : 'var(--neon-volt)');
+    const dot = document.getElementById('sim-trigger-dot');
+    const txt = document.getElementById('sim-trigger-text');
+    if (dot) dot.style.background = cor;
+    if (txt) txt.innerText = `${aluno.nome} • [${aluno.espaco || 'Musculação'}]`;
+}
+
+window.selecionarAtletaSimulador = function(id) {
+    const hiddenSelect = document.getElementById('select-simular-aluno');
+    if (hiddenSelect) hiddenSelect.value = id;
+    const a = ALUNOS.find(x => x.id == id);
+    if (a) {
+        atualizarTextoTriggerSimulador(a);
+        exibirAlunoNoVisorSpotlight(a, false);
+    }
+    document.getElementById('lista-custom-simulador')?.classList.remove('open');
+};
+
+// Fecha menus flutuantes ao clicar fora
+document.addEventListener('click', () => {
+    document.getElementById('lista-custom-simulador')?.classList.remove('open');
+    document.getElementById('menu-icones-tag')?.classList.remove('open');
+});
+
+// 3. Abas de Filtro e Renderização Rica das Passagens com Data de Vencimento
+window.filtrarFeedPassagens = function(filtro, btnEl) {
+    filtroPassagensAtivo = filtro;
+    document.querySelectorAll('.feed-filter-tabs .feed-tab').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    renderizarFeedGirosRecepcao();
+};
+
+// Substitui renderizarFeedGirosRecepcao para incluir Vencimento, Avatar, Status e Filtro
+window.renderizarFeedGirosRecepcao = function() {
+    const lista = document.getElementById('lista-giros-recepcao');
+    if (!lista) return;
+    lista.innerHTML = '';
+
+    let lib = 0, bloq = 0;
+    GIROS_CATRACA.forEach(g => {
+        if (g.status_acesso === 'LIBERADO') lib++; else bloq++;
+    });
+
+    const elLib = document.getElementById('count-liberados-hoje');
+    const elBloq = document.getElementById('count-bloqueados-hoje');
+    if (elLib) elLib.innerText = `${lib} Entraram`;
+    if (elBloq) elBloq.innerText = `${bloq} Retidos`;
+
+    popularMenuCustomSimulador();
+
+    const itensFiltrados = GIROS_CATRACA.filter(g => {
+        const atleta = ALUNOS.find(a => a.id == g.aluno_id);
+        const info = atleta ? calcularStatusMatricula(atleta) : { status: g.status_acesso === 'LIBERADO' ? 'ativo' : 'vencido' };
+
+        if (filtroPassagensAtivo === 'liberados') return g.status_acesso === 'LIBERADO' && info.status === 'ativo';
+        if (filtroPassagensAtivo === 'alerta') return info.status === 'alerta';
+        if (filtroPassagensAtivo === 'retidos') return g.status_acesso === 'BLOQUEADO' || info.status === 'vencido';
+        return true;
+    });
+
+    if (itensFiltrados.length === 0) {
+        lista.innerHTML = `<div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:11px;">Nenhum registro para o filtro selecionado.</div>`;
+        return;
+    }
+
+    itensFiltrados.slice(0, 15).forEach(g => {
+        const atleta = ALUNOS.find(a => a.id == g.aluno_id);
+        const info = atleta ? calcularStatusMatricula(atleta) : { status: g.status_acesso === 'LIBERADO' ? 'ativo' : 'vencido', texto: 'Avulso / Balcão' };
+        
+        const ok = g.status_acesso === 'LIBERADO';
+        const corBorda = !ok || info.status === 'vencido' ? 'var(--neon-red)' : (info.status === 'alerta' ? 'var(--neon-yellow)' : 'var(--neon-volt)');
+        const bgVenc = !ok || info.status === 'vencido' ? 'rgba(255,59,92,0.15)' : (info.status === 'alerta' ? 'rgba(255,184,0,0.16)' : 'rgba(0,245,155,0.12)');
+        
+        const vencBr = atleta && atleta.vencimento ? atleta.vencimento.split('-').reverse().join('/') : 'Hoje';
+        const iniciais = (g.aluno_nome || 'AT').substring(0, 2);
+        const avatarStyle = atleta && atleta.foto_base64
+            ? `background-image: url('${atleta.foto_base64}'); border: 2px solid ${corBorda};`
+            : `border: 2px solid ${corBorda};`;
+
+        const esp = g.espaco || (atleta ? atleta.espaco : 'Musculação');
+
+        lista.innerHTML += `
+            <div class="feed-rich-card" style="border-left: 3px solid ${corBorda};" onclick="selecionarAlunoPeloGiro(${g.aluno_id})">
+                <div class="feed-card-left">
+                    <div class="feed-mini-avatar" style="${avatarStyle}">${atleta && atleta.foto_base64 ? '' : iniciais}</div>
+                    <div style="min-width:0; flex:1;">
+                        <strong style="font-size:12px; color:white; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${g.aluno_nome}</strong>
+                        <span style="font-size:10px; color:var(--text-muted); display:block;">${esp} &bull; ${g.plano}</span>
+                        <span class="feed-venc-pill" style="background:${bgVenc}; color:${corBorda}; border:1px solid ${corBorda};">
+                            📅 Venc: ${vencBr} &bull; ${info.texto}
+                        </span>
+                    </div>
+                </div>
+                <div style="text-align:right; flex-shrink:0;">
+                    <span style="font-size:9px; font-weight:900; color:${corBorda}; display:block;">${g.status_acesso}</span>
+                    <span style="font-size:10px; color:var(--text-muted); font-family:monospace; display:block; margin:2px 0 4px 0;">${g.hora}</span>
+                    ${(!ok || info.status !== 'ativo') && atleta ? `<button onclick="event.stopPropagation(); abrirModalRenovacaoRapida(${atleta.id});" style="background:rgba(0,245,155,0.18); border:1px solid var(--neon-volt); color:var(--neon-volt); font-size:8.5px; font-weight:900; padding:2px 6px; border-radius:4px; cursor:pointer;">RENOVAR</button>` : ''}
+                </div>
+            </div>
+        `;
+    });
+};
+
+setTimeout(() => {
+    renderizarFeedGirosRecepcao();
+}, 180);
+
+// ==============================================================
+// 19. FILTRO INSTANTÂNEO ZERO-DELAY (0.0ms) & TOOLTIP MAGNÍFICO GLOBAL
+// ==============================================================
+
+// 1. Otimização de Velocidade: Renderiza os cards com atributo data-grupo e filtra via CSS em 0.0ms!
+window.renderizarFeedGirosRecepcao = function() {
+    const lista = document.getElementById('lista-giros-recepcao');
+    if (!lista) return;
+
+    // Mapa indexado O(1) para busca instantânea de atletas
+    const mapaAlunos = new Map();
+    ALUNOS.forEach(a => mapaAlunos.set(String(a.id), a));
+
+    let lib = 0, bloq = 0;
+    let htmlAcumulado = '';
+
+    GIROS_CATRACA.slice(0, 20).forEach(g => {
+        if (g.status_acesso === 'LIBERADO') lib++; else bloq++;
+
+        const atleta = mapaAlunos.get(String(g.aluno_id));
+        const info = atleta ? calcularStatusMatricula(atleta) : { status: g.status_acesso === 'LIBERADO' ? 'ativo' : 'vencido', texto: 'Liberado Balcão' };
+
+        const ok = g.status_acesso === 'LIBERADO';
+        let grupoCard = 'liberados';
+        if (!ok || info.status === 'vencido') grupoCard = 'retidos';
+        else if (info.status === 'alerta') grupoCard = 'alerta';
+
+        const corBorda = grupoCard === 'retidos' ? 'var(--neon-red)' : (grupoCard === 'alerta' ? 'var(--neon-yellow)' : 'var(--neon-volt)');
+        const bgVenc = grupoCard === 'retidos' ? 'rgba(255,59,92,0.15)' : (grupoCard === 'alerta' ? 'rgba(255,184,0,0.16)' : 'rgba(0,245,155,0.12)');
+
+        const vencBr = atleta && atleta.vencimento ? atleta.vencimento.split('-').reverse().join('/') : 'Hoje';
+        const iniciais = (g.aluno_nome || 'AT').substring(0, 2);
+        const avatarStyle = atleta && atleta.foto_base64
+            ? `background-image: url('${atleta.foto_base64}'); border: 2px solid ${corBorda};`
+            : `border: 2px solid ${corBorda};`;
+
+        const esp = g.espaco || (atleta ? atleta.espaco : 'Musculação');
+        const visivelAgora = (filtroPassagensAtivo === 'todos' || filtroPassagensAtivo === grupoCard) ? 'flex' : 'none';
+
+        htmlAcumulado += `
+            <div class="feed-rich-card" data-grupo="${grupoCard}" style="display:${visivelAgora}; border-left: 3px solid ${corBorda};" onclick="selecionarAlunoPeloGiro(${g.aluno_id})" data-tip="Clique para inspecionar ${g.aluno_nome} no visor">
+                <div class="feed-card-left">
+                    <div class="feed-mini-avatar" style="${avatarStyle}">${atleta && atleta.foto_base64 ? '' : iniciais}</div>
+                    <div style="min-width:0; flex:1;">
+                        <strong style="font-size:12px; color:white; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${g.aluno_nome}</strong>
+                        <span style="font-size:10px; color:var(--text-muted); display:block;">${esp} &bull; ${g.plano}</span>
+                        <span class="feed-venc-pill" style="background:${bgVenc}; color:${corBorda}; border:1px solid ${corBorda};">
+                            📅 Venc: ${vencBr} &bull; ${info.texto}
+                        </span>
+                    </div>
+                </div>
+                <div style="text-align:right; flex-shrink:0;">
+                    <span style="font-size:9px; font-weight:900; color:${corBorda}; display:block;">${g.status_acesso}</span>
+                    <span style="font-size:10px; color:var(--text-muted); font-family:monospace; display:block; margin:2px 0 4px 0;">${g.hora}</span>
+                    ${(grupoCard !== 'liberados' && atleta) ? `<button onclick="event.stopPropagation(); abrirModalRenovacaoRapida(${atleta.id});" data-tip="Renovar matrícula via PIX ou Cartão" style="background:rgba(0,245,155,0.18); border:1px solid var(--neon-volt); color:var(--neon-volt); font-size:8.5px; font-weight:900; padding:2px 6px; border-radius:4px; cursor:pointer;">RENOVAR</button>` : ''}
+                </div>
+            </div>
+        `;
+    });
+
+    // Contabiliza o total real da lista completa
+    let totalLib = 0, totalBloq = 0;
+    GIROS_CATRACA.forEach(g => { if (g.status_acesso === 'LIBERADO') totalLib++; else totalBloq++; });
+    const elLib = document.getElementById('count-liberados-hoje');
+    const elBloq = document.getElementById('count-bloqueados-hoje');
+    if (elLib) elLib.innerText = `${totalLib} Entraram`;
+    if (elBloq) elBloq.innerText = `${totalBloq} Retidos`;
+
+    lista.innerHTML = htmlAcumulado || `<div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:11px;">Nenhuma passagem registrada hoje.</div>`;
+
+    if (ALUNOS.length > 0) {
+        const idSel = document.getElementById('select-simular-aluno')?.value || ALUNOS[0].id;
+        const atletaSel = mapaAlunos.get(String(idSel)) || ALUNOS[0];
+        atualizarTextoTriggerSimulador(atletaSel);
+    }
+};
+
+// Troca de Aba em 0.0ms (Apenas alterna a visibilidade dos cards na GPU sem reconstruir DOM!)
+window.filtrarFeedPassagens = function(filtro, btnEl) {
+    filtroPassagensAtivo = filtro;
+    document.querySelectorAll('.feed-filter-tabs .feed-tab').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+
+    const lista = document.getElementById('lista-giros-recepcao');
+    if (!lista) return;
+
+    let visiveis = 0;
+    lista.querySelectorAll('.feed-rich-card').forEach(card => {
+        const bate = (filtro === 'todos' || card.getAttribute('data-grupo') === filtro);
+        card.style.display = bate ? 'flex' : 'none';
+        if (bate) visiveis++;
+    });
+
+    let msgVazio = document.getElementById('feed-empty-filter-msg');
+    if (visiveis === 0) {
+        if (!msgVazio) {
+            msgVazio = document.createElement('div');
+            msgVazio.id = 'feed-empty-filter-msg';
+            msgVazio.style.cssText = 'text-align:center; padding:28px 15px; color:var(--text-muted); font-size:11px;';
+            lista.appendChild(msgVazio);
+        }
+        msgVazio.innerText = 'Nenhum atleta nesta categoria no momento.';
+        msgVazio.style.display = 'block';
+    } else if (msgVazio) {
+        msgVazio.style.display = 'none';
+    }
+};
+
+// 2. Interceptador Global de Tooltips (Remove o balão branco nativo do Windows e exibe o HUD Neon)
+function inicializarTooltipsMagnificos() {
+    let tipEl = document.getElementById('titan-custom-tooltip');
+    if (!tipEl) {
+        tipEl = document.createElement('div');
+        tipEl.id = 'titan-custom-tooltip';
+        document.body.appendChild(tipEl);
+    }
+
+    const converterTitlesNativos = (root = document) => {
+        root.querySelectorAll('[title]').forEach(el => {
+            const t = el.getAttribute('title');
+            if (t && t.trim() !== '') {
+                el.setAttribute('data-tip', t.trim());
+            }
+            el.removeAttribute('title');
+        });
+    };
+
+    converterTitlesNativos();
+
+    document.addEventListener('mouseover', (e) => {
+        // Garante que qualquer elemento novo com title seja convertido na hora antes do navegador mostrar o balão branco
+        const comTitle = e.target.closest('[title]');
+        if (comTitle) {
+            comTitle.setAttribute('data-tip', comTitle.getAttribute('title'));
+            comTitle.removeAttribute('title');
+        }
+
+        const alvo = e.target.closest('[data-tip]');
+        if (!alvo) {
+            tipEl.style.display = 'none';
+            return;
+        }
+
+        const texto = alvo.getAttribute('data-tip');
+        if (!texto) return;
+
+        tipEl.innerText = texto;
+        tipEl.style.display = 'inline-flex';
+
+        const rect = alvo.getBoundingClientRect();
+        const tipRect = tipEl.getBoundingClientRect();
+
+        let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+        let top = rect.bottom + 8;
+
+        // Se bater no fundo da tela, joga para cima do botão
+        if (top + tipRect.height > window.innerHeight - 10) {
+            top = rect.top - tipRect.height - 8;
+        }
+        // Proteção nas laterais da tela
+        if (left < 10) left = 10;
+        if (left + tipRect.width > window.innerWidth - 10) {
+            left = window.innerWidth - tipRect.width - 10;
+        }
+
+        tipEl.style.left = `${Math.round(left)}px`;
+        tipEl.style.top = `${Math.round(top)}px`;
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        if (e.target.closest('[data-tip]')) {
+            tipEl.style.display = 'none';
+        }
+    });
+
+    document.addEventListener('mousedown', () => {
+        tipEl.style.display = 'none';
+    });
+}
+
+setTimeout(() => {
+    inicializarTooltipsMagnificos();
+    renderizarFeedGirosRecepcao();
+}, 120);
+
+// ==============================================================
+// 20. REFINAMENTO LUXURY: MONOGRAMA VIP, ARMÁRIO 1-CLIQUE E CORREÇÃO GIRO MANUAL
+// ==============================================================
+
+// 1. Corrige o Giro Manual para nunca misturar com foto ou vencimento de aluno
+window.acionarGiroManualCatraca = function() {
+    const hora = new Date().toTimeString().substring(0, 5);
+    GIROS_CATRACA.unshift({
+        id: Date.now(),
+        aluno_id: 0, // ID 0 exclusivo para liberação de balcão
+        aluno_nome: "ABERTURA MANUAL DE CATRACA",
+        espaco: "Recepção",
+        plano: "Relé SecBox Control iD",
+        status_acesso: "LIBERADO",
+        motivo: "Giro Manual Autorizado",
+        hora: hora
+    });
+    salvarLocal();
+    renderizarFeedGirosRecepcao();
+    atualizarLotacaoEspacos();
+    mostrarToast("🔓 Catraca destravada! Giro manual registrado.", "success");
+};
+
+// 2. Limpa qualquer giro manual antigo que tenha ficado com ID de aluno por engano
+GIROS_CATRACA.forEach(g => {
+    if ((g.aluno_nome || '').includes('LIBERADA PELO BALCÃO') || (g.aluno_nome || '').includes('MANUAL')) {
+        g.aluno_id = 0;
+        g.espaco = 'Recepção';
+        g.plano = 'Giro Livre Relé';
+    }
+});
+
+// 3. Troca Rápida de Chave de Armário em 1 Clique (Smart Locker)
+window.alternarArmarioRapido = function() {
+    if (!alunoNoVisorAtual) return;
+    const armariosDisponiveis = ['Sem Armário', 'Armário #04', 'Armário #08', 'Armário #12', 'Armário #15', 'Armário #21'];
+    const atual = alunoNoVisorAtual.armario || 'Armário #04';
+    const proxIdx = (armariosDisponiveis.indexOf(atual) + 1) % armariosDisponiveis.length;
+    alunoNoVisorAtual.armario = armariosDisponiveis[proxIdx];
+
+    salvarLocal();
+    exibirAlunoNoVisorSpotlight(alunoNoVisorAtual, false);
+    mostrarToast(`🔑 ${alunoNoVisorAtual.nome}: ${alunoNoVisorAtual.armario}`, "success");
+};
+
+// 4. Pager 1-Clique: Chamar Professor no Piso para atender o atleta do visor
+window.chamarProfessorNoPiso = function() {
+    if (!alunoNoVisorAtual) return;
+    const esp = alunoNoVisorAtual.espaco || 'Musculação';
+    const hora = new Date().toTimeString().substring(0, 5);
+
+    if (typeof MENSAGENS_CHAT !== 'undefined' && MENSAGENS_CHAT.piso) {
+        MENSAGENS_CHAT.piso.push({
+            autor: '📢 Pager Recepção',
+            texto: `Atenção instrutor (${esp}): Atleta ${alunoNoVisorAtual.nome} acabou de entrar e solicita acompanhamento na ficha!`,
+            tipo: 'outgoing',
+            hora: hora
+        });
+        setTimeout(() => {
+            MENSAGENS_CHAT.piso.push({
+                autor: `Prof. Responsável (${esp})`,
+                texto: `Recebido! Já estou indo receber ${alunoNoVisorAtual.nome.split(' ')[0]} no salão. 💪`,
+                tipo: 'incoming',
+                hora: hora
+            });
+            const badge = document.getElementById('chat-unread-badge');
+            if (badge) { badge.innerText = '1'; badge.style.display = 'flex'; }
+        }, 900);
+    }
+
+    mostrarToast(`📢 Professor de ${esp} acionado no rádio para atender ${alunoNoVisorAtual.nome.split(' ')[0]}!`, "success");
+};
+
+// 5. Aprimora o Visor com Monograma Cyber-VIP e Faixa Concierge
+const exibirVisorLuxuryBase = exibirAlunoNoVisorSpotlight;
+exibirAlunoNoVisorSpotlight = function(aluno, registrarGiro = true) {
+    exibirVisorLuxuryBase(aluno, registrarGiro);
+    if (!aluno) return;
+
+    // Substitui o bonequinho verde genérico pelo Monograma Cyber-VIP quando não há foto
+    const avatar = document.getElementById('spotlight-avatar');
+    if (avatar && !aluno.foto_base64) {
+        const partes = aluno.nome.trim().split(' ');
+        const iniciais = partes.length > 1 ? (partes[0][0] + partes[partes.length - 1][0]) : aluno.nome.substring(0, 2);
+        const info = calcularStatusMatricula(aluno);
+        const liberado = info.status !== 'vencido';
+        avatar.innerHTML = `
+            <div class="cyber-monogram">
+                <strong>${iniciais}</strong>
+                <span>${liberado ? 'TITAN ID' : 'RETIDO'}</span>
+            </div>
+        `;
+    }
+
+    // Atualiza a Faixa Concierge VIP (Armário, Fidelidade e Último Pagamento)
+    const elLocker = document.getElementById('concierge-locker');
+    if (elLocker) {
+        const arm = aluno.armario || (aluno.id == 101 ? 'Armário #04' : 'Sem Armário');
+        elLocker.innerText = arm === 'Sem Armário' ? '🔓 Sem Armário (Vincular)' : `🔑 ${arm} (Em Uso)`;
+        elLocker.className = arm === 'Sem Armário' ? 'text-cyan' : 'text-yellow';
+    }
+
+    const elFid = document.getElementById('concierge-fidelidade');
+    if (elFid) {
+        const meses = ((aluno.id % 9) + 3);
+        const nivel = aluno.plano === 'Anual Black' ? 'Nível Black Diamond' : (aluno.plano === 'Trimestral' ? 'Nível Prime Gold' : 'Atleta Member');
+        elFid.innerText = `💎 ${meses} Meses • ${nivel}`;
+    }
+
+    const elPagto = document.getElementById('concierge-pagto');
+    if (elPagto) {
+        const info = calcularStatusMatricula(aluno);
+        const valFmt = (parseFloat(aluno.valor_mensalidade) || 99.90).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        if (info.status === 'vencido') {
+            elPagto.innerText = `⚠️ Pendente (${valFmt})`;
+            elPagto.className = 'text-red';
+        } else {
+            elPagto.innerText = `⚡ PIX Confirmado (${valFmt})`;
+            elPagto.className = 'text-volt';
+        }
+    }
+};
+
+// 6. Aprimora os Cards da Direita para separar Giro Manual de Passagens de Alunos
+const renderFeedBaseLuxury = window.renderizarFeedGirosRecepcao;
+window.renderizarFeedGirosRecepcao = function() {
+    renderFeedBaseLuxury();
+    const lista = document.getElementById('lista-giros-recepcao');
+    if (!lista) return;
+
+    // Personaliza os cards de Giro Manual (aluno_id == 0) para terem visual exclusivo de Relé
+    lista.querySelectorAll('.feed-rich-card').forEach((card, idx) => {
+        const giro = GIROS_CATRACA[idx];
+        if (giro && (!giro.aluno_id || giro.aluno_id == 0)) {
+            card.style.borderLeftColor = 'var(--neon-cyan)';
+            const avatarEl = card.querySelector('.feed-mini-avatar');
+            if (avatarEl) {
+                avatarEl.style.backgroundImage = 'none';
+                avatarEl.style.borderColor = 'var(--neon-cyan)';
+                avatarEl.innerHTML = `<span class="material-icons-round" style="font-size:18px; color:var(--neon-cyan);">lock_open</span>`;
+            }
+            const pillEl = card.querySelector('.feed-venc-pill');
+            if (pillEl) {
+                pillEl.style.background = 'rgba(0, 210, 255, 0.12)';
+                pillEl.style.borderColor = 'var(--neon-cyan)';
+                pillEl.style.color = 'var(--neon-cyan)';
+                pillEl.innerText = '🔓 GIRO LIVRE RECEPÇÃO • RELÉ CONTROL iD';
+            }
+        }
+    });
+};
+
+setTimeout(() => {
+    if (alunoNoVisorAtual) exibirAlunoNoVisorSpotlight(alunoNoVisorAtual, false);
+    renderizarFeedGirosRecepcao();
+}, 150);
+
+// ==============================================================
+// 21. MODO CATRACA LIVRE (ALMOÇO / 21H), RÁDIO GYM, WHATSAPP D-1/D+1 E LIMPEZA
+// ==============================================================
+let catracaModoLivreAlmoco = false;
+let playlistGymIdx = 0;
+const PLAYLISTS_GYM = [
+    'RÁDIO GYM: PHONK / WORKOUT (128 BPM)',
+    'RÁDIO GYM: ELETRÔNICA / HIIT (135 BPM)',
+    'RÁDIO GYM: HIP-HOP / MAROMBA (110 BPM)',
+    'RÁDIO GYM: DESATIVADA (SILENCIOSO)'
+];
+
+if (typeof IDS_MODULOS_TRAVADOS !== 'undefined' && !IDS_MODULOS_TRAVADOS.includes('flag-armario')) {
+    IDS_MODULOS_TRAVADOS.push('flag-armario');
+}
+
+// 1. Modo Catraca Livre (Para Horário de Almoço e 1h Antes de Fechar)
+window.alternarModoLivreAlmoco = function() {
+    catracaModoLivreAlmoco = !catracaModoLivreAlmoco;
+    if (catracaModoLivreAlmoco && catracaPausadaGeral) {
+        alternarPausaCatracaGeral(); // Destrava se estivesse bloqueada
+    }
+
+    const banner = document.getElementById('banner-catraca-livre-almoco');
+    const btn = document.getElementById('btn-modo-livre-almoco');
+    const txtTit = document.getElementById('txt-titulo-almoco');
+    const txtSub = document.getElementById('txt-sub-almoco');
+    const txtTopo = document.getElementById('txt-status-catraca-topo');
+    const elRegime = document.getElementById('arena-regime-catraca');
+
+    if (catracaModoLivreAlmoco) {
+        if (banner) banner.style.display = 'flex';
+        if (btn) btn.classList.add('modo-livre-ativo');
+        if (txtTit) txtTit.innerText = 'Catraca Liberada';
+        if (txtSub) txtSub.innerText = 'Passagem Livre Ativa';
+        if (txtTopo) txtTopo.innerText = 'MODO ALMOÇO / FIM DE TURNO • PASSAGEM LIVRE SEM BIOMETRIA';
+        if (elRegime) { elRegime.innerText = '🔓 Passagem Livre (Almoço/21h)'; elRegime.className = 'text-yellow'; }
+        mostrarToast("🔓 Modo Catraca Livre Ativado (Horário de Almoço / Saída Recepção)!", "success");
+    } else {
+        if (banner) banner.style.display = 'none';
+        if (btn) btn.classList.remove('modo-livre-ativo');
+        if (txtTit) txtTit.innerText = 'Liberar Catraca';
+        if (txtSub) txtSub.innerText = 'Modo Almoço / 21h';
+        if (txtTopo) txtTopo.innerText = 'CATRACA CONTROL iD OPERACIONAL • FLUXO LIVRE';
+        if (elRegime) { elRegime.innerText = 'Biometria Ativa (Padrão)'; elRegime.className = 'text-volt'; }
+        mostrarToast("🔒 Biometria obrigatória reativada na catraca!", "success");
+    }
+};
+
+// 2. Botão de Música / Rádio Gym no Topo da Catraca
+window.alternarMusicaGym = function() {
+    playlistGymIdx = (playlistGymIdx + 1) % PLAYLISTS_GYM.length;
+    const txtEl = document.getElementById('txt-visor-musica');
+    const iconEl = document.getElementById('icon-visor-musica');
+    if (txtEl) txtEl.innerText = PLAYLISTS_GYM[playlistGymIdx];
+    if (iconEl) iconEl.innerText = playlistGymIdx === 3 ? 'volume_off' : 'equalizer';
+    mostrarToast(`🎵 ${PLAYLISTS_GYM[playlistGymIdx]}`, "success");
+};
+
+// 3. Disparo Direto de WhatsApp na Tela de Alunos (Com Regras "Vence Amanhã D-1" e "Pós-Vencimento D+1")
+window.enviarWhatsAppDiretoCRM = function(idAluno) {
+    const a = ALUNOS.find(x => x.id == idAluno);
+    if (!a) return;
+
+    const info = calcularStatusMatricula(a);
+    const numLimpo = (a.whatsapp || '').replace(/\D/g, '');
+    const fone = numLimpo.length >= 10 ? `55${numLimpo}` : '5571986030162';
+    const vencBr = a.vencimento ? a.vencimento.split('-').reverse().join('/') : '--';
+    const chavePix = CONFIG_HW.chavePix || 'pix@titanfitness.com.br';
+
+    const usarRegraD1 = CONFIG_HW.flags.whatsD1 ?? true;
+    const usarRegraPos1 = CONFIG_HW.flags.whatsPos1 ?? true;
+
+    let msg = '';
+    if (info.dias === 1 && usarRegraD1) {
+        msg = `Olá *${a.nome}*! Tudo bem? Passando para lembrar que sua matrícula na *${CONFIG_HW.nomeAcademia}* (${a.plano}) *vence amanhã (${vencBr})*! 🔔\n\nPara continuar passando direto na catraca sem bloqueio, você pode renovar via PIX (Chave: *${chavePix}*). Bom treino! 💪`;
+    } else if (info.dias === 0 && usarRegraD1) {
+        msg = `Olá *${a.nome}*! Sua matrícula na *${CONFIG_HW.nomeAcademia}* vence *hoje (${vencBr})*! ⚡\n\nRenove rapidinho via PIX (*${chavePix}*) para manter sua biometria liberada na catraca!`;
+    } else if (info.dias < 0) {
+        if (!usarRegraPos1) {
+            return mostrarToast("A regra de cobrança pós-vencimento está desativada nas configurações (o atleta já está retido na catraca).", "warning");
+        }
+        msg = `Olá *${a.nome}*! Notamos que sua matrícula na *${CONFIG_HW.nomeAcademia}* venceu em *${vencBr}* e o acesso na catraca encontra-se retido temporariamente. 🚫\n\nDeseja regularizar agora via PIX (*${chavePix}*) para liberarmos sua catraca imediatamente?`;
+    } else {
+        msg = `Olá *${a.nome}*! Aqui é da recepção da *${CONFIG_HW.nomeAcademia}*. Seu plano *${a.plano}* está ativo e liberado até *${vencBr}* (🔥 ${a.treinos_mes || 14} treinos no mês). Excelente treino!`;
+    }
+
+    window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, '_blank');
+    mostrarToast(`Abrindo WhatsApp para ${a.nome}...`, "success");
+};
+
+// 4. Atualiza a Tabela de Alunos com o Botão Direto de WhatsApp e Etiquetas "VENCE AMANHÃ!"
+window.renderizarTabelaAlunos = function() {
+    const grid = document.getElementById('grid-alunos-crm');
+    if (!grid) return;
+    const texto = (document.getElementById('filtro-texto-alunos')?.value || '').toLowerCase();
+    const statusFiltro = document.getElementById('filtro-status-alunos')?.value || 'todos';
+
+    grid.innerHTML = '';
+    ALUNOS.filter(a => {
+        const info = calcularStatusMatricula(a);
+        const bday = isAniversarianteDoMes(a.nascimento);
+        const bateTxt = a.nome.toLowerCase().includes(texto) || (a.cpf || '').includes(texto) || (a.objetivo || '').toLowerCase().includes(texto);
+        
+        let bateSt = true;
+        if (statusFiltro === 'vence_amanha') bateSt = (info.dias >= 0 && info.dias <= 3);
+        else if (statusFiltro === 'aniversariantes') bateSt = bday;
+        else if (statusFiltro !== 'todos') bateSt = (info.status === statusFiltro);
+
+        return bateTxt && bateSt;
+    }).forEach(a => {
+        const info = calcularStatusMatricula(a);
+        const cor = info.status === 'vencido' ? 'var(--neon-red)' : (info.status === 'alerta' ? 'var(--neon-yellow)' : 'var(--neon-volt)');
+        const bdayTag = isAniversarianteDoMes(a.nascimento) ? `<span class="bday-pill" style="margin-left:8px;">🎂 ANIVERSARIANTE</span>` : '';
+        
+        // Destaque especial se vence amanhã (D-1) ou 1 dia após vencimento (D+1)
+        let alertaReguaBadge = '';
+        if (info.dias === 1) {
+            alertaReguaBadge = `<span style="background:rgba(255,184,0,0.2); border:1px solid var(--neon-yellow); color:var(--neon-yellow); font-size:9px; font-weight:900; padding:2px 7px; border-radius:6px; margin-left:6px;">🔔 VENCE AMANHÃ!</span>`;
+        } else if (info.dias === -1) {
+            alertaReguaBadge = `<span style="background:rgba(255,59,92,0.2); border:1px solid var(--neon-red); color:#ff6b81; font-size:9px; font-weight:900; padding:2px 7px; border-radius:6px; margin-left:6px;">⚠️ VENCEU ONTEM (D+1)</span>`;
+        }
+
+        const avatarHtml = a.foto_base64
+            ? `<img src="${a.foto_base64}" style="width:46px; height:46px; border-radius:50%; object-fit:cover; border:2px solid ${cor};">`
+            : `<div style="width:46px; height:46px; border-radius:50%; border:2px solid ${cor}; background:#0b111e; display:flex; align-items:center; justify-content:center; font-weight:900;">${a.nome.substring(0,2)}</div>`;
+
+        const txtBotaoWhats = info.dias === 1 ? 'AVISAR: VENCE AMANHÃ' : (info.dias < 0 ? 'COBRAR NO WHATSAPP' : 'WHATSAPP');
+
+        grid.innerHTML += `
+            <div class="glass-card glow-hover" style="display:flex; justify-content:space-between; align-items:center; padding:14px 18px;">
+                <div style="display:flex; align-items:center; gap:14px;">
+                    ${avatarHtml}
+                    <div>
+                        <strong style="font-size:14px; color:white;">${a.nome}</strong>
+                        <span style="font-size:10px; color:${cor}; font-weight:800; margin-left:8px;">● ${info.texto.toUpperCase()}</span>
+                        ${alertaReguaBadge}
+                        ${bdayTag}
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">
+                            Espaço: <strong class="text-cyan">${a.espaco || 'Musculação'}</strong> &bull; Plano ${a.plano} &bull; 🔥 ${a.treinos_mes || 12} treinos/mês &bull; Venc: ${a.vencimento.split('-').reverse().join('/')}
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="btn-whats-direct-crm" onclick="enviarWhatsAppDiretoCRM(${a.id})" data-tip="Abrir conversa no WhatsApp com mensagem automática">
+                        <span class="material-icons-round" style="font-size:15px;">chat</span> ${txtBotaoWhats}
+                    </button>
+                    <button class="btn-volt-sm" onclick="abrirModalRenovacaoRapida(${a.id})"><span class="material-icons-round" style="font-size:14px;">qr_code_2</span> RENOVAR</button>
+                    <button class="btn-outline-cyan" style="padding:6px 10px;" onclick="abrirModalCadastroAluno(${a.id})"><span class="material-icons-round" style="font-size:15px;">edit</span></button>
+                </div>
+            </div>
+        `;
+    });
+};
+
+// 5. Conecta as novas chaves (#flag-musica, #flag-whats-d1, #flag-whats-pos1) nas Configurações
+const carregarCfgOriginal21 = carregarInputsConfiguracoes;
+carregarInputsConfiguracoes = function() {
+    carregarCfgOriginal21();
+    const f = CONFIG_HW.flags;
+    const setChk = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v ?? true; };
+    setChk('flag-musica', f.musica ?? true);
+    setChk('flag-whats-d1', f.whatsD1 ?? true);
+    setChk('flag-whats-pos1', f.whatsPos1 ?? true);
+};
+
+const aplicarFlagsOriginal21 = aplicarFlagsModulos;
+aplicarFlagsModulos = function(exibirAviso = true) {
+    aplicarFlagsOriginal21(false);
+    const getChk = (id) => { const el = document.getElementById(id); return el ? el.checked : true; };
+
+    CONFIG_HW.flags.musica = getChk('flag-musica');
+    CONFIG_HW.flags.whatsD1 = getChk('flag-whats-d1');
+    CONFIG_HW.flags.whatsPos1 = getChk('flag-whats-pos1');
+
+    const btnMusica = document.getElementById('btn-visor-musica');
+    if (btnMusica) btnMusica.style.display = CONFIG_HW.flags.musica ? 'inline-flex' : 'none';
+
+    const pillD1 = document.getElementById('pill-regua-d1');
+    const pillPos1 = document.getElementById('pill-regua-pos1');
+    if (pillD1) {
+        pillD1.innerText = `🔔 Vence Amanhã: ${CONFIG_HW.flags.whatsD1 ? 'Ativo' : 'Off'}`;
+        pillD1.className = CONFIG_HW.flags.whatsD1 ? 'pill-ok' : 'pill-err';
+    }
+    if (pillPos1) {
+        pillPos1.innerText = `⚠️ Pós-Venc. (D+1): ${CONFIG_HW.flags.whatsPos1 ? 'Ativo' : 'Só Bloqueio'}`;
+        pillPos1.className = CONFIG_HW.flags.whatsPos1 ? 'pill-ok' : 'pill-err';
+    }
+
+    salvarLocal();
+    if (exibirAviso) mostrarToast("Módulos e Regras de WhatsApp atualizados!", "success");
+};
+
+// Remove qualquer atributo de tooltip do personagem e do equipamento
+setTimeout(() => {
+    document.querySelectorAll('.titan-hero-holo, .arena-holo-visual').forEach(el => {
+        el.removeAttribute('data-tip');
+        el.removeAttribute('title');
+        el.onclick = null;
+    });
+    aplicarFlagsModulos(false);
+}, 180);
+
+// ==============================================================
+// 22. RANKING TOP 3 MONSTROS DO MÊS + SIMETRIA DAS 4 CAIXAS
+// ==============================================================
+function atualizarBentoRankingETurma() {
+    const rankEl = document.getElementById('bento-ranking-top3');
+    if (rankEl && ALUNOS.length > 0) {
+        const medalhas = ['🥇', '🥈', '🥉'];
+        const top3 = [...ALUNOS]
+            .sort((a, b) => (parseInt(b.treinos_mes) || 0) - (parseInt(a.treinos_mes) || 0))
+            .slice(0, 3);
+
+        rankEl.innerHTML = top3.map((atleta, idx) => {
+            const primeiroUltimo = atleta.nome.split(' ');
+            const nomeCurto = primeiroUltimo.length > 1 ? `${primeiroUltimo[0]} ${primeiroUltimo[1]}` : atleta.nome;
+            return `
+                <div class="podium-row">
+                    <strong>${medalhas[idx]} ${nomeCurto}</strong>
+                    <span>🔥 ${atleta.treinos_mes || 12}x</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Atualiza aula/clima do salão conforme horário
+    const elAula = document.getElementById('bento-aula-agora');
+    if (elAula) {
+        const hora = new Date().getHours();
+        if (hora >= 18 && hora <= 20) elAula.innerText = 'Pico Hipertrofia + Aulão Funcional';
+        else if (hora >= 11 && hora <= 14) elAula.innerText = 'Treino Almoço Express & Cardio';
+        else elAula.innerText = 'Musculação Performance & Força';
+    }
+
+    // Garante que o título da lotação na esquerda nunca quebre linha
+    const tituloLot = document.querySelector('.hw-title-txt');
+    if (tituloLot) tituloLot.innerText = 'LOTAÇÃO SALÃO';
+}
+
+const exibirVisorSimetrico = exibirAlunoNoVisorSpotlight;
+exibirAlunoNoVisorSpotlight = function(aluno, registrarGiro = true) {
+    exibirVisorSimetrico(aluno, registrarGiro);
+    if (!aluno) return;
+
+    // Deixa a 4ª métrica (Jornada & Fidelidade) em 1 linha exata para igualar a altura das outras 3 caixas!
+    const elFid = document.getElementById('concierge-fidelidade');
+    if (elFid) {
+        const meses = ((aluno.id % 9) + 3);
+        const selo = aluno.plano === 'Anual Black' ? 'Black VIP' : (aluno.plano === 'Trimestral' ? 'Prime Gold' : 'Member Pro');
+        elFid.innerText = `💎 ${meses} Meses • ${selo}`;
+    }
+
+    atualizarBentoRankingETurma();
+};
+
+setTimeout(() => {
+    atualizarBentoRankingETurma();
+    if (alunoNoVisorAtual) exibirAlunoNoVisorSpotlight(alunoNoVisorAtual, false);
+}, 160);
+
+// ==============================================================
+// 23. META MENSAL CONFIGURÁVEL, BLOQUEIO DE GIROS/DIA E BLUETOOTH SALÃO
+// ==============================================================
+const ESTACOES_BLUETOOTH_GYM = [
+    { nome: 'Phonk & Hardstyle Maromba', sub: 'ESTAÇÃO ATIVA • 128 BPM', mudo: false },
+    { nome: 'Eletrônica HIIT & Cardio', sub: 'ALTA ENERGIA • 135 BPM', mudo: false },
+    { nome: 'Hip-Hop Old School & Trap', sub: 'TREINO PESADO • 110 BPM', mudo: false },
+    { nome: 'Som Ambiente Pausado', sub: 'BLUETOOTH EM STANDBY', mudo: true }
+];
+let estacaoBtIdx = 0;
+
+// 1. Controlador do Novo Card Bluetooth na Bento Grid
+window.alternarMusicaGym = function() {
+    estacaoBtIdx = (estacaoBtIdx + 1) % ESTACOES_BLUETOOTH_GYM.length;
+    const est = ESTACOES_BLUETOOTH_GYM[estacaoBtIdx];
+
+    const txtNome = document.getElementById('txt-visor-musica');
+    const txtSub = document.getElementById('bento-bt-estilo');
+    const eqBars = document.getElementById('bt-eq-anim');
+    const statusBt = document.getElementById('bento-bt-status');
+
+    if (txtNome) {
+        txtNome.innerText = est.nome;
+        txtNome.className = est.mudo ? 'text-muted' : 'text-volt';
+    }
+    if (txtSub) txtSub.innerText = est.sub;
+    if (eqBars) eqBars.classList.toggle('eq-muted', est.mudo);
+    if (statusBt) {
+        statusBt.innerText = est.mudo ? '● PAUSADO' : '● JBL PRO CONECTADO';
+        statusBt.className = est.mudo ? 'bento-tag-purple' : 'bento-tag-volt';
+    }
+    mostrarToast(`🎵 Bluetooth Salão: ${est.nome}`, 'success');
+};
+
+// 2. Conta quantas passagens LIBERADAS o atleta já teve hoje
+function contarPassagensLiberadasHoje(alunoId) {
+    if (!alunoId) return 0;
+    return GIROS_CATRACA.filter(g => String(g.aluno_id) === String(alunoId) && g.status_acesso === 'LIBERADO').length;
+}
+
+// 3. Conecta Meta Mensal Configurável + Limite de Giros Diários nas Configurações
+const carregarCfgOriginal23 = carregarInputsConfiguracoes;
+carregarInputsConfiguracoes = function() {
+    carregarCfgOriginal23();
+    const elMetaTr = document.getElementById('hw-meta-treinos');
+    const elMaxGiros = document.getElementById('hw-max-giros-dia');
+    const elFlagLim = document.getElementById('flag-limite-diario');
+
+    if (elMetaTr) elMetaTr.value = CONFIG_HW.metaTreinosMes || 20;
+    if (elMaxGiros) elMaxGiros.value = CONFIG_HW.maxGirosDia || 1;
+    if (elFlagLim) elFlagLim.checked = CONFIG_HW.flags.limiteDiario ?? true;
+};
+
+const aplicarFlagsOriginal23 = aplicarFlagsModulos;
+aplicarFlagsModulos = function(exibirAviso = true) {
+    aplicarFlagsOriginal23(false);
+    const chkLim = document.getElementById('flag-limite-diario');
+    if (chkLim) CONFIG_HW.flags.limiteDiario = chkLim.checked;
+
+    const cardBt = document.getElementById('card-bento-musica');
+    if (cardBt) {
+        cardBt.style.opacity = (CONFIG_HW.flags.musica ?? true) ? '1' : '0.4';
+    }
+    salvarLocal();
+    if (exibirAviso) mostrarToast("Configurações e Módulos atualizados!", "success");
+};
+
+const salvarHwOriginal23 = salvarConfigHardware;
+salvarConfigHardware = function() {
+    CONFIG_HW.metaTreinosMes = Math.max(1, parseInt(document.getElementById('hw-meta-treinos')?.value) || 20);
+    CONFIG_HW.maxGirosDia = Math.max(1, parseInt(document.getElementById('hw-max-giros-dia')?.value) || 1);
+    salvarHwOriginal23();
+    if (alunoNoVisorAtual) exibirAlunoNoVisorSpotlight(alunoNoVisorAtual, false);
+};
+
+// 4. Intercepta a Passagem na Catraca para Validar o Limite Diário (1x, 2x, 3x...) e Atualizar a Meta Mensal
+const exibirVisorBase23 = exibirAlunoNoVisorSpotlight;
+window.exibirAlunoNoVisorSpotlight = function(aluno, registrarGiro = true) {
+    if (!aluno) return;
+
+    const usarLimiteDiario = CONFIG_HW.flags.limiteDiario ?? true;
+    const maxPermitidoDia = parseInt(CONFIG_HW.maxGirosDia) || 1;
+    const girosJaFeitosHoje = contarPassagensLiberadasHoje(aluno.id);
+    const infoMat = calcularStatusMatricula(aluno);
+
+    // Verifica se o atleta está em dia, mas já atingiu o limite de passagens de hoje
+    if (registrarGiro && !catracaPausadaGeral && !catracaModoLivreAlmoco && usarLimiteDiario && infoMat.status !== 'vencido' && girosJaFeitosHoje >= maxPermitidoDia) {
+        // Exibe o atleta no visor sem dar novo giro liberado
+        exibirVisorBase23(aluno, false);
+        atualizarBarraMetaMensalConfiguravel(aluno);
+
+        const horaAtual = new Date().toTimeString().substring(0, 5);
+        const card = document.getElementById('spotlight-card');
+        const banner = document.getElementById('spotlight-status-banner');
+        const icon = document.getElementById('spotlight-status-icon');
+        const txt = document.getElementById('spotlight-status-text');
+        const elDias = document.getElementById('spotlight-dias');
+
+        if (card) card.className = 'glass-card spotlight-card status-bloqueado';
+        if (banner) banner.className = 'status-banner banner-bloqueado';
+        if (icon) icon.innerText = 'block';
+        if (txt) txt.innerText = `ACESSO RETIDO • LIMITE DIÁRIO ATINGIDO (${girosJaFeitosHoje}/${maxPermitidoDia} PASSAGEM HOJE)`;
+        if (elDias) {
+            elDias.innerText = `Bloqueado (${girosJaFeitosHoje}/${maxPermitidoDia} hoje)`;
+            elDias.className = 'spot-value text-red';
+        }
+
+        GIROS_CATRACA.unshift({
+            id: Date.now(),
+            aluno_id: aluno.id,
+            aluno_nome: aluno.nome,
+            espaco: aluno.espaco || 'Musculação',
+            plano: aluno.plano,
+            status_acesso: 'BLOQUEADO',
+            motivo: `Limite Diário (${maxPermitidoDia}x/dia)`,
+            hora: horaAtual
+        });
+
+        falarRecepcao(`Atenção ${aluno.nome.split(' ')[0]}, limite de acesso diário atingido.`);
+        salvarLocal();
+        renderizarFeedGirosRecepcao();
+        mostrarToast(`🚫 Catraca Bloqueada: ${aluno.nome} já passou ${girosJaFeitosHoje}x hoje (Limite: ${maxPermitidoDia}x/dia)!`, 'error');
+        return;
+    }
+
+    // Fluxo normal caso esteja dentro do limite diário
+    exibirVisorBase23(aluno, registrarGiro);
+    atualizarBarraMetaMensalConfiguravel(aluno);
+};
+
+function atualizarBarraMetaMensalConfiguravel(aluno) {
+    if (!aluno) return;
+    const metaConfig = Math.max(1, parseInt(CONFIG_HW.metaTreinosMes) || 20);
+    const treinos = parseInt(aluno.treinos_mes) || 12;
+    const pct = Math.min(100, Math.round((treinos / metaConfig) * 100));
+    const kcal = treinos * 310;
+
+    const elLabel = document.getElementById('visor-label-meta-mensal');
+    const elPct = document.getElementById('visor-meta-pct');
+    const elBar = document.getElementById('visor-meta-bar');
+    const elKcal = document.getElementById('visor-kcal-est');
+
+    if (elLabel) elLabel.innerText = `META MENSAL (${metaConfig} TREINOS)`;
+    if (elPct) elPct.innerText = `${pct}% (${treinos}/${metaConfig})`;
+    if (elBar) elBar.style.width = `${pct}%`;
+    if (elKcal) {
+        elKcal.innerHTML = pct >= 100
+            ? `<strong class="text-yellow">🏆 META BATIDA! (~${kcal.toLocaleString('pt-BR')} kcal)</strong>`
+            : `⚡ ~${kcal.toLocaleString('pt-BR')} kcal queimadas no mês`;
+    }
+}
+
+setTimeout(() => {
+    carregarInputsConfiguracoes();
+    if (alunoNoVisorAtual) atualizarBarraMetaMensalConfiguravel(alunoNoVisorAtual);
+}, 200);
+
+// ==============================================================
+// 24. VITRINE DE MARCAS PARCEIRAS (GROWTH / WEPINK / CARIANI) + POPOVER TAG
+// ==============================================================
+const PARCEIROS_PADRAO_GYM = [
+    { id: 'growth', icone: '🧪', nome: 'Growth Supplements', cupom: 'TITAN10', desc: '10% OFF Whey & Creatina no site oficial', cor: 'cyan', ativo: true },
+    { id: 'wepink', icone: '💖', nome: 'WePink / Wellness', cupom: 'VIRGINIA15', desc: '15% OFF Linha Pós-Treino & Body Splash', cor: 'pink', ativo: true },
+    { id: 'darklab', icone: '⚡', nome: 'Dark Lab Suplementos', cupom: 'DARKVIP', desc: 'Combo Pré-Treino + Taurina c/ Desconto', cor: 'gold', ativo: true },
+    { id: 'ironberg', icone: '🏆', nome: 'Max Titanium / CT', cupom: 'CARIANI10', desc: 'Linha Pro Series para atletas assíduos', cor: 'volt', ativo: true },
+    { id: 'pilates', icone: '🧘‍♀️', nome: 'Studio Pilates Parceiro', cupom: '1 AULA VIP', desc: '1 Sessão de Postura/Mobilidade p/ Alunos Black', cor: 'purple', ativo: false }
+];
+
+let PARCEIROS_GYM = JSON.parse(localStorage.getItem('titanParceirosGym')) || PARCEIROS_PADRAO_GYM;
+let parceiroSelecionadoIdx = 0;
+
+function salvarParceirosLocal() {
+    localStorage.setItem('titanParceirosGym', JSON.stringify(PARCEIROS_GYM));
+}
+
+// 1. Renderiza a Vitrine de Marcas Parceiras e a Logo Co-Branding no Topo
+window.renderizarBarraParceirosTopo = function() {
+    const ribbon = document.getElementById('arena-sponsors-ribbon');
+    if (!ribbon) return;
+
+    const mostrarRibbon = CONFIG_HW.flags.parceiros ?? true;
+    ribbon.style.display = mostrarRibbon ? 'flex' : 'none';
+
+    // Nome curto e Logo da Academia (Co-Branding)
+    const elNome = document.getElementById('ribbon-gym-name');
+    const elLogo = document.getElementById('gym-custom-logo-box');
+    if (elNome) elNome.innerText = CONFIG_HW.siglaAcademia || 'TITAN GYM';
+    if (elLogo) {
+        if (CONFIG_HW.logoAcademiaBase64) {
+            elLogo.innerHTML = '';
+            elLogo.style.backgroundImage = `url('${CONFIG_HW.logoAcademiaBase64}')`;
+        } else {
+            elLogo.style.backgroundImage = 'none';
+            elLogo.innerHTML = `<span class="material-icons-round">fitness_center</span>`;
+        }
+    }
+
+    const track = document.getElementById('ribbon-sponsors-list');
+    if (!track) return;
+
+    const ativos = PARCEIROS_GYM.filter(p => p.ativo);
+    if (ativos.length === 0) {
+        track.innerHTML = `<span style="font-size:10px; color:var(--text-muted);">Nenhuma marca ativa. Clique em "Parceiros" para ativar!</span>`;
+        return;
+    }
+
+    track.innerHTML = ativos.map((p, idx) => `
+        <div class="sponsor-pill-card sp-color-${p.cor || 'volt'}" onclick="selecionarParceiroDaBarra('${p.id}')" data-tip="Clique para selecionar ${p.nome} (${p.cupom}) e enviar ao atleta">
+            <span style="font-size:15px;">${p.icone || '⭐'}</span>
+            <div>
+                <strong>${p.nome}</strong>
+                <span>CUPOM: ${p.cupom}</span>
+            </div>
+        </div>
+    `).join('');
+
+    // Atualiza o texto do 3º botão tático (Mimo VIP)
+    const parcAtual = ativos[parceiroSelecionadoIdx % ativos.length] || ativos[0];
+    const txtBtn = document.getElementById('txt-btn-cupom-parceiro');
+    if (txtBtn && parcAtual) {
+        txtBtn.innerText = `${parcAtual.cupom}`;
+    }
+};
+
+window.selecionarParceiroDaBarra = function(idParceiro) {
+    const ativos = PARCEIROS_GYM.filter(p => p.ativo);
+    const idx = ativos.findIndex(p => p.id === idParceiro);
+    if (idx > -1) parceiroSelecionadoIdx = idx;
+    const parc = ativos[idx] || ativos[0];
+    renderizarBarraParceirosTopo();
+    if (parc) {
+        navigator.clipboard?.writeText(parc.cupom);
+        mostrarToast(`🎁 Parceiro "${parc.nome}" selecionado! Cupom ${parc.cupom} copiado.`, 'success');
+    }
+};
+
+// 2. Dispara o Cupom da Marca Parceira para o WhatsApp do Atleta no Visor
+window.enviarCupomParceiroAtleta = function() {
+    if (!alunoNoVisorAtual) return;
+    const ativos = PARCEIROS_GYM.filter(p => p.ativo);
+    const parc = ativos[parceiroSelecionadoIdx % ativos.length] || PARCEIROS_GYM[0];
+    const a = alunoNoVisorAtual;
+
+    const numLimpo = (a.whatsapp || '').replace(/\D/g, '');
+    const fone = numLimpo.length >= 10 ? `55${numLimpo}` : '5571986030162';
+
+    const msg = `🔥 Parabéns pela dedicação nos treinos, *${a.nome}*! Aqui é da *${CONFIG_HW.nomeAcademia}*.\n\nComo atleta VIP da nossa academia (${a.treinos_mes || 18} treinos no mês), você ganhou um benefício exclusivo no nosso parceiro oficial *${parc.icone} ${parc.nome}*:\n\n🎁 *CUPOM:* \`${parc.cupom}\`\n✨ *Vantagem:* ${parc.desc}\n\nContinue firme na meta! 💪`;
+
+    window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, '_blank');
+    mostrarToast(`Enviando cupom ${parc.cupom} (${parc.nome}) para ${a.nome}!`, 'success');
+};
+
+// 3. Modal de Gestão de Marcas Parceiras e Upload de Logo da Academia
+window.abrirModalParceirosGym = function() {
+    document.getElementById('input-sigla-academia').value = CONFIG_HW.siglaAcademia || 'TITAN GYM';
+    const prev = document.getElementById('preview-logo-academia');
+    if (prev && CONFIG_HW.logoAcademiaBase64) {
+        prev.innerHTML = `<img src="${CONFIG_HW.logoAcademiaBase64}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">`;
+    }
+    renderizarGridParceirosModal();
+    document.getElementById('modal-parceiros-gym')?.classList.add('active');
+};
+
+function renderizarGridParceirosModal() {
+    const grid = document.getElementById('grid-marcas-parceiras-modal');
+    if (!grid) return;
+    grid.innerHTML = PARCEIROS_GYM.map((p, idx) => `
+        <div onclick="alternarAtivoParceiro(${idx})" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:10px; background:${p.ativo ? 'rgba(0,245,155,0.08)' : 'rgba(0,0,0,0.4)'}; border:1px solid ${p.ativo ? 'var(--neon-volt)' : 'rgba(255,255,255,0.08)'};">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:20px;">${p.icone || '⭐'}</span>
+                <div>
+                    <strong style="font-size:12px; color:white; display:block;">${p.nome}</strong>
+                    <span style="font-size:10px; color:var(--neon-cyan); font-family:monospace;">Cupom: ${p.cupom}</span>
+                </div>
+            </div>
+            <span style="font-size:9px; font-weight:900; padding:3px 8px; border-radius:6px; background:${p.ativo ? 'var(--neon-volt)' : 'rgba(255,255,255,0.08)'}; color:${p.ativo ? '#04060b' : 'var(--text-muted)'};">
+                ${p.ativo ? 'ATIVO NO TOPO' : 'OCULTO'}
+            </span>
+        </div>
+    `).join('');
+}
+
+window.alternarAtivoParceiro = function(idx) {
+    if (!PARCEIROS_GYM[idx]) return;
+    PARCEIROS_GYM[idx].ativo = !PARCEIROS_GYM[idx].ativo;
+    salvarParceirosLocal();
+    renderizarGridParceirosModal();
+    renderizarBarraParceirosTopo();
+};
+
+window.adicionarParceiroCustom = function() {
+    const nome = document.getElementById('novo-parc-nome')?.value.trim();
+    const cupom = document.getElementById('novo-parc-cupom')?.value.trim().toUpperCase();
+    const cor = document.getElementById('novo-parc-cor')?.value || 'volt';
+    if (!nome || !cupom) return mostrarToast("Preencha o nome da marca e o cupom!", "warning");
+
+    PARCEIROS_GYM.unshift({
+        id: 'custom_' + Date.now(),
+        icone: '🤝',
+        nome: nome,
+        cupom: cupom,
+        desc: `Benefício exclusivo para alunos ativos da academia`,
+        cor: cor,
+        ativo: true
+    });
+
+    document.getElementById('novo-parc-nome').value = '';
+    document.getElementById('novo-parc-cupom').value = '';
+    salvarParceirosLocal();
+    renderizarGridParceirosModal();
+    renderizarBarraParceirosTopo();
+    mostrarToast(`Parceiro "${nome}" adicionado à vitrine do topo!`, 'success');
+};
+
+window.carregarLogoAcademia = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        CONFIG_HW.logoAcademiaBase64 = e.target.result;
+        const prev = document.getElementById('preview-logo-academia');
+        if (prev) prev.innerHTML = `<img src="${CONFIG_HW.logoAcademiaBase64}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">`;
+        salvarLocal();
+        renderizarBarraParceirosTopo();
+        mostrarToast("Logo comercial carregada com sucesso!", "success");
+    };
+    reader.readAsDataURL(file);
+};
+
+window.salvarCoBrandingParceiros = function() {
+    const sigla = document.getElementById('input-sigla-academia')?.value.trim().toUpperCase();
+    if (sigla) CONFIG_HW.siglaAcademia = sigla;
+    salvarLocal();
+    salvarParceirosLocal();
+    renderizarBarraParceirosTopo();
+    fecharTodosModais();
+    mostrarToast("Vitrine de Marcas Parceiras e Co-Branding atualizada!", "success");
+};
+
+// 4. Controlador da Nova Caixinha Flutuante (Popover) de Tags
+window.focarEditorTagVisor = function(idxTag = null) {
+    const popover = document.getElementById('popover-tag-studio');
+    const input = document.getElementById('visor-nota-rapida');
+    const selIcone = document.getElementById('tag-icone-select');
+    if (!popover || !input || !alunoNoVisorAtual) return;
+
+    popover.classList.add('open');
+    garantirArrayTags(alunoNoVisorAtual);
+
+    if (idxTag !== null && alunoNoVisorAtual.tags_custom[idxTag]) {
+        indiceTagEmEdicao = idxTag;
+        const tag = alunoNoVisorAtual.tags_custom[idxTag];
+        input.value = tag.texto;
+        if (selIcone) selIcone.value = tag.icone || '🔑';
+        const disp = document.getElementById('tag-icone-display');
+        if (disp) disp.innerText = `${tag.icone || '🔑'} Tag`;
+        corTagSelecionada = tag.cor || 'volt';
+    } else {
+        indiceTagEmEdicao = null;
+        input.value = '';
+    }
+
+    atualizarContadorTag(input);
+    setTimeout(() => input.focus(), 50);
+};
+
+window.fecharPopoverTag = function() {
+    document.getElementById('popover-tag-studio')?.classList.remove('open');
+    indiceTagEmEdicao = null;
+};
+
+// Fecha o Popover automaticamente após salvar a tag
+const salvarTagOriginalPopover = window.salvarNotaRapidaVisor;
+window.salvarNotaRapidaVisor = function() {
+    salvarTagOriginalPopover();
+    fecharPopoverTag();
+};
+
+// Conecta a chave #flag-parceiros nas Configurações
+const carregarCfgOriginal24 = carregarInputsConfiguracoes;
+carregarInputsConfiguracoes = function() {
+    carregarCfgOriginal24();
+    const chkParc = document.getElementById('flag-parceiros');
+    if (chkParc) chkParc.checked = CONFIG_HW.flags.parceiros ?? true;
+};
+
+const aplicarFlagsOriginal24 = aplicarFlagsModulos;
+aplicarFlagsModulos = function(exibirAviso = true) {
+    aplicarFlagsOriginal24(false);
+    const chkParc = document.getElementById('flag-parceiros');
+    if (chkParc) CONFIG_HW.flags.parceiros = chkParc.checked;
+    salvarLocal();
+    renderizarBarraParceirosTopo();
+    if (exibirAviso) mostrarToast("Módulos e Vitrine Comercial atualizados!", "success");
+};
+
+setTimeout(() => {
+    renderizarBarraParceirosTopo();
+}, 220);
+
+// ==============================================================
+// 25. POPOVER ANCORADO + VOUCHER META 20/20 + CARD STORIES INSTAGRAM
+// ==============================================================
+
+// 1. Abre o Popover ancorado exatamente embaixo do botão + TAG
+window.focarEditorTagVisor = function(idxTag = null, event = null) {
+    if (event) event.stopPropagation();
+    const popover = document.getElementById('popover-tag-studio');
+    const input = document.getElementById('visor-nota-rapida');
+    const selIcone = document.getElementById('tag-icone-select');
+    if (!popover || !input || !alunoNoVisorAtual) return;
+
+    popover.classList.add('open');
+    garantirArrayTags(alunoNoVisorAtual);
+
+    if (idxTag !== null && alunoNoVisorAtual.tags_custom[idxTag]) {
+        indiceTagEmEdicao = idxTag;
+        const tag = alunoNoVisorAtual.tags_custom[idxTag];
+        input.value = tag.texto;
+        if (selIcone) selIcone.value = tag.icone || '🔑';
+        const disp = document.getElementById('tag-icone-display');
+        if (disp) disp.innerText = `${tag.icone || '🔑'} Tag`;
+        corTagSelecionada = tag.cor || 'volt';
+    } else {
+        indiceTagEmEdicao = null;
+        input.value = '';
+    }
+
+    atualizarContadorTag(input);
+    setTimeout(() => input.focus(), 40);
+};
+
+// Fecha o Popover de Tag ao clicar fora dele
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tag-trigger-anchor') && !e.target.closest('.custom-student-tag')) {
+        fecharPopoverTag();
+    }
+});
+
+// 2. Emitir Voucher de Recompensa quando o aluno bate a Meta Mensal (Cupom 80mm)
+window.emitirVoucherMetaBatida = function() {
+    if (!alunoNoVisorAtual) return;
+    const a = alunoNoVisorAtual;
+    const metaConfig = Math.max(1, parseInt(CONFIG_HW.metaTreinosMes) || 20);
+    const treinos = parseInt(a.treinos_mes) || 12;
+
+    const ativos = (typeof PARCEIROS_GYM !== 'undefined') ? PARCEIROS_GYM.filter(p => p.ativo) : [];
+    const parc = ativos[parceiroSelecionadoIdx % Math.max(1, ativos.length)] || { nome: 'Growth Supplements', cupom: 'TITAN10' };
+
+    document.getElementById('cupom-academia-nome').innerText = CONFIG_HW.nomeAcademia;
+    document.getElementById('cupom-titulo-doc').innerText = "🏆 VOUCHER OFICIAL DE META & ASSIDUIDADE";
+    document.getElementById('cupom-corpo-linhas').innerHTML = `
+        <div><strong>ATLETA VIP:</strong> ${a.nome}</div>
+        <div><strong>DESEMPENHO NO MÊS:</strong> 🔥 ${treinos} / ${metaConfig} Treinos</div>
+        <div><strong>RECOMPENSA:</strong> ${treinos >= metaConfig ? 'META 100% CONCLUÍDA (VIP)' : 'BÔNUS DE INCENTIVO'}</div>
+        <div><strong>PARCEIRO OFICIAL:</strong> ${parc.nome}</div>
+        <div><strong>CÓDIGO / VOUCHER:</strong> ${parc.cupom}</div>
+    `;
+    document.getElementById('cupom-bloco-parq').style.display = 'none';
+    document.getElementById('cupom-hash').innerText = `REWARD_ID: 0x${Math.random().toString(16).substring(2, 10).toUpperCase()}`;
+    document.getElementById('cupom-datahora').innerText = new Date().toLocaleString('pt-BR');
+    document.getElementById('modal-cupom-termico')?.classList.add('active');
+};
+
+// 3. Gerador de Card Stories do Atleta (9:16) para Instagram e WhatsApp
+window.abrirModalStoriesAtleta = function() {
+    if (!alunoNoVisorAtual) return;
+    const a = alunoNoVisorAtual;
+    const treinos = parseInt(a.treinos_mes) || 14;
+    const kcal = treinos * 310;
+
+    const ativos = (typeof PARCEIROS_GYM !== 'undefined') ? PARCEIROS_GYM.filter(p => p.ativo) : [];
+    const parc = ativos[parceiroSelecionadoIdx % Math.max(1, ativos.length)] || { icone: '🧪', nome: 'GROWTH SUPPLEMENTS', cupom: 'TITAN10' };
+
+    document.getElementById('ig-card-academia').innerText = CONFIG_HW.siglaAcademia || CONFIG_HW.nomeAcademia;
+    document.getElementById('ig-card-data').innerText = new Date().toLocaleDateString('pt-BR');
+    document.getElementById('ig-card-nome').innerText = a.nome;
+    document.getElementById('ig-card-foco').innerText = `MODALIDADE: ${(a.espaco || 'MUSCULAÇÃO').toUpperCase()} • ${(a.objetivo || 'HIPERTROFIA').toUpperCase()}`;
+    document.getElementById('ig-card-treinos').innerText = `🔥 ${treinos}`;
+    document.getElementById('ig-card-kcal').innerText = `⚡ ${kcal.toLocaleString('pt-BR')} kcal`;
+    document.getElementById('ig-card-nivel').innerText = a.plano === 'Anual Black' ? '💎 BLACK VIP' : '⚡ TITAN PRO';
+    document.getElementById('ig-card-sponsor').innerHTML = `
+        <span>PARCEIRO OFICIAL</span>
+        <strong>${parc.icone || '⭐'} ${parc.nome.toUpperCase()} &bull; CUPOM: ${parc.cupom}</strong>
+    `;
+
+    const av = document.getElementById('ig-card-avatar');
+    if (av) {
+        if (a.foto_base64) {
+            av.innerText = '';
+            av.style.backgroundImage = `url('${a.foto_base64}')`;
+        } else {
+            av.style.backgroundImage = 'none';
+            const partes = a.nome.trim().split(' ');
+            av.innerText = partes.length > 1 ? (partes[0][0] + partes[partes.length - 1][0]) : a.nome.substring(0, 2);
+        }
+    }
+
+    document.getElementById('modal-stories-atleta')?.classList.add('active');
+};
+
+window.compartilharStoriesWhatsApp = function() {
+    if (!alunoNoVisorAtual) return;
+    const a = alunoNoVisorAtual;
+    const treinos = parseInt(a.treinos_mes) || 14;
+    const kcal = treinos * 310;
+    const ativos = (typeof PARCEIROS_GYM !== 'undefined') ? PARCEIROS_GYM.filter(p => p.ativo) : [];
+    const parc = ativos[parceiroSelecionadoIdx % Math.max(1, ativos.length)] || { icone: '🧪', nome: 'Growth Supplements', cupom: 'TITAN10' };
+
+    const numLimpo = (a.whatsapp || '').replace(/\D/g, '');
+    const fone = numLimpo.length >= 10 ? `55${numLimpo}` : '5571986030162';
+
+    const msg = `📸 *MEU RESUMO DE PERFORMANCE - ${CONFIG_HW.nomeAcademia}*\n\n🏋️ *Atleta:* ${a.nome}\n🔥 *Frequência no Mês:* ${treinos} Treinos Concluídos\n⚡ *Energia Queimada:* ~${kcal.toLocaleString('pt-BR')} kcal\n\n🎁 *Cupom Parceiro Desbloqueado:* \`${parc.cupom}\` (${parc.nome})\n\n_Poste nos seus Stories e marque a nossa academia!_ 💪`;
+    window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+window.baixarCardStoriesPDF = async function() {
+    const el = document.getElementById('stories-card-capture');
+    if (!el || !alunoNoVisorAtual) return;
+    await html2pdf().from(el).set({
+        margin: 8,
+        filename: `Stories_${alunoNoVisorAtual.nome.replace(/\s+/g, '_')}.pdf`,
+        html2canvas: { scale: 2, backgroundColor: '#050811' },
+        jsPDF: { unit: 'mm', format: [105, 165], orientation: 'portrait' }
+    }).save();
+    mostrarToast("Card Stories salvo com sucesso!", "success");
+};
+
+setTimeout(() => {
+    if (alunoNoVisorAtual) renderizarPillsSemanaVisor(alunoNoVisorAtual);
+}, 260);
+
+// ==============================================================
+// 26. VITRINE 4 PARCEIROS GRANDES + CUPOM OPCIONAL + DISPARO ZAP DIRETO
+// ==============================================================
+const MAX_PARCEIROS_ATIVOS = 4;
+
+// Garante que no máximo 4 parceiros estejam ativos inicialmente
+if (typeof PARCEIROS_GYM !== 'undefined') {
+    let contAtivos = 0;
+    PARCEIROS_GYM.forEach(p => {
+        if (p.ativo) {
+            contAtivos++;
+            if (contAtivos > MAX_PARCEIROS_ATIVOS) p.ativo = false;
+        }
+    });
+}
+
+// 1. Renderiza o Nome da Academia no Topo + Os 4 Cards Grandes de Empresas Parceiras Abaixo
+window.renderizarBarraParceirosTopo = function() {
+    const elNome = document.getElementById('ribbon-gym-name');
+    const elLogo = document.getElementById('gym-custom-logo-box');
+    const elCounter = document.getElementById('badge-count-parceiros');
+
+    // Por padrão exibe TITAN GYM OS (ou o nome personalizado pelo dono)
+    const nomeExibido = CONFIG_HW.siglaAcademia || CONFIG_HW.nomeAcademia || 'TITAN GYM OS';
+    if (elNome) elNome.innerText = nomeExibido;
+
+    if (elLogo) {
+        if (CONFIG_HW.logoAcademiaBase64) {
+            elLogo.innerHTML = '';
+            elLogo.style.backgroundImage = `url('${CONFIG_HW.logoAcademiaBase64}')`;
+        } else {
+            elLogo.style.backgroundImage = 'none';
+            elLogo.innerHTML = `<span class="material-icons-round">fitness_center</span>`;
+        }
+    }
+
+    const showcaseBox = document.getElementById('arena-sponsors-ribbon');
+    const mostrarRibbon = CONFIG_HW.flags.parceiros ?? true;
+    if (showcaseBox) showcaseBox.style.display = mostrarRibbon ? 'flex' : 'none';
+
+    const track = document.getElementById('ribbon-sponsors-list');
+    if (!track) return;
+
+    const ativos = PARCEIROS_GYM.filter(p => p.ativo).slice(0, MAX_PARCEIROS_ATIVOS);
+    if (elCounter) elCounter.innerText = `${ativos.length}/${MAX_PARCEIROS_ATIVOS} PARCEIROS`;
+
+    if (ativos.length === 0) {
+        track.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; padding:8px; font-size:10.5px; color:var(--text-muted);">Nenhuma empresa parceira ativa. Clique em "Configurar Parceiros" para selecionar até 4 marcas!</div>`;
+        return;
+    }
+
+    track.innerHTML = ativos.map(p => {
+        const temCupom = p.cupom && p.cupom.trim() !== '';
+        const textoCupom = temCupom ? `🎁 CUPOM: ${p.cupom}` : `✨ PARCEIRO OFICIAL`;
+        return `
+            <div class="partner-big-card sp-color-${p.cor || 'volt'}" onclick="dispararParceiroWhatsApp('${p.id}')" data-tip="Clique para enviar ${p.nome} direto para o WhatsApp do atleta no visor">
+                <div class="partner-big-left">
+                    <div class="partner-big-icon">${p.icone || '🏆'}</div>
+                    <div class="partner-big-info">
+                        <strong>${p.nome}</strong>
+                        <span>${textoCupom}</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-partner-zap" onclick="event.stopPropagation(); dispararParceiroWhatsApp('${p.id}');">
+                    <span class="material-icons-round" style="font-size:13px;">send</span> ZAP
+                </button>
+            </div>
+        `;
+    }).join('');
+};
+
+// 2. Dispara o Parceiro (Com ou Sem Cupom!) direto para o WhatsApp do Aluno no Visor
+window.dispararParceiroWhatsApp = function(idParceiro) {
+    if (!alunoNoVisorAtual) return;
+    const a = alunoNoVisorAtual;
+    const parc = PARCEIROS_GYM.find(p => p.id === idParceiro) || PARCEIROS_GYM[0];
+    if (!parc) return;
+
+    const ativos = PARCEIROS_GYM.filter(p => p.ativo);
+    const idxAtivo = ativos.findIndex(p => p.id === idParceiro);
+    if (idxAtivo > -1) parceiroSelecionadoIdx = idxAtivo;
+
+    const numLimpo = (a.whatsapp || '').replace(/\D/g, '');
+    const fone = numLimpo.length >= 10 ? `55${numLimpo}` : '5571986030162';
+    const nomeGym = CONFIG_HW.siglaAcademia || CONFIG_HW.nomeAcademia || 'TITAN GYM OS';
+    const temCupom = parc.cupom && parc.cupom.trim() !== '';
+
+    let msg = '';
+    if (temCupom) {
+        navigator.clipboard?.writeText(parc.cupom);
+        msg = `🔥 Parabéns pelo treino de hoje, *${a.nome}*! Aqui é da *${nomeGym}*.\n\nComo você é nosso atleta ativo (${a.treinos_mes || 18} treinos no mês), liberamos um cupom VIP na nossa empresa parceira *${parc.icone || '🏆'} ${parc.nome}*:\n\n🎁 *CUPOM EXCLUSIVO:* \`${parc.cupom}\`\n✨ *Benefício:* ${parc.desc || 'Desconto especial para alunos da academia'}\n\nAproveite e bom descanso pós-treino! 💪`;
+    } else {
+        msg = `🔥 Excelente treino hoje, *${a.nome}*! Aqui é da *${nomeGym}*.\n\nPassando para indicar nossa empresa parceira oficial *${parc.icone || '🏆'} ${parc.nome}*! Basta apresentar seu cadastro ativo da academia para ter atendimento e condições VIP de atleta.\n\nSeguimos juntos na evolução! 💪`;
+    }
+
+    window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, '_blank');
+    mostrarToast(`📲 Enviando parceria "${parc.nome}" para o WhatsApp de ${a.nome}!`, 'success');
+};
+
+// 3. Limita a ativação em no máximo 4 empresas parceiras e permite cadastrar SEM cupom (opcional)
+window.alternarAtivoParceiro = function(idx) {
+    if (!PARCEIROS_GYM[idx]) return;
+    const qtdAtivos = PARCEIROS_GYM.filter(p => p.ativo).length;
+
+    if (!PARCEIROS_GYM[idx].ativo && qtdAtivos >= MAX_PARCEIROS_ATIVOS) {
+        return mostrarToast(`Limite máximo de ${MAX_PARCEIROS_ATIVOS} parceiros no visor! Desative um antes de ativar outro.`, "warning");
+    }
+
+    PARCEIROS_GYM[idx].ativo = !PARCEIROS_GYM[idx].ativo;
+    salvarParceirosLocal();
+    if (typeof renderizarGridParceirosModal === 'function') renderizarGridParceirosModal();
+    renderizarBarraParceirosTopo();
+};
+
+window.adicionarParceiroCustom = function() {
+    const nome = document.getElementById('novo-parc-nome')?.value.trim();
+    const cupom = (document.getElementById('novo-parc-cupom')?.value || '').trim().toUpperCase(); // Agora 100% Opcional!
+    const cor = document.getElementById('novo-parc-cor')?.value || 'volt';
+
+    if (!nome) return mostrarToast("Informe o nome da empresa parceira!", "warning");
+
+    // Se já houver 4 ativos, desativa o último para entrar o novo nos 4 destaques
+    const ativos = PARCEIROS_GYM.filter(p => p.ativo);
+    if (ativos.length >= MAX_PARCEIROS_ATIVOS) {
+        ativos[ativos.length - 1].ativo = false;
+    }
+
+    PARCEIROS_GYM.unshift({
+        id: 'custom_' + Date.now(),
+        icone: '🏆',
+        nome: nome,
+        cupom: cupom, // Pode ser vazio ("")
+        desc: cupom ? `Cupom ${cupom} exclusivo para atletas` : `Parceiro Oficial Homologado`,
+        cor: cor,
+        ativo: true
+    });
+
+    document.getElementById('novo-parc-nome').value = '';
+    document.getElementById('novo-parc-cupom').value = '';
+    salvarParceirosLocal();
+    if (typeof renderizarGridParceirosModal === 'function') renderizarGridParceirosModal();
+    renderizarBarraParceirosTopo();
+    mostrarToast(`Empresa "${nome}" adicionada à vitrine de 4 parceiros!`, 'success');
+};
+
+setTimeout(() => {
+    renderizarBarraParceirosTopo();
+}, 280);
+
+// ==============================================================
+// 27. VITRINE INSTITUCIONAL PURA (ZERO CUPOM) + BOAS-VINDAS DINÂMICO
+// ==============================================================
+const MARCAS_PRESTIGE_PADRAO = [
+    { id: 'growth', icone: '🧪', nome: 'GROWTH SUPPLEMENTS', categoria: 'Suplementação Oficial', cor: 'cyan', ativo: true },
+    { id: 'wepink', icone: '💖', nome: 'WEPINK WELLNESS', categoria: 'Beauty & Care Partner', cor: 'pink', ativo: true },
+    { id: 'darklab', icone: '⚡', nome: 'DARK LAB PRO', categoria: 'High Performance', cor: 'gold', ativo: true },
+    { id: 'ironberg', icone: '🏆', nome: 'MAX TITANIUM', categoria: 'Official Pro Series', cor: 'volt', ativo: true }
+];
+
+// Atualiza os parceiros antigos que tinham código de cupom para Categorias de Prestígio
+PARCEIROS_GYM = MARCAS_PRESTIGE_PADRAO.map((padrao, i) => {
+    const salvo = PARCEIROS_GYM[i];
+    if (salvo && salvo.nome && !salvo.nome.includes('Growth') && !salvo.nome.includes('WePink')) {
+        return {
+            ...salvo,
+            categoria: (salvo.cupom && salvo.cupom.length > 4) ? salvo.cupom : 'Parceiro Oficial'
+        };
+    }
+    return padrao;
+});
+salvarParceirosLocal();
+
+// 1. Renderiza o "SEJA BEM-VINDO À ACADEMIA..." + As 4 Placas Institucionais no Topo
+window.renderizarBarraParceirosTopo = function() {
+    const nomeAcademiaAtual = (CONFIG_HW.siglaAcademia || CONFIG_HW.nomeAcademia || 'ACADEMIA CORPO E MENTE').toUpperCase();
+
+    // Atualiza a pílula de Boas-Vindas no topo esquerdo (se a catraca estiver em fluxo normal)
+    const txtTopo = document.getElementById('txt-status-catraca-topo');
+    if (txtTopo && !catracaPausadaGeral && !catracaModoLivreAlmoco) {
+        txtTopo.innerHTML = `SEJA BEM-VINDO À <strong>${nomeAcademiaAtual}</strong> &bull; BIOMETRIA ATIVA`;
+    }
+
+    // Atualiza o emblema da Academia na Vitrine
+    const elNome = document.getElementById('ribbon-gym-name');
+    const elLogo = document.getElementById('gym-custom-logo-box');
+    if (elNome) elNome.innerText = nomeAcademiaAtual.replace('ACADEMIA ', '');
+
+    if (elLogo) {
+        if (CONFIG_HW.logoAcademiaBase64) {
+            elLogo.innerHTML = '';
+            elLogo.style.backgroundImage = `url('${CONFIG_HW.logoAcademiaBase64}')`;
+        } else {
+            elLogo.style.backgroundImage = 'none';
+            elLogo.innerHTML = `<span class="material-icons-round">fitness_center</span>`;
+        }
+    }
+
+    const dock = document.getElementById('arena-sponsors-ribbon');
+    if (dock) {
+        dock.style.display = (CONFIG_HW.flags.parceiros ?? true) ? 'flex' : 'none';
+    }
+
+    const row = document.getElementById('ribbon-sponsors-list');
+    if (!row) return;
+
+    const ativos = PARCEIROS_GYM.filter(p => p.ativo).slice(0, 4);
+    row.innerHTML = ativos.map(p => {
+        const subtitulo = p.categoria || 'Parceiro Oficial';
+        return `
+            <div class="prestige-brand-tile tile-${p.cor || 'volt'}">
+                <div class="prestige-brand-emblem">${p.icone || '🏆'}</div>
+                <div class="prestige-brand-text">
+                    <strong>${p.nome}</strong>
+                    <span>${subtitulo}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+};
+
+// 2. Atualiza o Modal de Parceiros para mostrar a Categoria Institucional (Sem texto de Cupom)
+window.renderizarGridParceirosModal = function() {
+    const grid = document.getElementById('grid-marcas-parceiras-modal');
+    if (!grid) return;
+    grid.innerHTML = PARCEIROS_GYM.map((p, idx) => `
+        <div onclick="alternarAtivoParceiro(${idx})" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:10px; background:${p.ativo ? 'rgba(0,245,155,0.08)' : 'rgba(0,0,0,0.4)'}; border:1px solid ${p.ativo ? 'var(--neon-volt)' : 'rgba(255,255,255,0.08)'};">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:20px;">${p.icone || '🏆'}</span>
+                <div>
+                    <strong style="font-size:12px; color:white; display:block;">${p.nome}</strong>
+                    <span style="font-size:10px; color:var(--neon-cyan);">${p.categoria || 'Parceiro Oficial'}</span>
+                </div>
+            </div>
+            <span style="font-size:9px; font-weight:900; padding:3px 8px; border-radius:6px; background:${p.ativo ? 'var(--neon-volt)' : 'rgba(255,255,255,0.08)'}; color:${p.ativo ? '#04060b' : 'var(--text-muted)'};">
+                ${p.ativo ? 'EXIBINDO NO TOPO' : 'OCULTO'}
+            </span>
+        </div>
+    `).join('');
+};
+
+window.adicionarParceiroCustom = function() {
+    const nome = document.getElementById('novo-parc-nome')?.value.trim().toUpperCase();
+    const categoria = document.getElementById('novo-parc-cupom')?.value.trim() || 'Parceiro Oficial';
+    const cor = document.getElementById('novo-parc-cor')?.value || 'volt';
+
+    if (!nome) return mostrarToast("Informe o nome da marca patrocinadora!", "warning");
+
+    const ativos = PARCEIROS_GYM.filter(p => p.ativo);
+    if (ativos.length >= 4) ativos[ativos.length - 1].ativo = false;
+
+    PARCEIROS_GYM.unshift({
+        id: 'brand_' + Date.now(),
+        icone: '🏆',
+        nome: nome,
+        categoria: categoria,
+        cor: cor,
+        ativo: true
+    });
+
+    document.getElementById('novo-parc-nome').value = '';
+    document.getElementById('novo-parc-cupom').value = '';
+    salvarParceirosLocal();
+    renderizarGridParceirosModal();
+    renderizarBarraParceirosTopo();
+    mostrarToast(`Marca "${nome}" adicionada à Vitrine Oficial!`, 'success');
+};
+
+setTimeout(() => {
+    renderizarBarraParceirosTopo();
+}, 300);
