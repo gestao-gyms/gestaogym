@@ -985,3 +985,2729 @@ body.tv-mode .sidebar { display: none !important; }
     color: var(--text-muted);
     line-height: 1.35;
 }
+
+/* ==============================================================
+   1. BARRA LATERAL ESQUERDA 100% SEM BORDAS (FUNDIDA AO FUNDO)
+   ============================================================== */
+.sidebar,
+.sidebar.glass-panel {
+    border: none !important;
+    border-right: none !important;
+    background: linear-gradient(180deg, rgba(4, 6, 11, 0.95) 0%, rgba(7, 11, 20, 0.6) 100%) !important;
+    box-shadow: none !important;
+}
+
+.user-profile {
+    border-bottom: none !important;
+    margin-bottom: 6px !important;
+}
+
+.sidebar .hardware-status-box {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 6px 8px !important;
+}
+
+.sidebar .hw-header {
+    border-bottom: none !important;
+    margin-bottom: 6px !important;
+}
+
+.sidebar .menu-item {
+    border-left: none !important;
+    border-radius: 0 12px 12px 0;
+    margin-right: 14px;
+}
+
+.sidebar .menu-item.active {
+    background: linear-gradient(90deg, rgba(0, 245, 155, 0.18) 0%, transparent 100%) !important;
+}
+
+/* ==============================================================
+   2. TITÃ MUSCULOSO ANIMADO CENTRALIZADO (100% GPU - ZERO CPU)
+   ============================================================== */
+.titan-hero-holo {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    margin: 4px 0;
+    cursor: pointer;
+    user-select: none;
+    border: none !important;
+    background: transparent !important;
+}
+
+.holo-aura-bg {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(0, 245, 155, 0.16) 0%, rgba(0, 210, 255, 0.05) 50%, transparent 72%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.titan-bodybuilder-svg {
+    width: 155px;
+    height: 135px;
+    z-index: 1;
+    overflow: visible;
+}
+
+/* Animação da Barra Olímpica e Bíceps usando APENAS transform (GPU) */
+@keyframes barbellPumpGPU {
+    0%, 100% { transform: translate3d(0, 4px, 0) scale(1); }
+    50% { transform: translate3d(0, -10px, 0) scale(1.03); }
+}
+
+@keyframes torsoBreatheGPU {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.025); }
+}
+
+.titan-pump-arms {
+    animation: barbellPumpGPU 2.2s infinite ease-in-out;
+    transform-origin: center center;
+    will-change: transform;
+}
+
+.titan-torso-anim {
+    animation: torsoBreatheGPU 2.2s infinite ease-in-out;
+    transform-origin: center bottom;
+    will-change: transform;
+}
+
+.titan-hero-holo:hover .titan-pump-arms {
+    animation-duration: 0.9s; /* Acelera as repetições quando passa o mouse! */
+}
+
+.titan-holo-caption {
+    text-align: center;
+    z-index: 1;
+    margin-top: -4px;
+}
+
+.holo-tag {
+    display: block;
+    font-size: 8px;
+    font-weight: 900;
+    color: var(--neon-volt);
+    letter-spacing: 1.5px;
+}
+
+.titan-holo-caption strong {
+    font-size: 10px;
+    font-weight: 800;
+    color: #cbd5e1;
+    letter-spacing: 0.5px;
+}
+
+/* ==============================================================
+   3. CAIXA DE AUTOMAÇÕES BILIONÁRIAS (PREENCHE O CARD DIREITO)
+   ============================================================== */
+.billion-automation-box {
+    background: rgba(0, 245, 155, 0.04);
+    border: 1px dashed rgba(0, 245, 155, 0.28);
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 4px;
+}
+.billion-box-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 10px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+}
+
+/* ==============================================================
+   4. TITAN CHAT FLUTUANTE (RECEPÇÃO, PISO & IA)
+   ============================================================== */
+#titan-chat-wrapper {
+    position: fixed;
+    bottom: 22px;
+    right: 24px;
+    z-index: 99990;
+}
+
+.titan-chat-fab {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--neon-volt), var(--neon-cyan));
+    color: #04060b;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 25px rgba(0, 245, 155, 0.4);
+    position: relative;
+    transition: transform 0.15s ease-out;
+}
+.titan-chat-fab:hover {
+    transform: scale(1.08);
+}
+.titan-chat-fab .material-icons-round {
+    font-size: 26px;
+}
+.chat-unread-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--neon-red);
+    color: white;
+    font-size: 10px;
+    font-weight: 900;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #04060b;
+}
+
+.titan-chat-window {
+    position: absolute;
+    bottom: 68px;
+    right: 0;
+    width: 340px;
+    height: 430px;
+    background: #0b111e;
+    border: 1px solid rgba(0, 245, 155, 0.4);
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+.titan-chat-window.open {
+    display: flex;
+}
+
+.chat-win-header {
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.45);
+    border-bottom: 1px solid var(--border-glass);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-tabs-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--border-glass);
+}
+.chat-tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 9px;
+    cursor: pointer;
+}
+.chat-tab-btn.active {
+    color: var(--neon-volt);
+    border-bottom-color: var(--neon-volt);
+    background: rgba(0, 245, 155, 0.06);
+}
+
+.chat-messages-area {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chat-bubble {
+    max-width: 85%;
+    padding: 9px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    line-height: 1.4;
+}
+.chat-bubble.incoming {
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-glass);
+    color: #e2e8f0;
+}
+.chat-bubble.outgoing {
+    align-self: flex-end;
+    background: rgba(0, 245, 155, 0.16);
+    border: 1px solid rgba(0, 245, 155, 0.4);
+    color: white;
+}
+.chat-bubble strong {
+    display: block;
+    font-size: 9px;
+    color: var(--neon-cyan);
+    margin-bottom: 2px;
+}
+
+.chat-quick-chips {
+    display: flex;
+    gap: 6px;
+    padding: 6px 10px;
+    overflow-x: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.chat-quick-chips span {
+    background: rgba(0, 210, 255, 0.1);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    color: var(--neon-cyan);
+    font-size: 9.5px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.chat-quick-chips span:hover {
+    background: var(--neon-cyan);
+    color: #04060b;
+}
+
+.chat-input-row {
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border-top: 1px solid var(--border-glass);
+    display: flex;
+    gap: 6px;
+}
+.chat-input-row input {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+}
+
+/* ==============================================================
+   REFINAMENTO DA SIDEBAR ESQUERDA (ASSINATURA CRAVADA NO RODAPÉ)
+   ============================================================== */
+.sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100vh !important;
+    padding: 16px 0 10px 0 !important;
+}
+
+/* Faz a div superior da sidebar distribuir os menus no topo e o Titã no centro */
+.sidebar > div:first-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.titan-hero-holo {
+    margin: auto 0 !important; /* Centraliza perfeitamente o Titã no espaço livre */
+    padding: 4px 10px !important;
+}
+
+/* Empurra a Lotação e a Assinatura Ricardo Lima para o final exato do rodapé */
+.sidebar-footer {
+    margin-top: auto !important;
+    padding: 0 16px 4px 16px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dev-signature {
+    margin-top: 4px;
+    padding: 8px 4px 2px 4px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s ease;
+}
+.dev-signature:hover {
+    transform: translateY(-1px);
+}
+.dev-signature .sig-name {
+    color: #f8fafc;
+    text-shadow: 0 0 12px rgba(0, 210, 255, 0.45);
+}
+
+/* ==============================================================
+   BORDAS ESPECIAIS DOS MÓDULOS (CIANO NO CHAT E LARANJA NOS TRAVADOS)
+   ============================================================== */
+.switch-row-cyan {
+    border: 1px solid rgba(0, 210, 255, 0.45) !important;
+    background: linear-gradient(90deg, rgba(0, 210, 255, 0.08) 0%, rgba(0, 0, 0, 0.4) 100%) !important;
+}
+
+.switch-row-orange {
+    border: 1px solid rgba(245, 158, 11, 0.45) !important;
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.07) 0%, rgba(0, 0, 0, 0.45) 100%) !important;
+    opacity: 0.88;
+}
+.switch-row-orange strong {
+    color: #fde68a !important;
+}
+
+/* ==============================================================
+   1. COMANDOS RÁPIDOS NO TOPO (SUBSTITUEM A BARRA DE PESQUISA)
+   ============================================================== */
+.top-quick-commands {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-top-cmd {
+    background: rgba(11, 17, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.btn-top-cmd:hover {
+    transform: translateY(-2px);
+}
+.btn-top-cmd.cmd-cyan:hover { border-color: var(--neon-cyan); box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2); }
+.btn-top-cmd.cmd-volt:hover { border-color: var(--neon-volt); box-shadow: 0 4px 15px rgba(0, 245, 155, 0.2); }
+.btn-top-cmd.cmd-purple:hover { border-color: var(--neon-purple); box-shadow: 0 4px 15px rgba(168, 85, 247, 0.2); }
+
+.cmd-top-txt strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.1;
+}
+.cmd-top-txt span {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* ==============================================================
+   2. CLASSIFICAÇÃO DO ID DO ALUNO E MULTI-TAGS COM CANETINHA
+   ============================================================== */
+.student-tier-badge {
+    font-size: 10px;
+    font-weight: 900;
+    font-family: monospace;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: rgba(0, 210, 255, 0.12);
+    border: 1px solid rgba(0, 210, 255, 0.4);
+    color: var(--neon-cyan);
+    letter-spacing: 0.5px;
+}
+
+.student-tags-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.spotlight-plan-text {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.visor-tags-list {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.custom-student-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+.custom-student-tag:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.15);
+}
+.custom-student-tag .tag-edit-pencil {
+    font-size: 11px;
+    opacity: 0.75;
+    margin-left: 2px;
+}
+.custom-student-tag .tag-del-btn {
+    font-size: 12px;
+    opacity: 0.65;
+    margin-left: 2px;
+}
+.custom-student-tag .tag-del-btn:hover {
+    opacity: 1;
+    color: var(--neon-red);
+}
+
+/* Cores das Multi-Tags */
+.tag-color-volt { background: rgba(0, 245, 155, 0.14); border: 1px solid var(--neon-volt); color: var(--neon-volt); }
+.tag-color-cyan { background: rgba(0, 210, 255, 0.14); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); }
+.tag-color-yellow { background: rgba(255, 184, 0, 0.16); border: 1px solid var(--neon-yellow); color: var(--neon-yellow); }
+.tag-color-purple { background: rgba(168, 85, 247, 0.16); border: 1px solid var(--neon-purple); color: #e9d5ff; }
+.tag-color-red { background: rgba(255, 59, 92, 0.16); border: 1px solid var(--neon-red); color: #ff6b81; }
+
+.btn-inline-edit-tag {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    color: #cbd5e1;
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+.btn-inline-edit-tag:hover {
+    border-color: var(--neon-volt);
+    color: var(--neon-volt);
+}
+
+/* Barra Criadora de Tags */
+.tag-studio-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 8px 12px;
+    border-radius: 10px;
+}
+
+.tag-color-picker {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 4px;
+}
+.color-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+     opacity: 0.55;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+}
+.color-dot:hover, .color-dot.active {
+    opacity: 1;
+    transform: scale(1.2);
+    border-color: white;
+}
+.dot-volt { background: var(--neon-volt); }
+.dot-cyan { background: var(--neon-cyan); }
+.dot-yellow { background: var(--neon-yellow); }
+.dot-purple { background: var(--neon-purple); }
+.dot-red { background: var(--neon-red); }
+
+/* ==============================================================
+   3. DIAS DA SEMANA 100% AUTOMÁTICOS (VERDE = VEIO | VERMELHO = FALTOU)
+   ============================================================== */
+.day-pill {
+    pointer-events: none !important; /* Automático pela catraca, sem clique manual */
+    font-size: 9.5px !important;
+    padding: 6px 0 !important;
+}
+.day-pill.day-present {
+    background: rgba(0, 245, 155, 0.18) !important;
+    border: 1px solid var(--neon-volt) !important;
+    color: var(--neon-volt) !important;
+    box-shadow: 0 0 10px rgba(0, 245, 155, 0.2);
+}
+.day-pill.day-absent {
+    background: rgba(255, 59, 92, 0.14) !important;
+    border: 1px solid var(--neon-red) !important;
+    color: #ff6b81 !important;
+}
+.day-pill.day-future {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px dashed rgba(255, 255, 255, 0.12) !important;
+    color: #64748b !important;
+}
+
+/* ==============================================================
+   4. DECK HOLOGRÁFICO CYBER-GYM NA BASE (ESTILO TITÃ SEM BORDAS PESADAS)
+   ============================================================== */
+.titan-arena-holo-deck {
+    display: grid;
+    grid-template-columns: 1.1fr 1.3fr 1.1fr;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 18px;
+    background: linear-gradient(90deg, rgba(0, 245, 155, 0.06) 0%, rgba(11, 17, 30, 0.75) 50%, rgba(0, 210, 255, 0.06) 100%);
+    border: 1px solid rgba(0, 245, 155, 0.22);
+    border-radius: 14px;
+    flex-shrink: 0;
+}
+
+.arena-holo-visual {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.arena-kettlebell-svg {
+    width: 100%;
+    max-width: 210px;
+    height: 46px;
+}
+
+.arena-holo-stats {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+}
+.arena-stat-pill strong {
+    font-size: 11px;
+    font-weight: 900;
+    display: block;
+    margin-top: 2px;
+}
+
+.arena-quick-search {
+    position: relative;
+    background: rgba(5, 9, 18, 0.85);
+    border: 1px solid rgba(0, 245, 155, 0.3);
+    border-radius: 10px;
+    padding: 0 12px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.arena-quick-search input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 11px;
+    width: 100%;
+}
+
+/* ==============================================================
+   1. AUTO-FIT MULTI-RESOLUÇÃO (PERFEITO EM 27" QHD E 1080p EM 100%)
+   ============================================================== */
+.spotlight-card {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+}
+
+.spotlight-body {
+    flex: 1.15;
+    display: flex;
+    align-items: center;
+}
+
+.clean-reception-strip {
+    flex: 1.25;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around !important;
+}
+
+/* Ajuste automático para monitores grandes (27 polegadas QHD / Ultrawide em 100%) */
+@media (min-height: 920px) {
+    .spotlight-avatar { width: 128px !important; height: 128px !important; }
+    .spotlight-student-name { font-size: 28px !important; }
+    .spot-metric-box { padding: 12px 16px !important; }
+    .spot-value { font-size: 15px !important; }
+    .week-attendance-box { padding: 12px 16px !important; }
+    .day-pill { padding: 9px 0 !important; font-size: 11px !important; }
+    .btn-spot-action { padding: 14px 18px !important; font-size: 12px !important; }
+    .titan-arena-holo-deck { padding: 14px 20px !important; }
+}
+
+/* ==============================================================
+   2. BOTÕES DO TOPO AMPLIADOS + GRADIENTE EXCLUSIVO [CATRACA / PIN]
+   ============================================================== */
+.top-quick-commands {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-top-cmd {
+    padding: 9px 16px !important;
+    border-radius: 12px !important;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(12, 18, 32, 0.92);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+.cmd-top-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.cmd-top-icon-box .material-icons-round {
+    font-size: 20px;
+}
+
+.icon-box-cyan { background: rgba(0, 210, 255, 0.15); color: var(--neon-cyan); border: 1px solid rgba(0, 210, 255, 0.35); }
+.icon-box-purple { background: rgba(168, 85, 247, 0.16); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.4); }
+.icon-box-gold { background: rgba(255, 184, 0, 0.2); color: #fde047; border: 1px solid rgba(255, 184, 0, 0.5); }
+
+.btn-top-cmd .cmd-top-txt strong {
+    font-size: 12.5px !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.2px;
+    color: #ffffff;
+}
+.btn-top-cmd .cmd-top-txt span {
+    font-size: 10px !important;
+    color: #cbd5e1;
+}
+
+/* Gradiente Exclusivo para [Abrir Catraca / Digitar PIN] */
+.cmd-pin-catraca-gradient {
+    background: linear-gradient(135deg, rgba(255, 184, 0, 0.18) 0%, rgba(244, 63, 94, 0.16) 55%, rgba(168, 85, 247, 0.2) 100%) !important;
+    border: 1px solid rgba(255, 184, 0, 0.55) !important;
+    box-shadow: 0 4px 20px rgba(255, 184, 0, 0.15);
+}
+.cmd-pin-catraca-gradient:hover {
+    transform: translateY(-2px);
+    border-color: #fde047 !important;
+    box-shadow: 0 6px 25px rgba(255, 184, 0, 0.3);
+}
+.cmd-cyan-lg:hover { transform: translateY(-2px); border-color: var(--neon-cyan); box-shadow: 0 6px 20px rgba(0, 210, 255, 0.22); }
+.cmd-purple-lg:hover { transform: translateY(-2px); border-color: var(--neon-purple); box-shadow: 0 6px 20px rgba(168, 85, 247, 0.25); }
+
+/* Botão de Giro Livre dentro do Modal Keypad */
+.btn-giro-livre-modal {
+    background: linear-gradient(135deg, rgba(0, 245, 155, 0.2), rgba(0, 210, 255, 0.15));
+    border: 1px solid var(--neon-volt);
+    color: white;
+    padding: 12px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+}
+.btn-giro-livre-modal:hover {
+    background: var(--neon-volt);
+    color: #04060b;
+}
+.btn-giro-livre-modal .material-icons-round { font-size: 24px; color: var(--neon-volt); }
+.btn-giro-livre-modal:hover .material-icons-round { color: #04060b; }
+.btn-giro-livre-modal strong { display: block; font-size: 11.5px; font-weight: 900; }
+.btn-giro-livre-modal span { font-size: 9.5px; opacity: 0.85; }
+
+/* ==============================================================
+   3. SELETORES CUSTOMIZADOS NEON (SUBSTITUEM O SELECT NATIVO FEIO)
+   ============================================================== */
+.custom-sim-dropdown-wrap,
+.custom-icon-picker-wrap {
+    position: relative;
+}
+.custom-sim-dropdown-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+.custom-sim-trigger,
+.btn-custom-icon-trigger {
+    width: 100%;
+    background: rgba(8, 13, 24, 0.95);
+    border: 1px solid rgba(0, 245, 155, 0.35);
+    color: white;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+.custom-sim-trigger:hover,
+.btn-custom-icon-trigger:hover {
+    border-color: var(--neon-volt);
+    box-shadow: 0 0 15px rgba(0, 245, 155, 0.18);
+}
+
+.sim-trigger-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.sim-dot-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--neon-volt);
+    flex-shrink: 0;
+}
+
+.custom-sim-menu,
+.custom-icon-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    background: #080d18;
+    border: 1px solid var(--neon-volt);
+    border-radius: 12px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.92);
+    z-index: 99999;
+    display: none;
+    flex-direction: column;
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 4px;
+}
+.custom-icon-popover {
+    width: 165px;
+    top: auto;
+    bottom: calc(100% + 6px);
+}
+.custom-sim-menu.open,
+.custom-icon-popover.open {
+    display: flex;
+}
+
+.sim-option-item,
+.custom-icon-popover div {
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #e2e8f0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.sim-option-item:last-child,
+.custom-icon-popover div:last-child {
+    border-bottom: none;
+}
+.sim-option-item:hover,
+.custom-icon-popover div:hover {
+    background: rgba(0, 245, 155, 0.15);
+    color: var(--neon-volt);
+}
+
+/* ==============================================================
+   4. ABAS DE FILTRO E CARDS DE PASSAGEM COM DATA DE VENCIMENTO
+   ============================================================== */
+.feed-filter-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
+}
+.feed-tab {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 6px 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+}
+.feed-tab:hover {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.feed-tab.active {
+    background: rgba(0, 245, 155, 0.15);
+    border-color: var(--neon-volt);
+    color: var(--neon-volt);
+}
+
+.feed-rich-card {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(7, 11, 20, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    gap: 10px;
+}
+.feed-rich-card:hover {
+    border-color: rgba(0, 245, 155, 0.45);
+    background: rgba(14, 22, 38, 0.9);
+}
+
+.feed-card-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+.feed-mini-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #0d1526;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    color: white;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+}
+.feed-venc-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 5px;
+    margin-top: 3px;
+    font-family: monospace;
+}
+
+/* ==============================================================
+   1. CORREÇÃO DEFINITIVA DA BORDA CORTADA NO TOPO AO PASSAR O MOUSE
+   ============================================================== */
+.spa-view {
+    padding-top: 6px !important;
+}
+
+.balcao-topbar {
+    padding: 4px 2px !important;
+    margin-top: -4px !important;
+    overflow: visible !important;
+}
+
+.top-quick-commands,
+.topbar-actions {
+    overflow: visible !important;
+}
+
+/* ==============================================================
+   2. BOTÃO DUPLO BIPARTIDO [ ABRIR CATRACA  /  DIGITAR PIN ]
+   ============================================================== */
+.split-catraca-pin-pill {
+    display: inline-flex;
+    align-items: stretch;
+    border-radius: 12px;
+    padding: 2px;
+    background: linear-gradient(90deg, rgba(0, 245, 155, 0.35) 0%, rgba(255, 184, 0, 0.45) 50%, rgba(168, 85, 247, 0.45) 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+    position: relative;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.split-catraca-pin-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 26px rgba(0, 245, 155, 0.18), 0 8px 26px rgba(255, 184, 0, 0.18);
+}
+
+.split-half {
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 14px;
+    text-align: left;
+    transition: filter 0.12s ease, background 0.12s ease;
+}
+
+/* Lado Esquerdo: Verde Volt (Abrir Catraca) */
+.split-left-volt {
+    border-radius: 10px 0 0 10px;
+    background: linear-gradient(135deg, rgba(6, 38, 28, 0.96) 0%, rgba(10, 18, 30, 0.96) 100%);
+}
+.split-left-volt:hover {
+    background: linear-gradient(135deg, rgba(0, 245, 155, 0.25) 0%, rgba(10, 22, 36, 0.96) 100%);
+}
+
+/* Lado Direito: Ouro & Roxo (Digitar PIN) */
+.split-right-gold {
+    border-radius: 0 10px 10px 0;
+    background: linear-gradient(135deg, rgba(14, 18, 32, 0.96) 0%, rgba(42, 24, 14, 0.96) 100%);
+}
+.split-right-gold:hover {
+    background: linear-gradient(135deg, rgba(255, 184, 0, 0.24) 0%, rgba(88, 28, 135, 0.35) 100%);
+}
+
+.icon-box-volt {
+    background: rgba(0, 245, 155, 0.16);
+    color: var(--neon-volt);
+    border: 1px solid rgba(0, 245, 155, 0.45);
+}
+
+/* Barra Diagonal "/" Separadora em Gradiente */
+.split-slash-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    background: #0a101d;
+    font-size: 20px;
+    font-weight: 900;
+    font-style: italic;
+    background-image: linear-gradient(180deg, var(--neon-volt), var(--neon-yellow));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* ==============================================================
+   3. ASSINATURA RICARDO LIMA TRAVADA NO RODAPÉ ABSOLUTO DA SIDEBAR
+   ============================================================== */
+.sidebar {
+    padding-bottom: 0 !important;
+    position: relative;
+}
+
+.sidebar-footer {
+    padding: 0 14px 54px 14px !important; /* Espaço reservado para o rodapé fixo embaixo */
+    margin-top: auto !important;
+}
+
+.sidebar .hardware-status-box {
+    background: rgba(8, 13, 24, 0.55) !important;
+    border-radius: 12px !important;
+    padding: 10px 12px !important;
+    margin-bottom: 4px !important;
+}
+
+.dev-signature {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 44px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: linear-gradient(180deg, rgba(4, 6, 11, 0.2) 0%, rgba(0, 245, 155, 0.06) 100%) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 10;
+}
+
+/* ==============================================================
+   4. TOOLTIP MAGNÍFICO TITAN (SUBSTITUI O BALÃO BRANCO DO NAVEGADOR)
+   ============================================================== */
+#titan-custom-tooltip {
+    position: fixed;
+    z-index: 9999999;
+    pointer-events: none;
+    background: rgba(7, 11, 20, 0.96);
+    border: 1px solid var(--neon-volt);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.85), 0 0 16px rgba(0, 245, 155, 0.22);
+    color: #f8fafc;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    display: none;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    transform: translate3d(0, 0, 0);
+}
+
+#titan-custom-tooltip::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--neon-volt);
+    box-shadow: 0 0 8px var(--neon-volt);
+    flex-shrink: 0;
+}
+
+/* ==============================================================
+   1. LUZ ESPECULAR SAFIRA & ACABAMENTO DE LUXO NO CARD PRINCIPAL
+   ============================================================== */
+.specular-top-line {
+    position: absolute;
+    top: 0;
+    left: 10%;
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--neon-volt) 35%, var(--neon-cyan) 65%, transparent 100%);
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+.spotlight-body {
+    flex: 0 0 auto !important;
+    padding: 16px 20px !important;
+    background: linear-gradient(135deg, rgba(14, 22, 38, 0.85) 0%, rgba(6, 10, 20, 0.92) 100%) !important;
+    border: 1px solid rgba(0, 245, 155, 0.22) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Avatar Cyber-VIP com Monograma e Mini Câmera */
+.avatar-cam-mini {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #0b111e;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+}
+.avatar-cam-mini .material-icons-round {
+    font-size: 14px;
+    animation: none !important;
+}
+
+.cyber-monogram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.cyber-monogram strong {
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #ffffff 0%, var(--neon-volt) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.cyber-monogram span {
+    font-size: 8px !important;
+    font-weight: 900;
+    color: var(--neon-cyan) !important;
+    letter-spacing: 1.5px;
+    margin-top: 4px;
+}
+
+.metric-box-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+/* ==============================================================
+   2. FAIXA CONCIERGE VIP (PREENCHE O CENTRO COM ARMÁRIO E FIDELIDADE)
+   ============================================================== */
+.concierge-vip-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.concierge-item {
+    background: rgba(10, 16, 28, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.concierge-item:hover {
+    transform: translateY(-1px);
+    border-color: rgba(0, 210, 255, 0.4);
+}
+
+.concierge-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.bg-yellow-soft {
+    background: rgba(255, 184, 0, 0.14);
+    border: 1px solid rgba(255, 184, 0, 0.35);
+}
+.concierge-item strong {
+    font-size: 11.5px;
+    font-weight: 800;
+    display: block;
+    margin-top: 1px;
+}
+
+.btn-hud-pager {
+    background: linear-gradient(90deg, rgba(168, 85, 247, 0.16), rgba(0, 210, 255, 0.14)) !important;
+    border-color: rgba(168, 85, 247, 0.5) !important;
+    color: #f3e8ff !important;
+}
+
+/* ==============================================================
+   1. SIDEBAR ESQUERDA: PERSONAGEM NÃO-CLICÁVEL, CONFORTÁVEL ALINHADO E RODAPÉ CRAVADO
+   ============================================================== */
+.sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100vh !important;
+    padding: 14px 0 0 0 !important;
+}
+
+.sidebar-top-zone {
+    flex-shrink: 0;
+}
+
+/* Personagem e Equipamento 100% Não-Clicáveis e Sem Tooltip */
+.titan-hero-holo,
+.titan-hero-holo *,
+.arena-holo-visual,
+.arena-holo-visual * {
+    pointer-events: none !important;
+    cursor: default !important;
+    user-select: none !important;
+}
+
+.titan-hero-holo {
+    margin: auto 0 !important;
+    padding: 0 10px !important;
+}
+
+.sidebar-bottom-dock {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: auto;
+}
+
+.sidebar-bottom-dock .hardware-status-box {
+    margin: 0 14px 10px 14px !important;
+    padding: 12px 14px !important;
+    background: rgba(8, 13, 24, 0.65) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 12px !important;
+}
+
+/* Alinhamento Perfeito do "LOTAÇÃO DOS ESPAÇOS" e "● CONFORTÁVEL" */
+.hw-header-aligned {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 10px !important;
+    padding-bottom: 6px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    line-height: 1 !important;
+}
+.hw-title-txt {
+    font-size: 9px;
+    font-weight: 900;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+}
+.hw-status-badge {
+    font-size: 9px;
+    font-weight: 900;
+    color: var(--neon-volt);
+    background: rgba(0, 245, 155, 0.12);
+    border: 1px solid rgba(0, 245, 155, 0.3);
+    padding: 3px 7px;
+    border-radius: 6px;
+    line-height: 1;
+}
+
+/* Assinatura Ricardo Lima Cravada no Rodapé Extremo */
+.dev-signature-locked {
+    width: 100%;
+    height: 46px;
+    background: linear-gradient(180deg, rgba(4, 6, 11, 0.4) 0%, rgba(0, 245, 155, 0.08) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+.dev-signature-locked .sig-sub {
+    font-size: 7px;
+    color: var(--text-muted);
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+.dev-signature-locked .sig-name {
+    font-size: 11px;
+    font-weight: 900;
+    color: #ffffff;
+    font-family: monospace;
+    letter-spacing: 1.2px;
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+}
+
+/* ==============================================================
+   2. NOVOS BOTÕES DE TOPO REFORMULADOS (BRILHANTES E SEM "/" FEIO)
+   ============================================================== */
+.top-quick-commands {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.btn-top-luxury {
+    background: linear-gradient(165deg, rgba(16, 24, 42, 0.95) 0%, rgba(8, 12, 22, 0.98) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.btn-top-luxury:hover {
+    transform: translateY(-2px);
+}
+
+.lux-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.lux-icon .material-icons-round { font-size: 18px; }
+
+.lux-text strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+.lux-text span {
+    display: block;
+    font-size: 9px;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Cores Individuais de Alto Brilho */
+.lux-cyan .lux-icon { background: rgba(0, 210, 255, 0.15); color: var(--neon-cyan); border: 1px solid rgba(0, 210, 255, 0.35); }
+.lux-cyan:hover { border-color: var(--neon-cyan); box-shadow: 0 6px 20px rgba(0, 210, 255, 0.22); }
+
+.lux-volt .lux-icon { background: rgba(0, 245, 155, 0.15); color: var(--neon-volt); border: 1px solid rgba(0, 245, 155, 0.35); }
+.lux-volt:hover { border-color: var(--neon-volt); box-shadow: 0 6px 20px rgba(0, 245, 155, 0.22); }
+
+.lux-amber {
+    background: linear-gradient(135deg, rgba(255, 184, 0, 0.14) 0%, rgba(16, 24, 42, 0.95) 100%);
+    border-color: rgba(255, 184, 0, 0.4);
+}
+.lux-amber .lux-icon { background: rgba(255, 184, 0, 0.2); color: var(--neon-yellow); border: 1px solid rgba(255, 184, 0, 0.5); }
+.lux-amber:hover { border-color: var(--neon-yellow); box-shadow: 0 6px 22px rgba(255, 184, 0, 0.28); }
+.lux-amber.modo-livre-ativo {
+    background: linear-gradient(135deg, rgba(255, 184, 0, 0.32) 0%, rgba(0, 245, 155, 0.2) 100%) !important;
+    border-color: #fde047 !important;
+    box-shadow: 0 0 25px rgba(255, 184, 0, 0.4) !important;
+}
+
+.lux-blue .lux-icon { background: rgba(59, 130, 246, 0.18); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+.lux-blue:hover { border-color: #60a5fa; box-shadow: 0 6px 20px rgba(59, 130, 246, 0.25); }
+
+.lux-purple .lux-icon { background: rgba(168, 85, 247, 0.18); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.4); }
+.lux-purple:hover { border-color: var(--neon-purple); box-shadow: 0 6px 20px rgba(168, 85, 247, 0.25); }
+
+.catraca-free-alert {
+    background: linear-gradient(90deg, rgba(255, 184, 0, 0.22), rgba(0, 245, 155, 0.12));
+    border: 1px solid var(--neon-yellow);
+    color: white;
+    padding: 9px 16px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+/* ==============================================================
+   3. BOTÃO DE MÚSICA NO TOPO DA CATRACA & COMPACTAÇÃO DO QUADRADO PRINCIPAL
+   ============================================================== */
+.gym-music-pill {
+    background: rgba(168, 85, 247, 0.14);
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    color: #f3e8ff;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 3px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.4px;
+}
+.gym-music-pill:hover {
+    border-color: var(--neon-volt);
+    color: var(--neon-volt);
+    background: rgba(0, 245, 155, 0.12);
+}
+.gym-music-pill .material-icons-round {
+    font-size: 13px;
+    color: var(--neon-volt);
+}
+
+.spotlight-metrics-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+/* Deixa o Card Principal compacto e elegante e expande o Deck Inferior */
+.spotlight-card {
+    flex: 0 1 auto !important;
+    gap: 10px !important;
+}
+
+.clean-reception-strip {
+    flex: 0 1 auto !important;
+    gap: 10px !important;
+}
+
+.titan-arena-holo-deck {
+    flex: 1 0 auto !important;
+    min-height: 76px;
+    grid-template-columns: 0.9fr 1.6fr 1fr !important;
+    background: linear-gradient(135deg, rgba(14, 22, 38, 0.92) 0%, rgba(7, 11, 20, 0.96) 100%) !important;
+    border: 1px solid rgba(0, 210, 255, 0.25) !important;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+}
+
+/* ==============================================================
+   4. FAIXA DE AUTOMAÇÃO WHATSAPP NA TELA DE ALUNOS
+   ============================================================== */
+.whatsapp-automation-strip {
+    background: linear-gradient(90deg, rgba(0, 245, 155, 0.1), rgba(11, 17, 30, 0.9));
+    border: 1px solid rgba(0, 245, 155, 0.3);
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.btn-whats-direct-crm {
+    background: rgba(0, 245, 155, 0.14);
+    border: 1px solid var(--neon-volt);
+    color: var(--neon-volt);
+    font-size: 10px;
+    font-weight: 900;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-whats-direct-crm:hover {
+    background: var(--neon-volt);
+    color: #04060b;
+}
+
+/* ==============================================================
+   1. TOPO GYM: DOCK BARRA OLÍMPICA (ANILHAS NEON NAS PONTAS)
+   ============================================================== */
+.gym-barbell-dock {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+/* Anilhas Olímpicas Laterais da Dock */
+.barbell-end-left,
+.barbell-end-right {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    pointer-events: none;
+}
+.barbell-end-left span:first-child,
+.barbell-end-right span:last-child {
+    width: 4px;
+    height: 26px;
+    background: var(--neon-cyan);
+    border-radius: 2px;
+    box-shadow: 0 0 8px var(--neon-cyan);
+}
+.barbell-end-left span:last-child,
+.barbell-end-right span:first-child {
+    width: 6px;
+    height: 36px;
+    background: var(--neon-volt);
+    border-radius: 3px;
+    box-shadow: 0 0 10px var(--neon-volt);
+}
+
+.barbell-dock-inner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(8, 13, 24, 0.94);
+    border-top: 2px solid rgba(255, 255, 255, 0.18);
+    border-bottom: 2px solid rgba(0, 245, 155, 0.3);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 5px 10px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
+}
+
+.dock-pill-btn {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: #f8fafc;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 7px 12px;
+    border-radius: 9px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+.dock-pill-btn .material-icons-round {
+    font-size: 16px;
+}
+.dock-pill-btn:hover {
+    transform: translateY(-2px);
+}
+
+.pill-cyan { border-color: rgba(0, 210, 255, 0.35); color: var(--neon-cyan); background: rgba(0, 210, 255, 0.08); }
+.pill-cyan:hover { background: var(--neon-cyan); color: #04060b; box-shadow: 0 0 16px rgba(0, 210, 255, 0.4); }
+
+.pill-volt { border-color: rgba(0, 245, 155, 0.4); color: var(--neon-volt); background: rgba(0, 245, 155, 0.1); }
+.pill-volt:hover { background: var(--neon-volt); color: #04060b; box-shadow: 0 0 16px rgba(0, 245, 155, 0.4); }
+
+.pill-amber { border-color: rgba(255, 184, 0, 0.45); color: var(--neon-yellow); background: rgba(255, 184, 0, 0.1); }
+.pill-amber:hover, .pill-amber.modo-livre-ativo {
+    background: var(--neon-yellow) !important;
+    color: #04060b !important;
+    box-shadow: 0 0 18px rgba(255, 184, 0, 0.5) !important;
+}
+
+.pill-blue { border-color: rgba(59, 130, 246, 0.45); color: #60a5fa; background: rgba(59, 130, 246, 0.1); }
+.pill-blue:hover { background: #3b82f6; color: white; box-shadow: 0 0 16px rgba(59, 130, 246, 0.4); }
+
+.pill-purple { border-color: rgba(168, 85, 247, 0.45); color: #e9d5ff; background: rgba(168, 85, 247, 0.12); }
+.pill-purple:hover { background: var(--neon-purple); color: white; box-shadow: 0 0 16px rgba(168, 85, 247, 0.45); }
+
+.pill-pause { border-color: rgba(255, 59, 92, 0.4); color: #ff6b81; background: rgba(255, 59, 92, 0.08); }
+.pill-pause:hover, .pill-pause.catraca-travada { background: var(--neon-red) !important; color: white !important; }
+
+.pill-tv { border-color: rgba(0, 210, 255, 0.3); color: var(--neon-cyan); padding: 7px 9px; }
+
+.dock-separator {
+    width: 1px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 0 2px;
+}
+
+/* ==============================================================
+   2. PROPORÇÃO PERFEITA: CARD DO ATLETA (FLEX 1) + BENTO GRID COMPACTA (116px)
+   ============================================================== */
+.spotlight-card {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+
+/* Garante que as 4 caixas de métricas tenham SEMPRE a mesma altura e 1 linha */
+.spotlight-metrics-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    align-items: stretch;
+}
+.spotlight-metrics-4 .spot-metric-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+}
+.spotlight-metrics-4 .spot-value {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-size: 13px !important;
+}
+
+/* Bento Grid Inferior de 3 Colunas (Substitui o retângulo gigante vazio) */
+.gym-bento-bottom-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1.25fr 1fr;
+    gap: 12px;
+    height: 118px !important;
+    min-height: 118px !important;
+    max-height: 118px !important;
+    flex-shrink: 0 !important;
+}
+
+.bento-mini-card {
+    padding: 10px 14px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    overflow: hidden;
+}
+
+.bento-mini-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 900;
+    color: var(--text-muted);
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 5px;
+}
+
+.bento-tag-volt { background: rgba(0,245,155,0.14); color: var(--neon-volt); padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; }
+.bento-tag-cyan { background: rgba(0,210,255,0.14); color: var(--neon-cyan); padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; }
+.bento-tag-purple { background: rgba(168,85,247,0.16); color: #e9d5ff; padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; }
+
+.bento-podium-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.podium-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10.5px;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+.podium-row strong {
+    color: white;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 145px;
+}
+.podium-row span {
+    font-family: monospace;
+    font-weight: 900;
+    font-size: 10px;
+    color: var(--neon-volt);
+}
+
+.bento-pulse-body {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: auto 0;
+}
+.bento-schedule-info {
+    flex: 1;
+    min-width: 0;
+}
+.bento-schedule-info strong {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bento-search-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto 0;
+}
+
+/* ==============================================================
+   3. CORREÇÃO DA QUEBRA DE LINHA DO "CONFORTÁVEL" NA SIDEBAR ESQUERDA
+   ============================================================== */
+.hw-header-aligned {
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
+}
+.hw-title-txt {
+    font-size: 8.5px !important;
+    white-space: nowrap !important;
+}
+.hw-status-badge {
+    font-size: 8px !important;
+    padding: 2px 6px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+}
+
+/* ==============================================================
+   DECK BLUETOOTH & SOM AMBIENTE NA BENTO GRID INFERIOR
+   ============================================================== */
+.bento-bt-player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.38);
+    border: 1px solid rgba(0, 210, 255, 0.2);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin: auto 0;
+}
+
+.bt-eq-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.bt-eq-bars span {
+    width: 4px;
+    background: linear-gradient(180deg, var(--neon-cyan), var(--neon-volt));
+    border-radius: 2px;
+    animation: eqBounce 0.9s infinite ease-in-out alternate;
+    will-change: transform;
+    transform-origin: bottom;
+}
+.bt-eq-bars span:nth-child(1) { height: 14px; animation-delay: 0.1s; }
+.bt-eq-bars span:nth-child(2) { height: 22px; animation-delay: 0.3s; }
+.bt-eq-bars span:nth-child(3) { height: 18px; animation-delay: 0.0s; }
+.bt-eq-bars span:nth-child(4) { height: 24px; animation-delay: 0.4s; }
+.bt-eq-bars span:nth-child(5) { height: 12px; animation-delay: 0.2s; }
+
+.bt-eq-bars.eq-muted span {
+    animation: none !important;
+    height: 4px !important;
+    background: var(--text-muted) !important;
+}
+
+@keyframes eqBounce {
+    0% { transform: scaleY(0.35); }
+    100% { transform: scaleY(1); }
+}
+
+.bt-track-info {
+    flex: 1;
+    min-width: 0;
+}
+.bt-track-info strong {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-bt-next {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(0, 245, 155, 0.14);
+    border: 1px solid var(--neon-volt);
+    color: var(--neon-volt);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.12s ease, background 0.12s ease;
+}
+.btn-bt-next:hover {
+    background: var(--neon-volt);
+    color: #04060b;
+    transform: scale(1.06);
+}
+
+/* ==============================================================
+   1. VITRINE DE MARCAS PARCEIRAS & CO-BRANDING NO TOPO DO VISOR
+   ============================================================== */
+.arena-sponsors-ribbon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(90deg, rgba(11, 18, 32, 0.95) 0%, rgba(7, 11, 20, 0.92) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-left: 3px solid var(--neon-volt);
+    border-radius: 14px;
+    padding: 7px 12px;
+    height: 52px;
+    flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.gym-own-brand-slot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding-right: 4px;
+    flex-shrink: 0;
+}
+.gym-logo-mini {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, rgba(0, 245, 155, 0.2), rgba(0, 210, 255, 0.15));
+    border: 1px solid var(--neon-volt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    color: var(--neon-volt);
+}
+.gym-logo-mini .material-icons-round { font-size: 18px; }
+.gym-own-brand-txt strong {
+    font-size: 11px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 0.4px;
+    display: block;
+    line-height: 1.1;
+}
+
+.sponsors-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.sponsors-badges-track {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    overflow-x: auto;
+    padding: 2px 0;
+}
+.sponsors-badges-track::-webkit-scrollbar { height: 0px; }
+
+.sponsor-pill-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 10px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.sponsor-pill-card:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.15);
+}
+.sponsor-pill-card strong {
+    font-size: 10.5px;
+    font-weight: 900;
+    color: white;
+    display: block;
+    line-height: 1.1;
+}
+.sponsor-pill-card span {
+    font-size: 8.5px;
+    font-weight: 800;
+    font-family: monospace;
+    display: block;
+}
+
+.sp-color-volt { border-color: rgba(0, 245, 155, 0.4); background: rgba(0, 245, 155, 0.07); }
+.sp-color-volt span { color: var(--neon-volt); }
+
+.sp-color-cyan { border-color: rgba(0, 210, 255, 0.4); background: rgba(0, 210, 255, 0.07); }
+.sp-color-cyan span { color: var(--neon-cyan); }
+
+.sp-color-pink { border-color: rgba(236, 72, 153, 0.5); background: rgba(236, 72, 153, 0.09); }
+.sp-color-pink span { color: #f472b6; }
+
+.sp-color-gold { border-color: rgba(255, 184, 0, 0.45); background: rgba(255, 184, 0, 0.08); }
+.sp-color-gold span { color: var(--neon-yellow); }
+
+.sp-color-purple { border-color: rgba(168, 85, 247, 0.45); background: rgba(168, 85, 247, 0.08); }
+.sp-color-purple span { color: #e9d5ff; }
+
+.btn-config-sponsors {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.22);
+    color: #cbd5e1;
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+.btn-config-sponsors:hover {
+    border-color: var(--neon-volt);
+    color: var(--neon-volt);
+}
+
+/* ==============================================================
+   2. POPOVER FLUTUANTE DE TAGS (ABRE AO CLICAR EM "+ TAG")
+   ============================================================== */
+.tag-floating-popover {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 20px;
+    width: 440px;
+    background: #080d18;
+    border: 1px solid var(--neon-volt);
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 245, 155, 0.22);
+    z-index: 99995;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+}
+.tag-floating-popover.open {
+    display: flex;
+}
+.popover-tag-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9.5px;
+    font-weight: 900;
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 6px;
+}
+.btn-close-popover {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+}
+.btn-close-popover:hover { color: var(--neon-red); }
+
+.popover-tag-body {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.popover-tag-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 4px;
+}
+
+/* ==============================================================
+   3. NOVA GRADE EXECUTIVA: META MENSAL + 3 CARTÕES TÁTICOS
+   ============================================================== */
+.executive-middle-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1.25fr;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.tactical-action-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.tactical-btn {
+    background: rgba(12, 19, 33, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 11px;
+    padding: 10px 10px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.tactical-btn:hover {
+    transform: translateY(-2px);
+}
+.tac-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.tac-icon .material-icons-round { font-size: 18px; }
+.tac-txt strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 900;
+    color: white;
+    line-height: 1.15;
+}
+.tac-txt span {
+    display: block;
+    font-size: 9px;
+    color: var(--text-muted);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tac-whats { border-color: rgba(0, 245, 155, 0.35); }
+.tac-whats .tac-icon { background: rgba(0, 245, 155, 0.15); color: var(--neon-volt); }
+.tac-whats:hover { border-color: var(--neon-volt); box-shadow: 0 6px 18px rgba(0, 245, 155, 0.22); }
+
+.tac-ferias { border-color: rgba(0, 210, 255, 0.35); }
+.tac-ferias .tac-icon { background: rgba(0, 210, 255, 0.15); color: var(--neon-cyan); }
+.tac-ferias:hover { border-color: var(--neon-cyan); box-shadow: 0 6px 18px rgba(0, 210, 255, 0.22); }
+
+.tac-partner { border-color: rgba(236, 72, 153, 0.45); background: linear-gradient(135deg, rgba(236, 72, 153, 0.12), rgba(168, 85, 247, 0.12)); }
+.tac-partner .tac-icon { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+.tac-partner:hover { border-color: #f472b6; box-shadow: 0 6px 18px rgba(236, 72, 153, 0.28); }
+
+/* ==============================================================
+   REFINAMENTO FINAL: VITRINE NO TOPO, POPOVER ANCORADO E STORIES
+   ============================================================== */
+.balcao-topbar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: nowrap !important;
+}
+
+.topbar-left {
+    flex-shrink: 0;
+}
+
+.topbar-sponsors-hub {
+    flex: 1;
+    min-width: 0;
+    max-width: 680px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(90deg, rgba(10, 16, 28, 0.94) 0%, rgba(6, 10, 18, 0.94) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 3px solid var(--neon-volt);
+    border-radius: 12px;
+    padding: 5px 10px;
+    height: 46px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+/* Permite que o Popover da Tag flutue livremente sem ser cortado pelo card */
+.spotlight-card {
+    overflow: visible !important;
+}
+
+.tag-trigger-anchor {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.tag-anchored-popover {
+    position: absolute !important;
+    top: calc(100% + 10px) !important;
+    left: 0 !important;
+    width: 420px !important;
+    background: #080d18 !important;
+    border: 1px solid var(--neon-volt) !important;
+    border-radius: 14px !important;
+    padding: 12px 14px !important;
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.96), 0 0 25px rgba(0, 245, 155, 0.25) !important;
+    z-index: 99999 !important;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+}
+.tag-anchored-popover.open {
+    display: flex !important;
+}
+
+.popover-arrow-up {
+    position: absolute;
+    top: -6px;
+    left: 24px;
+    width: 10px;
+    height: 10px;
+    background: #080d18;
+    border-left: 1px solid var(--neon-volt);
+    border-top: 1px solid var(--neon-volt);
+    transform: rotate(45deg);
+}
+
+.btn-stories-viral {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.16), rgba(168, 85, 247, 0.16));
+    border: 1px solid rgba(236, 72, 153, 0.5);
+    color: #f472b6;
+    font-size: 9.5px;
+    font-weight: 900;
+    padding: 3px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: transform 0.12s ease, filter 0.12s ease;
+}
+.btn-stories-viral:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.2);
+    border-color: #f472b6;
+}
+
+/* Grade Tripla Central: Dias da Semana + Meta Mensal + WhatsApp/Férias */
+.executive-triple-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1.05fr 0.9fr;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.tactical-action-cards-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.btn-meta-reward {
+    background: linear-gradient(90deg, rgba(255, 184, 0, 0.2), rgba(0, 245, 155, 0.15));
+    border: 1px solid var(--neon-yellow);
+    color: var(--neon-yellow);
+    font-size: 8.5px;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.btn-meta-reward:hover {
+    background: var(--neon-yellow);
+    color: #04060b;
+}
+
+/* Card Stories Instagram (9:16) */
+.ig-stories-canvas {
+    width: 280px;
+    padding: 22px 18px;
+    margin-top: 10px;
+    border-radius: 18px;
+    background: 
+        radial-gradient(circle at 50% 25%, rgba(0, 245, 155, 0.22) 0%, transparent 55%),
+        linear-gradient(165deg, #0b1324 0%, #050811 100%);
+    border: 2px solid var(--neon-volt);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.ig-stories-top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8px;
+    font-weight: 900;
+    color: var(--neon-cyan);
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+.ig-stories-avatar-wrap {
+    position: relative;
+    margin-bottom: 14px;
+}
+.ig-stories-avatar {
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    border: 3px solid var(--neon-volt);
+    background: #0d1629;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 900;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 20px rgba(0, 245, 155, 0.35);
+}
+.ig-stories-Input-badge {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #050811;
+    border: 1px solid var(--neon-yellow);
+    color: var(--neon-yellow);
+    font-size: 8px;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+.ig-stories-name {
+    font-size: 16px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 2px;
+}
+.ig-stories-sub {
+    font-size: 8.5px;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+    margin-bottom: 16px;
+}
+.ig-stories-stats-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.ig-stat-box {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 8px;
+}
+.ig-stat-box span {
+    font-size: 7.5px;
+    font-weight: 800;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 3px;
+}
+.ig-stat-box strong {
+    font-size: 13px;
+    font-weight: 900;
+}
+.ig-stories-sponsor-bar {
+    width: 100%;
+    background: rgba(0, 245, 155, 0.1);
+    border: 1px dashed var(--neon-volt);
+    border-radius: 8px;
+    padding: 6px;
+}
+.ig-stories-sponsor-bar span {
+    font-size: 7px;
+    font-weight: 900;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    display: block;
+}
+.ig-stories-sponsor-bar strong {
+    font-size: 9px;
+    font-weight: 900;
+    color: var(--neon-volt);
+}
+
+/* ==============================================================
+   1. CORREÇÃO DEFINITIVA DO PISCA-PISCA DO MOUSE NAS BORDAS (ANTI-JITTER)
+   ============================================================== */
+.glow-hover:hover,
+.btn-volt:hover,
+.btn-volt-sm:hover,
+.btn-outline-cyan:hover,
+.btn-hud:hover,
+.btn-spot-action:hover,
+.dock-pill-btn:hover,
+.tactical-btn:hover,
+.custom-student-tag:hover,
+.btn-inline-edit-tag:hover,
+.btn-stories-viral:hover,
+.sponsor-pill-card:hover,
+.partner-big-card:hover {
+    transform: none !important; /* Impede que o elemento fuja do ponteiro do mouse na borda! */
+}
+
+.dock-pill-btn:hover,
+.tactical-btn:hover,
+.btn-spot-action:hover,
+.custom-student-tag:hover,
+.btn-inline-edit-tag:hover,
+.btn-stories-viral:hover {
+    filter: brightness(1.16);
+    box-shadow: 0 0 18px rgba(0, 245, 155, 0.25);
+}
+
+/* ==============================================================
+   2. BANNER CENTRAL DE IDENTIDADE DA ACADEMIA NO TOPO
+   ============================================================== */
+.gym-official-identity-bar {
+    flex: 1;
+    min-width: 0;
+    max-width: 580px;
+    height: 50px;
+    background: linear-gradient(90deg, rgba(0, 245, 155, 0.12) 0%, rgba(10, 16, 28, 0.96) 45%, rgba(0, 210, 255, 0.1) 100%);
+    border: 1px solid rgba(0, 245, 155, 0.4);
+    border-radius: 14px;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.gym-official-identity-bar:hover {
+    border-color: var(--neon-volt);
+    box-shadow: 0 0 22px rgba(0, 245, 155, 0.25);
+}
+
+.identity-left {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+}
+
+.gym-logo-large {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--neon-volt), var(--neon-cyan));
+    color: #04060b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 14px rgba(0, 245, 155, 0.35);
+}
+.gym-logo-large .material-icons-round {
+    font-size: 22px;
+}
+
+.identity-titles {
+    min-width: 0;
+}
+.identity-kicker {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 8.5px;
+    font-weight: 900;
+    color: var(--neon-volt);
+    letter-spacing: 1.2px;
+}
+.identity-kicker i {
+    font-size: 11px;
+}
+.identity-titles strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.identity-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.identity-partner-counter {
+    font-size: 9px;
+    font-weight: 900;
+    font-family: monospace;
+    color: var(--neon-cyan);
+    background: rgba(0, 210, 255, 0.12);
+    border: 1px solid rgba(0, 210, 255, 0.35);
+    padding: 4px 8px;
+    border-radius: 7px;
+}
+.btn-manage-brand {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #f8fafc;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 6px 11px;
+    border-radius: 9px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-manage-brand:hover {
+    border-color: var(--neon-volt);
+    color: var(--neon-volt);
+}
+
+/* ==============================================================
+   3. VITRINE GRANDE DE 4 EMPRESAS PARCEIRAS (DENTRO DO VISOR)
+   ============================================================== */
+.sponsors-showcase-box {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    background: rgba(6, 10, 20, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 10px 14px;
+}
+
+.showcase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 900;
+    color: var(--text-muted);
+    letter-spacing: 0.6px;
+}
+.showcase-sub-link {
+    color: var(--neon-cyan);
+    cursor: pointer;
+    font-size: 9px;
+    font-weight: 800;
+}
+.showcase-sub-link:hover {
+    text-decoration: underline;
+}
+
+.sponsors-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.partner-big-card {
+    border-radius: 11px;
+    padding: 9px 11px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(13, 20, 35, 0.9);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    min-width: 0;
+}
+.partner-big-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+.partner-big-left {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    flex: 1;
+}
+.partner-big-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.partner-big-info {
+    min-width: 0;
+    flex: 1;
+}
+.partner-big-info strong {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 900;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+.partner-big-info span {
+    display: block;
+    font-size: 9px;
+    font-weight: 800;
+    font-family: monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+.btn-partner-zap {
+    background: rgba(0, 245, 155, 0.16);
+    border: 1px solid rgba(0, 245, 155, 0.45);
+    color: var(--neon-volt);
+    font-size: 9px;
+    font-weight: 900;
+    padding: 5px 8px;
+    border-radius: 7px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+}
+.btn-partner-zap:hover {
+    background: var(--neon-volt);
+    color: #04060b;
+}
+
+/* ==============================================================
+   1. PÍLULA "SEJA BEM-VINDO À ACADEMIA" + DOCK DE PATROCÍNIO PURO
+   ============================================================== */
+.welcome-gym-pill {
+    background: linear-gradient(90deg, rgba(0, 245, 155, 0.16) 0%, rgba(0, 210, 255, 0.08) 100%) !important;
+    border: 1px solid rgba(0, 245, 155, 0.45) !important;
+    padding: 4px 12px !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0.8px !important;
+    color: #e2e8f0 !important;
+}
+.welcome-gym-pill strong {
+    color: var(--neon-volt);
+    font-weight: 900;
+}
+
+.prestige-sponsors-dock {
+    flex: 1;
+    min-width: 0;
+    max-width: 740px;
+    height: 52px;
+    background: linear-gradient(180deg, rgba(15, 23, 40, 0.95) 0%, rgba(7, 11, 20, 0.98) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.prestige-host-badge {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    padding: 2px 6px 2px 2px;
+    flex-shrink: 0;
+}
+.prestige-host-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--neon-volt), var(--neon-cyan));
+    color: #04060b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 14px rgba(0, 245, 155, 0.35);
+}
+.prestige-host-logo .material-icons-round { font-size: 20px; }
+.prestige-host-txt span {
+    display: block;
+    font-size: 7.5px;
+    font-weight: 900;
+    color: var(--neon-volt);
+    letter-spacing: 1.4px;
+}
+.prestige-host-txt strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.prestige-divider {
+    width: 1px;
+    height: 30px;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.2), transparent);
+    flex-shrink: 0;
+}
+
+.prestige-brands-row {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    min-width: 0;
+}
+
+.prestige-brand-tile {
+    height: 38px;
+    border-radius: 10px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    min-width: 0;
+    user-select: none;
+}
+.prestige-brand-emblem {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.06);
+}
+.prestige-brand-text {
+    min-width: 0;
+    flex: 1;
+}
+.prestige-brand-text strong {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 900;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.2px;
+    line-height: 1.15;
+}
+.prestige-brand-text span {
+    display: block;
+    font-size: 7.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.85;
+}
+
+.tile-volt { border-color: rgba(0, 245, 155, 0.35); background: linear-gradient(135deg, rgba(0, 245, 155, 0.09), rgba(0,0,0,0.3)); }
+.tile-volt span { color: var(--neon-volt); }
+
+.tile-cyan { border-color: rgba(0, 210, 255, 0.35); background: linear-gradient(135deg, rgba(0, 210, 255, 0.09), rgba(0,0,0,0.3)); }
+.tile-cyan span { color: var(--neon-cyan); }
+
+.tile-pink { border-color: rgba(236, 72, 153, 0.4); background: linear-gradient(135deg, rgba(236, 72, 153, 0.11), rgba(0,0,0,0.3)); }
+.tile-pink span { color: #f472b6; }
+
+.tile-gold { border-color: rgba(255, 184, 0, 0.4); background: linear-gradient(135deg, rgba(255, 184, 0, 0.1), rgba(0,0,0,0.3)); }
+.tile-gold span { color: var(--neon-yellow); }
+
+.tile-purple { border-color: rgba(168, 85, 247, 0.4); background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(0,0,0,0.3)); }
+.tile-purple span { color: #e9d5ff; }
+
+.btn-prestige-config {
+    width: 34px;
+    height: 38px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.btn-prestige-config:hover {
+    border-color: var(--neon-volt);
+    color: var(--neon-volt);
+}
+
+/* ==============================================================
+   2. DISTRIBUIÇÃO INTERNA DO CARD DO ALUNO (SEM VAZIO ESCURO!)
+   ============================================================== */
+.spotlight-body {
+    flex: 1 1 auto !important;
+    padding: 22px 24px !important;
+}
+.clean-reception-strip {
+    padding: 16px 18px !important;
+}
