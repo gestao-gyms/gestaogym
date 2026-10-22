@@ -72,11 +72,13 @@
     <div class="app-container" id="app-main" style="display: none;">
 
         <!-- SIDEBAR -->
+        <!-- SIDEBAR ESQUERDA (SEM BORDAS, PERSONAGEM NÃO-CLICÁVEL E ASSINATURA NO RODAPÉ EXTREMO) -->
         <aside class="sidebar glass-panel">
-            <div>
+            <!-- BLOCO TOPO: PERFIL E MENUS -->
+            <div class="sidebar-top-zone">
                 <div class="user-profile">
                     <div class="profile-left">
-                        <div class="avatar-wrapper glow-hover" onclick="document.getElementById('input-foto-perfil').click()" title="Trocar Foto do Operador">
+                        <div class="avatar-wrapper glow-hover" onclick="document.getElementById('input-foto-perfil').click()" data-tip="Trocar Foto do Operador">
                             <div id="ui-avatar" class="glow-avatar">RL</div>
                             <div class="camera-badge">
                                 <span class="material-icons-round">photo_camera</span>
@@ -88,7 +90,7 @@
                             <p id="ui-role" class="operator-role">RECEPÇÃO & CEO</p>
                         </div>
                     </div>
-                    <button class="btn-icon-danger" onclick="abrirModalFechoTurno()" title="Auditar Caixa e Encerrar Turno">
+                    <button class="btn-icon-danger" onclick="abrirModalFechoTurno()" data-tip="Auditar Caixa e Encerrar Turno">
                         <span class="material-icons-round">power_settings_new</span>
                     </button>
                 </div>
@@ -113,7 +115,7 @@
                         Fichas & Protocolos
                     </a>
 
-                    <p class="menu-label" style="margin-top: 20px;">DIRETORIA & ENGENHARIA</p>
+                    <p class="menu-label" style="margin-top: 16px;">DIRETORIA & ENGENHARIA</p>
 
                     <a href="#" id="nav-ceo" class="menu-item" onclick="solicitarAcessoCEO()">
                         <span class="material-icons-round text-yellow">lock</span>
@@ -132,34 +134,58 @@
                         Módulos & Configurações
                     </a>
                 </div>
+            </div>
 
-                <!-- NOVO: PREENCHE O ESPAÇO VAZIO DA SIDEBAR ESQUERDA COM AMBIENTE GYM -->
-                <div class="sidebar-gym-pulse">
-                    <div class="gym-pulse-header">
-                        <span class="material-icons-round text-volt" style="font-size: 15px;">vital_signs</span>
-                        <span>STATUS DO SALÃO AGORA</span>
-                    </div>
-                    <div class="gym-pulse-grid">
-                        <div class="pulse-mini-card">
-                            <span class="pulse-mini-label">TREINO DO DIA</span>
-                            <strong class="text-cyan">Força & Hipertrofia</strong>
-                        </div>
-                        <div class="pulse-mini-card">
-                            <span class="pulse-mini-label">EQUIPAMENTOS</span>
-                            <strong class="text-volt">100% Operantes</strong>
-                        </div>
-                    </div>
+            <!-- BLOCO CENTRAL: TITÃ MUSCULOSO DECORATIVO (ZERO CLIQUE E ZERO TOOLTIP) -->
+            <div class="titan-hero-holo">
+                <div class="holo-aura-bg"></div>
+                <svg class="titan-bodybuilder-svg" viewBox="0 0 200 165" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="neonBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00f59b" />
+                            <stop offset="100%" stop-color="#00d2ff" />
+                        </linearGradient>
+                        <linearGradient id="torsoArmor" x1="50%" y1="0%" x2="50%" y2="100%">
+                            <stop offset="0%" stop-color="rgba(0, 245, 155, 0.28)" />
+                            <stop offset="100%" stop-color="rgba(0, 210, 255, 0.03)" />
+                        </linearGradient>
+                    </defs>
+                    <ellipse cx="100" cy="154" rx="46" ry="4" fill="rgba(0, 245, 155, 0.16)" />
+                    <g class="titan-torso-anim">
+                        <path d="M72 58 L100 50 L128 58 L118 66 L82 66 Z" fill="rgba(0, 210, 255, 0.25)" stroke="url(#neonBodyGrad)" stroke-width="1.8"/>
+                        <path d="M89 30 C89 21, 111 21, 111 30 L109 46 C109 51, 91 51, 91 46 Z" fill="#08101e" stroke="url(#neonBodyGrad)" stroke-width="2.2"/>
+                        <path d="M93 35 L107 35" stroke="#00f59b" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M62 60 L138 60 L122 126 L78 126 Z" fill="url(#torsoArmor)" stroke="url(#neonBodyGrad)" stroke-width="2.2" stroke-linejoin="round"/>
+                        <path d="M66 82 Q83 90 100 82 Q117 90 134 82" stroke="#00f59b" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                        <line x1="100" y1="82" x2="100" y2="122" stroke="#00d2ff" stroke-width="1.8"/>
+                        <line x1="86" y1="94" x2="114" y2="94" stroke="#00d2ff" stroke-width="1.6" stroke-linecap="round"/>
+                        <line x1="88" y1="105" x2="112" y2="105" stroke="#00d2ff" stroke-width="1.6" stroke-linecap="round"/>
+                        <line x1="90" y1="116" x2="110" y2="116" stroke="#00d2ff" stroke-width="1.6" stroke-linecap="round"/>
+                    </g>
+                    <g class="titan-pump-arms">
+                        <path d="M62 62 C42 60, 34 78, 42 94 C48 78, 56 76, 66 80 Z" fill="rgba(0, 245, 155, 0.22)" stroke="#00f59b" stroke-width="2.2"/>
+                        <path d="M138 62 C158 60, 166 78, 158 94 C152 78, 144 76, 134 80 Z" fill="rgba(0, 245, 155, 0.22)" stroke="#00f59b" stroke-width="2.2"/>
+                        <path d="M40 92 L48 70" stroke="#00d2ff" stroke-width="6" stroke-linecap="round"/>
+                        <path d="M160 92 L152 70" stroke="#00d2ff" stroke-width="6" stroke-linecap="round"/>
+                        <line x1="14" y1="68" x2="186" y2="68" stroke="#f8fafc" stroke-width="3.2" stroke-linecap="round"/>
+                        <rect x="18" y="48" width="7" height="40" rx="3" fill="#00f59b" stroke="#04060b" stroke-width="1"/>
+                        <rect x="27" y="53" width="6" height="30" rx="2.5" fill="#00d2ff" stroke="#04060b" stroke-width="1"/>
+                        <rect x="175" y="48" width="7" height="40" rx="3" fill="#00f59b" stroke="#04060b" stroke-width="1"/>
+                        <rect x="167" y="53" width="6" height="30" rx="2.5" fill="#00d2ff" stroke="#04060b" stroke-width="1"/>
+                    </g>
+                </svg>
+                <div class="titan-holo-caption">
+                    <span class="holo-tag">⚡ PERFORMANCE MODE</span>
+                    <strong>HIPERTROFIA & ALTA ENERGIA</strong>
                 </div>
             </div>
-                
-     
 
-            <!-- MONITOR DE LOTAÇÃO EM TEMPO REAL -->
-            <div class="sidebar-footer">
+            <!-- BLOCO BASE: LOTAÇÃO ALINHADA + RODAPÉ RICARDO LIMA TRAVADO NO FUNDO -->
+            <div class="sidebar-bottom-dock">
                 <div class="hardware-status-box">
-                    <div class="hw-header">
-                        <span>LOTAÇÃO DOS ESPAÇOS</span>
-                        <span class="hw-online" id="lotacao-status-geral">● CONFORTÁVEL</span>
+                    <div class="hw-header-aligned">
+                        <span class="hw-title-txt">LOTAÇÃO DOS ESPAÇOS</span>
+                        <span class="hw-status-badge" id="lotacao-status-geral">● CONFORTÁVEL</span>
                     </div>
                     
                     <div class="zone-capacity-item">
@@ -187,7 +213,7 @@
                     </div>
                 </div>
 
-                <div class="dev-signature" onclick="window.open('https://wa.me/5571986030162', '_blank')">
+                <div class="dev-signature-locked" onclick="window.open('https://wa.me/5571986030162', '_blank')">
                     <div class="signature-glow"></div>
                     <span class="sig-sub">ARCHITECTURE BY</span>
                     <span class="sig-name">RICARDO LIMA</span>
@@ -198,189 +224,340 @@
         <!-- ÁREA CENTRAL MULTI-TELAS -->
         <main class="main-content">
 
+
             <!-- ==========================================================
-                 TELA 1: RECEPÇÃO PÓS-CATRACA (LIMPA, RÁPIDA E FOCADA)
+                 TELA 1: RECEPÇÃO PÓS-CATRACA (PROPORÇÃO PERFEITA & MODO ALMOÇO)
                  ========================================================== -->
-            <section id="view-recepcao" class="spa-view active-view">
-                
+           <section id="view-recepcao" class="spa-view active-view">
                 <header class="balcao-topbar">
                     <div class="topbar-left">
-                        <div class="live-pill" id="pill-status-catraca-topo">
-                            <span class="pulse-dot" id="dot-status-catraca"></span> <span id="txt-status-catraca-topo">CATRACA CONTROL iD OPERACIONAL &bull; FLUXO LIVRE</span>
+                        <div class="live-pill welcome-gym-pill" id="pill-status-catraca-topo">
+                            <span class="pulse-dot" id="dot-status-catraca"></span>
+                            <span id="txt-status-catraca-topo">SEJA BEM-VINDO À <strong>ACADEMIA CORPO E MENTE</strong> &bull; BIOMETRIA ATIVA</span>
                         </div>
                         <h1>Monitor de <span class="text-volt">Passagem & Recepção</span></h1>
                     </div>
 
-                    <!-- BUSCA INSTANTÂNEA ZERO-LAG -->
-                    <div class="quick-search-bar">
-                        <span class="material-icons-round text-cyan">search</span>
-                        <input type="text" id="input-busca-rapida-balcao" oninput="buscarAlunoRapidoBalcao(this.value)" placeholder="Pesquisar atleta na recepção (Nome ou Matrícula)...">
-                        <div id="dropdown-busca-balcao" class="quick-search-results"></div>
-                    </div>
+                    <!-- VITRINE INSTITUCIONAL DE MARCAS PARCEIRAS (ZERO CUPOM / PURO PRESTÍGIO) -->
+                    <div id="arena-sponsors-ribbon" class="prestige-sponsors-dock">
+                        <div class="prestige-host-badge" onclick="abrirModalParceirosGym()" data-tip="Clique para alterar Nome/Logo da Academia e Marcas Parceiras">
+                            <div id="gym-custom-logo-box" class="prestige-host-logo">
+                                <span class="material-icons-round">fitness_center</span>
+                            </div>
+                            <div class="prestige-host-txt">
+                                <span>ARENA OFICIAL</span>
+                                <strong id="ribbon-gym-name">CORPO E MENTE</strong>
+                            </div>
+                        </div>
 
-                    <!-- AÇÕES DE TOPO: CHECK-IN PIN, SIMULAR LEITURA E PAUSAR CATRACA -->
-                    <div class="topbar-actions">
-                        <button class="btn-outline-cyan" onclick="abrirModalKeypad()" title="Digitar código de acesso">
-                            <span class="material-icons-round">dialpad</span> PIN
+                        <div class="prestige-divider"></div>
+
+                        <!-- 4 Placas de Patrocínio Oficial (Sem texto de cupom!) -->
+                        <div id="ribbon-sponsors-list" class="prestige-brands-row"></div>
+
+                        <button type="button" class="btn-prestige-config" onclick="abrirModalParceirosGym()" data-tip="Gerenciar Marcas Patrocinadoras (Máx 4)">
+                            <span class="material-icons-round">tune</span>
                         </button>
-                        <button class="btn-simular-passagem" onclick="simularBipCatraca('aleatorio')" title="Simula aluno passando na catraca antes da recepção">
-                            <span class="material-icons-round">face_retouching_natural</span> SIMULAR PASSAGEM
-                        </button>
-                        <button id="btn-topo-pausar-catraca" class="btn-pausar-catraca" onclick="alternarPausaCatracaGeral()" title="Trava a catraca imediatamente para ninguém entrar">
-                            <span class="material-icons-round">lock</span> PAUSAR CATRACA
-                        </button>
-                        <button class="btn-outline-cyan" onclick="toggleTVMode()" title="Modo Monitor Tela Cheia">
-                            <span class="material-icons-round">tv</span>
-                        </button>
+                    </div>
+                    
+                    <!-- NOVO TOPO GYM: DOCK BARRA OLÍMPICA (EMOLDURADA POR ANILHAS NEON NAS PONTAS!) -->
+                    <div class="gym-barbell-dock">
+                        <!-- Anilha Olímpica Esquerda -->
+                        <div class="barbell-end-left"><span></span><span></span></div>
+
+                        <div class="barbell-dock-inner">
+                            <button class="dock-pill-btn pill-cyan" onclick="abrirModalVisitante()" data-tip="Liberar acesso de visitante avulso ou aula experimental">
+                                <span class="material-icons-round">directions_run</span>
+                                <span>Diária / Exp.</span>
+                            </button>
+
+                            <button class="dock-pill-btn pill-volt" onclick="acionarGiroManualCatraca()" data-tip="Destravar o braço da catraca para 1 passagem autorizada">
+                                <span class="material-icons-round">sensor_door</span>
+                                <span>Abrir Catraca (1x)</span>
+                            </button>
+
+                            <button id="btn-modo-livre-almoco" class="dock-pill-btn pill-amber" onclick="alternarModoLivreAlmoco()" data-tip="Deixar catraca livre para horário de almoço ou saída da recepção (21h)">
+                                <span class="material-icons-round" id="icon-modo-almoco">lock_open</span>
+                                <span id="txt-titulo-almoco">Modo Livre (Almoço/21h)</span>
+                            </button>
+
+                            <button id="btn-topo-pausar-catraca" class="dock-pill-btn pill-pause" onclick="alternarPausaCatracaGeral()" data-tip="Travar a catraca para impedir novas entradas">
+                                <span class="material-icons-round">lock</span>
+                                <span>Pausar</span>
+                            </button>
+
+                            <button class="dock-pill-btn pill-purple" onclick="abrirModalCadastroAluno()" data-tip="Cadastrar novo atleta e liberar biometria imediata">
+                                <span class="material-icons-round">person_add</span>
+                                <span>Matricular</span>
+                            </button>
+
+
+                            <button class="dock-pill-btn pill-tv" onclick="toggleTVMode()" data-tip="Expandir painel em Modo Monitor (Tela Cheia)">
+                                <span class="material-icons-round">tv</span>
+                            </button>
+                        </div>
+
+                        <!-- Anilha Olímpica Direita -->
+                        <div class="barbell-end-right"><span></span><span></span></div>
                     </div>
                 </header>
 
-                <!-- AVISO QUANDO A CATRACA ESTIVER PAUSADA PELA RECEPÇÃO -->
+                <!-- BANNER QUANDO A CATRACA ESTIVER EM MODO LIVRE (ALMOÇO / SAÍDA RECEPÇÃO) -->
+                <div id="banner-catraca-livre-almoco" class="catraca-free-alert" style="display: none;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="material-icons-round">restaurant</span>
+                        <div>
+                            <strong>MODO CATRACA LIVRE ATIVO (HORÁRIO DE ALMOÇO / FIM DE EXPEDIENTE):</strong>
+                            <span style="font-size: 11px; margin-left: 6px; color: #fde68a;">O braço da catraca está recolhido/liberado para passagem livre dos atletas.</span>
+                        </div>
+                    </div>
+                    <button class="btn-volt-sm" onclick="alternarModoLivreAlmoco()">REATIVAR BIOMETRIA</button>
+                </div>
+
+                <!-- AVISO QUANDO A CATRACA ESTIVER PAUSADA/TRAVADA -->
                 <div id="banner-catraca-pausada" class="catraca-paused-alert" style="display: none;">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span class="material-icons-round">front_hand</span>
-                        <strong>CATRACA PAUSADA PELA RECEPÇÃO:</strong> Nenhuma entrada biométrica ou por PIN está autorizada no momento.
+                        <strong>CATRACA BLOQUEADA PELA RECEPÇÃO:</strong> Nenhuma entrada biométrica ou por PIN está autorizada no momento.
                     </div>
                     <button class="btn-volt-sm" onclick="alternarPausaCatracaGeral()">DESTRAVAR CATRACA AGORA</button>
                 </div>
 
-                <!-- GRID DO BALCÃO -->
+                <!-- GRID PRINCIPAL -->
                 <div class="balcao-grid">
 
-                    <!-- COLUNA ESQUERDA: VISOR DO ATLETA QUE ACABOU DE PASSAR NA CATRACA -->
+                    <!-- COLUNA ESQUERDA: CARD COMPACTO DO ATLETA + PAINEL DE AMBIENTE DA ACADEMIA -->
                     <div class="catraca-spotlight-container">
-                        
+
+                        <!-- CARTÃO DO ATLETA (AGORA COMPACTO, SEM SOBRAR BURACOS ESCUROS) -->
                         <div id="spotlight-card" class="glass-card spotlight-card status-liberado">
+                            <div class="specular-top-line"></div>
+
+                            <!-- TOPO DA CATRACA COM O NOVO BOTÃO DE MÚSICA CONFIGURÁVEL -->
                             <div class="spotlight-top-bar">
-                                <span class="hardware-tag"><i class="material-icons-round">sensor_door</i> MONITOR PÓS-CATRACA &bull; <span id="spotlight-zona-tag">ESPAÇO: MUSCULAÇÃO</span></span>
-                                <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="hardware-tag"><i class="material-icons-round">verified_user</i> TERMINAL PÓS-CATRACA &bull; BIOMETRIA SINCRONIZADA</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
                                     <span id="badge-aniversariante" class="bday-pill" style="display: none;">🎂 ANIVERSARIANTE DO MÊS!</span>
+
+                                    <span id="visor-laudo-badge" class="laudo-ok-pill">📋 PAR-Q: Vigente</span>
                                     <span id="spotlight-hora" class="spotlight-clock">PRONTO</span>
                                 </div>
                             </div>
 
+
+                            <!-- PERFIL LUXURY + 4 MÉTRICAS NA MESMA LINHA (INCLUINDO JORNADA & FIDELIDADE) -->
                             <div class="spotlight-body">
-                                <!-- FOTO DO ATLETA + CONTADOR DE TREINOS NO MÊS -->
-                                <div class="spotlight-photo-wrap" onclick="editarAlunoDoVisor()" style="cursor: pointer;" title="Clique para editar foto ou cadastro">
+                                <div class="spotlight-photo-wrap" onclick="editarAlunoDoVisor()" style="cursor: pointer;" data-tip="Clique para alterar a foto ou editar a ficha do atleta">
                                     <div id="spotlight-avatar" class="spotlight-avatar">
                                         <span class="material-icons-round">fitness_center</span>
                                     </div>
-                                    <div id="spotlight-streak-badge" class="metodo-badge">🔥 14 TREINOS</div>
+                                    <div class="avatar-cam-mini"><span class="material-icons-round">photo_camera</span></div>
+                                    <div id="spotlight-streak-badge" class="metodo-badge">🔥 21 TREINOS</div>
                                 </div>
 
-                                <!-- DADOS ESSENCIAIS E LIMPOS (SEM CPF E SEM POLUIÇÃO) -->
                                 <div class="spotlight-info">
-                                    <div id="spotlight-status-banner" class="status-banner banner-liberado">
-                                        <span class="material-icons-round" id="spotlight-status-icon">verified</span>
-                                        <span id="spotlight-status-text">PASSAGEM LIBERADA NA CATRACA</span>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                        <div id="spotlight-status-banner" class="status-banner banner-liberado" style="margin-bottom: 0;">
+                                            <span class="material-icons-round" id="spotlight-status-icon">verified</span>
+                                            <span id="spotlight-status-text">PASSAGEM LIBERADA NA CATRACA &bull; BOM TREINO!</span>
+                                        </div>
+
                                     </div>
 
-                                    <h2 id="spotlight-nome" class="spotlight-student-name">AGUARDANDO PASSAGEM NA CATRACA</h2>
-                                    <p id="spotlight-sub" class="spotlight-student-plan">Plano Mensal &bull; Modalidade: Musculação</p>
+                                    <h2 id="spotlight-nome" class="spotlight-student-name">LUCAS MENDES SILVA</h2>
 
-                                    <!-- 3 CARTÕES ESSENCIAIS -->
-                                    <div class="spotlight-metrics">
+                                    <div class="student-tags-row">
+                                        <span id="spotlight-sub" class="spotlight-plan-text">Plano <strong>Anual Black</strong> &bull; Musculação</span>
+                                        <div id="visor-tags-container" class="visor-tags-list"></div>
+                                        
+                                        <!-- ÂNCORA DO BOTÃO + TAG (A CAIXINHA ABRE COLADA EXATAMENTE AQUI EMBAIXO!) -->
+                                        <div class="tag-trigger-anchor">
+                                            <button type="button" class="btn-inline-edit-tag" onclick="focarEditorTagVisor(null, event)" data-tip="Adicionar nova tag personalizada neste atleta">
+                                                <span class="material-icons-round" style="font-size: 13px;">edit</span> + TAG
+                                            </button>
+
+                                            <div id="popover-tag-studio" class="tag-anchored-popover" onclick="event.stopPropagation()">
+                                                <div class="popover-arrow-up"></div>
+                                                <div class="popover-tag-header">
+                                                    <span><i class="material-icons-round text-volt" style="font-size: 14px; vertical-align: middle;">sell</i> ADICIONAR / EDITAR TAG DO ATLETA</span>
+                                                    <button type="button" class="btn-close-popover" onclick="fecharPopoverTag()">&times;</button>
+                                                </div>
+
+                                                <div class="popover-tag-body">
+                                                    <div class="custom-icon-picker-wrap">
+                                                        <button type="button" class="btn-custom-icon-trigger" onclick="toggleMenuIconesTag(event)">
+                                                            <span id="tag-icone-display">🔑 Chave</span>
+                                                            <span class="material-icons-round" style="font-size: 14px; color: var(--neon-volt);">expand_more</span>
+                                                        </button>
+                                                        <div id="menu-icones-tag" class="custom-icon-popover">
+                                                            <div onclick="escolherIconeTag('🔑', '🔑 Chave')">🔑 Chave / Armário</div>
+                                                            <div onclick="escolherIconeTag('⚠️', '⚠️ Aviso')">⚠️ Aviso Recepção</div>
+                                                            <div onclick="escolherIconeTag('🩺', '🩺 Saúde')">🩺 Saúde / Restrição</div>
+                                                            <div onclick="escolherIconeTag('🔥', '🔥 Treino')">🔥 Foco de Treino</div>
+                                                            <div onclick="escolherIconeTag('⭐', '⭐ VIP')">⭐ Destaque VIP</div>
+                                                            <div onclick="escolherIconeTag('💊', '💊 Suplem.')">💊 Suplementação</div>
+                                                            <div onclick="escolherIconeTag('🎧', '🎧 Item')">🎧 Pertences / Item</div>
+                                                        </div>
+                                                        <input type="hidden" id="tag-icone-select" value="🔑">
+                                                    </div>
+
+                                                    <div style="position: relative; flex: 1;">
+                                                        <input type="text" id="visor-nota-rapida" maxlength="22" oninput="atualizarContadorTag(this)" class="premium-input" placeholder="Ex: Armário #04 (Máx 22 letras)" style="padding: 8px 42px 8px 12px; font-size: 11px;" onkeypress="if(event.key === 'Enter') salvarNotaRapidaVisor()">
+                                                        <span id="tag-char-count" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 9px; color: var(--text-muted); font-family: monospace;">0/22</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="popover-tag-footer">
+                                                    <div class="tag-color-picker">
+                                                        <span style="font-size: 9px; color: var(--text-muted); font-weight: 800; margin-right: 4px;">COR:</span>
+                                                        <span class="color-dot dot-volt active" data-color="volt" onclick="selecionarCorTag(this)"></span>
+                                                        <span class="color-dot dot-cyan" data-color="cyan" onclick="selecionarCorTag(this)"></span>
+                                                        <span class="color-dot dot-yellow" data-color="yellow" onclick="selecionarCorTag(this)"></span>
+                                                        <span class="color-dot dot-purple" data-color="purple" onclick="selecionarCorTag(this)"></span>
+                                                        <span class="color-dot dot-red" data-color="red" onclick="selecionarCorTag(this)"></span>
+                                                    </div>
+                                                    <button type="button" class="btn-volt-sm" onclick="salvarNotaRapidaVisor()">
+                                                        <span class="material-icons-round" style="font-size: 14px;">check</span> SALVAR TAG
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- BOTÃO DE MARKETING VIRAL (CARD STORIES DO ATLETA) -->
+                                        <button type="button" class="btn-stories-viral" onclick="abrirModalStoriesAtleta()" data-tip="Gerar Card Stories do Atleta (com Patrocinador Master) para Instagram / WhatsApp">
+                                            <span class="material-icons-round" style="font-size: 13px;">photo_camera</span> CARD STORIES
+                                        </button>
+                                    </div>
+
+                                    <!-- 4 INDICADORES UNIFICADOS (VENCIMENTO + STATUS + RISCO + JORNADA & FIDELIDADE) -->
+                                    <div class="spotlight-metrics-4">
                                         <div class="spot-metric-box">
-                                            <span class="spot-label">VENCIMENTO DO PLANO</span>
-                                            <strong id="spotlight-vencimento" class="spot-value">--/--/----</strong>
+                                            <div class="metric-box-head">
+                                                <span class="spot-label">VENCIMENTO</span>
+                                                <span class="material-icons-round text-cyan" style="font-size: 14px;">event_available</span>
+                                            </div>
+                                            <strong id="spotlight-vencimento" class="spot-value">08/11/2026</strong>
                                         </div>
                                         <div class="spot-metric-box">
-                                            <span class="spot-label">STATUS NA CATRACA</span>
-                                            <strong id="spotlight-dias" class="spot-value text-volt">Liberado</strong>
+                                            <div class="metric-box-head">
+                                                <span class="spot-label">STATUS CATRACA</span>
+                                                <span class="material-icons-round text-volt" style="font-size: 14px;">sensor_occupied</span>
+                                            </div>
+                                            <strong id="spotlight-dias" class="spot-value text-volt">Liberado (+18d)</strong>
                                         </div>
                                         <div class="spot-metric-box">
-                                            <span class="spot-label">RISCO DE DESISTÊNCIA</span>
+                                            <div class="metric-box-head">
+                                                <span class="spot-label">RISCO DESISTÊNCIA</span>
+                                                <span class="material-icons-round text-cyan" style="font-size: 14px;">insights</span>
+                                            </div>
                                             <strong id="spotlight-desistencia" class="spot-value text-cyan">Baixo (Assíduo)</strong>
+                                        </div>
+                                        <div class="spot-metric-box" style="border-color: rgba(168,85,247,0.35);">
+                                            <div class="metric-box-head">
+                                                <span class="spot-label">JORNADA & FIDELIDADE</span>
+                                                <span class="material-icons-round text-purple" style="font-size: 14px;">military_tech</span>
+                                            </div>
+                                            <strong id="concierge-fidelidade" class="spot-value" style="color: #f3e8ff; font-size: 12px;">💎 8m • Black Diamond</strong>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- NOVO: PAINEL DE TELEMETRIA MUSCULAR & META FITNESS (PREENCHE O VAZIO DO CARD ESQUERDO!) -->
-                            <div class="gym-muscle-cockpit">
-                                <div class="muscle-cockpit-left">
+                            <!-- MÓDULO FUTURO CONFIGURÁVEL: CHAVE DE ARMÁRIO (OCULTO POR PADRÃO) -->
+                            <div id="mod-visor-armario" class="concierge-vip-bar" style="display: none; grid-template-columns: 1fr;">
+                                <div class="concierge-item" onclick="alternarArmarioRapido()" style="cursor: pointer;">
+                                    <div class="concierge-icon bg-yellow-soft"><span class="material-icons-round text-yellow">vpn_key</span></div>
+                                    <div>
+                                        <span class="spot-label">SMART LOCKER / CHAVE DE ARMÁRIO</span>
+                                        <strong id="concierge-locker" class="text-yellow">🔑 Armário #04 (Em Uso)</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MÓDULO FUTURO CONFIGURÁVEL: GRUPAMENTO MUSCULAR (OCULTO POR PADRÃO) -->
+                            <div id="mod-visor-musculos" class="gym-muscle-cockpit" style="display: none;">
+                                <div class="muscle-cockpit-left" style="grid-column: 1 / -1;">
                                     <div class="muscle-header-row">
-                                        <span class="spot-label" style="margin: 0;"><i class="material-icons-round text-volt" style="font-size: 13px; vertical-align: middle;">fitness_center</i> GRUPAMENTO MUSCULAR & FOCO DO DIA</span>
-                                        <span id="visor-laudo-badge" class="laudo-ok-pill">🩺 Atestado / PAR-Q: Vigente</span>
+                                        <span class="spot-label" style="margin: 0;">GRUPAMENTO MUSCULAR & FOCO DO DIA</span>
+                                        <strong id="visor-foco-atual" class="text-cyan" style="font-size: 10px;">Foco: Peitoral & Tríceps</strong>
                                     </div>
                                     <div class="muscle-chips-grid" id="visor-muscle-chips">
                                         <div class="muscle-chip active-muscle" onclick="selecionarMusculoVisor(this, 'Peitoral & Tríceps')">💪 Peitoral & Tríceps</div>
                                         <div class="muscle-chip" onclick="selecionarMusculoVisor(this, 'Dorsal & Bíceps')">🦍 Dorsal & Bíceps</div>
-                                        <div class="muscle-chip" onclick="selecionarMusculoVisor(this, 'Quadríceps & Glúteo')">🦵 Inferiores & Glúteo</div>
+                                        <div class="muscle-chip" onclick="selecionarMusculoVisor(this, 'Inferiores & Glúteo')">🦵 Inferiores & Glúteo</div>
                                         <div class="muscle-chip" onclick="selecionarMusculoVisor(this, 'Cardio HIT & Core')">🔥 Cardio HIT & Core</div>
-                                    </div>
-                                </div>
-
-                                <div class="muscle-cockpit-right">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                        <span class="spot-label" style="margin: 0;">META MENSAL (20 TREINOS)</span>
-                                        <strong id="visor-meta-pct" class="text-volt" style="font-size: 12px;">70%</strong>
-                                    </div>
-                                    <div class="zone-bar-bg" style="height: 8px; margin-bottom: 8px;">
-                                        <div id="visor-meta-bar" class="zone-bar-fill fill-volt" style="width: 70%;"></div>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted);">
-                                        <span id="visor-kcal-est">⚡ ~4.200 kcal queimadas</span>
-                                        <strong id="visor-foco-atual" class="text-cyan">Foco: Peitoral & Tríceps</strong>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- FAIXA VISUAL LIMPA: PRESENÇA NA SEMANA + FERRAMENTAS DE BALCÃO -->
+                            <!-- FAIXA CENTRAL COMPLETA: DIAS DA SEMANA (SEG-SÁB) + META MENSAL C/ VOUCHER + WHATSAPP & FÉRIAS -->
                             <div class="clean-reception-strip">
-                                <!-- Linha superior limpa: Frequência Semanal Visual + Nota Rápida de Recepção -->
-                                <div class="strip-top-row">
+                                <div class="executive-triple-grid">
+                                    
+                                    <!-- 1. Leitura Semanal Automática (SEG a SÁB) De Volta! -->
                                     <div class="week-attendance-box">
-                                        <span class="spot-label">PRESENÇA NA SEMANA</span>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span class="spot-label" style="margin: 0;">FREQUÊNCIA NA SEMANA (CATRACA)</span>
+                                            <span style="font-size: 8.5px; color: var(--neon-cyan); font-weight: 800; font-family: monospace;">AUTO-SYNC</span>
+                                        </div>
                                         <div class="week-days-pills" id="visor-semana-pills">
-                                            <span class="day-pill active">SEG</span>
-                                            <span class="day-pill active">TER</span>
+                                            <span class="day-pill">SEG</span>
+                                            <span class="day-pill">TER</span>
                                             <span class="day-pill">QUA</span>
-                                            <span class="day-pill active">QUI</span>
-                                            <span class="day-pill active">SEX</span>
+                                            <span class="day-pill">QUI</span>
+                                            <span class="day-pill">SEX</span>
                                             <span class="day-pill">SÁB</span>
                                         </div>
                                     </div>
 
-                                    <div class="quick-note-box">
-                                        <span class="spot-label">OBSERVAÇÃO RÁPIDA DE RECEPÇÃO (ARMÁRIO / LEMBRETE)</span>
-                                        <div style="display: flex; gap: 6px;">
-                                            <input type="text" id="visor-nota-rapida" class="premium-input" placeholder="Ex: Levou chave do armário #08 / Avisar sobre avaliação..." style="padding: 6px 10px; font-size: 11px;">
-                                            <button class="btn-volt-sm" onclick="salvarNotaRapidaVisor()" title="Guardar observação no cadastro do aluno">SALVAR</button>
+                                    <!-- 2. Meta Mensal Configurável + Marco de Recompensa 20/20 -->
+                                    <div class="week-attendance-box" style="display: flex; flex-direction: column; justify-content: center;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                            <span class="spot-label" id="visor-label-meta-mensal" style="margin: 0;">META MENSAL (20 TREINOS)</span>
+                                            <strong id="visor-meta-pct" class="text-volt" style="font-size: 11.5px;">100% (21/20)</strong>
+                                        </div>
+                                        <div class="zone-bar-bg" style="height: 8px; margin-bottom: 6px;">
+                                            <div id="visor-meta-bar" class="zone-bar-fill fill-volt" style="width: 100%;"></div>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; color: var(--text-muted); font-weight: 700;">
+                                            <span id="visor-kcal-est">⚡ ~6.510 kcal no mês</span>
+                                            <button type="button" id="btn-voucher-meta" class="btn-meta-reward" onclick="emitirVoucherMetaBatida()" data-tip="Emitir Voucher de Recompensa por Meta Batida (Cupom 80mm)">
+                                                🎁 VOUCHER META
+                                            </button>
                                         </div>
                                     </div>
+
+                                    <!-- 3. Ações Táticas Limpas: Apenas WhatsApp e Dar Férias (Sem Mimo VIP) -->
+                                    <div class="tactical-action-cards-2">
+                                        <button type="button" class="tactical-btn tac-whats" onclick="dispararWhatsAppAluno()" data-tip="Enviar mensagem inteligente ou lembrete no WhatsApp do atleta">
+                                            <div class="tac-icon"><span class="material-icons-round">chat</span></div>
+                                            <div class="tac-txt">
+                                                <strong>WhatsApp</strong>
+                                                <span>Aviso Rápido</span>
+                                            </div>
+                                        </button>
+
+                                        <button type="button" class="tactical-btn tac-ferias" onclick="abrirModalFerias()" data-tip="Congelar matrícula e acrescentar dias de férias ao plano">
+                                            <div class="tac-icon"><span class="material-icons-round">flight_takeoff</span></div>
+                                            <div class="tac-txt">
+                                                <strong>Dar Férias</strong>
+                                                <span>Pausar Dias</span>
+                                            </div>
+                                        </button>
+                                    </div>
+
                                 </div>
 
-                                <!-- Linha inferior: Botões rápidos (Convénio, Pré-Treino e Água ficam ocultos por padrão e nunca encavalam!) -->
-                                <div class="hud-quick-bar">
-                                    <button class="btn-hud btn-hud-whats" onclick="dispararWhatsAppAluno()">
-                                        <span class="material-icons-round">chat</span> ENVIAR WHATSAPP
-                                    </button>
-
-                                    <button class="btn-hud btn-hud-ferias" onclick="abrirModalFerias()">
-                                        <span class="material-icons-round">flight_takeoff</span> DAR FÉRIAS
-                                    </button>
-
-                                    <button class="btn-hud btn-hud-upsell" id="mod-visor-upsell" onclick="abrirModalRenovacaoRapida()">
-                                        <span class="material-icons-round">workspace_premium</span> <span id="hud-upsell-msg">UPGRADE ANUAL BLACK</span>
-                                    </button>
-
-                                    <!-- DESATIVADOS POR PADRÃO (PODEM SER LIGADOS NAS CONFIGURAÇÕES SEM BUGAR) -->
-                                    <button class="btn-hud btn-hud-convenio" id="mod-btn-convenio" style="display: none;" onclick="registrarCheckinConvenio()">
-                                        <span class="material-icons-round">confirmation_number</span> VALIDAR CONVÊNIO
-                                    </button>
-
-                                    <button class="btn-hud btn-hud-pdv" id="mod-btn-pdv1" style="display: none;" onclick="vendaRapidaBalcao('Dose Pré-Treino / Whey', 12.00)">
-                                        <span class="material-icons-round">bolt</span> + PRÉ-TREINO (R$12)
-                                    </button>
-
-                                    <button class="btn-hud btn-hud-pdv" id="mod-btn-pdv2" style="display: none;" onclick="vendaRapidaBalcao('Água / Isotónico', 5.00)">
-                                        <span class="material-icons-round">water_drop</span> + ÁGUA (R$5)
-                                    </button>
+                                <!-- Botões de Expansão Futura Ocultos -->
+                                <div style="display: none;">
+                                    <button id="mod-visor-upsell"></button>
+                                    <button id="mod-btn-convenio"></button>
+                                    <button id="mod-btn-pdv1"></button>
+                                    <button id="mod-btn-pdv2"></button>
                                 </div>
                             </div>
 
-                            <!-- 3 AÇÕES PRINCIPAIS DO ALUNO BIPADO (AGORA COM EDITAR CADASTRO DIRETO!) -->
+                            <!-- 3 AÇÕES PRINCIPAIS DO ALUNO BIPADO -->
                             <div class="spotlight-action-bar">
                                 <button class="btn-spot-action btn-spot-volt" onclick="abrirModalRenovacaoRapida()">
                                     <span class="material-icons-round">qr_code_2</span> RENOVAR PLANO (PIX / CUPOM)
@@ -394,41 +571,70 @@
                             </div>
                         </div>
 
-                        <!-- 3 COMANDOS DE CONTROLE DA CATRACA E BALCÃO -->
-                        <div class="quick-desk-commands">
-                            <div class="glass-card cmd-card glow-hover" onclick="abrirModalVisitante()">
-                                <div class="cmd-icon bg-cyan-soft"><span class="material-icons-round text-cyan">directions_run</span></div>
-                                <div>
-                                    <h4>Diária / Aula Experimental</h4>
-                                    <p>Libera visitante na catraca para Musculação, Aulão ou Pilates</p>
+                        <!-- NOVA BENTO GRID INFERIOR (3 CARDS DE ALTURA COMPACTA: RANKING TOP 3 + SALÃO AO VIVO + BUSCA) -->
+                        <div class="gym-bento-bottom-grid">
+                            
+                            <!-- Card 1: Top 3 Monstros do Mês (Gamificação Automática) -->
+                            <div class="glass-card bento-mini-card">
+                                <div class="bento-mini-header">
+                                    <span><i class="material-icons-round text-yellow" style="font-size: 14px; vertical-align: middle;">emoji_events</i> TOP 3 FREQUÊNCIA DO MÊS</span>
+                                    <span class="bento-tag-volt">RANKING LIVE</span>
+                                </div>
+                                <div class="bento-podium-list" id="bento-ranking-top3">
+                                    <!-- Preenchido automaticamente pelo JS -->
                                 </div>
                             </div>
 
-                            <div class="glass-card cmd-card glow-hover" onclick="acionarGiroManualCatraca()">
-                                <div class="cmd-icon bg-volt-soft"><span class="material-icons-round text-volt">sensor_door</span></div>
-                                <div>
-                                    <h4>Abrir Catraca (Giro Manual)</h4>
-                                    <p>Destrava o braço da catraca para entrada autorizada pela recepção</p>
+                           <!-- Card 2: Central Bluetooth & Som Ambiente da Academia (Substitui o Pulso do Salão) -->
+                            <div class="glass-card bento-mini-card" id="card-bento-musica">
+                                <div class="bento-mini-header">
+                                    <span><i class="material-icons-round text-cyan" style="font-size: 14px; vertical-align: middle;">bluetooth_audio</i> SOM AMBIENTE & BLUETOOTH SALÃO</span>
+                                    <span class="bento-tag-volt" id="bento-bt-status">● JBL PRO CONECTADO</span>
+                                </div>
+                                <div class="bento-bt-player">
+                                    <!-- Equalizador de Barras Neon GPU -->
+                                    <div class="bt-eq-bars" id="bt-eq-anim">
+                                        <span></span><span></span><span></span><span></span><span></span>
+                                    </div>
+                                    <div class="bt-track-info">
+                                        <span class="spot-label" id="bento-bt-estilo">ESTAÇÃO ATIVA &bull; 128 BPM</span>
+                                        <strong id="txt-visor-musica" class="text-volt" style="font-size: 11.5px;">Phonk & Hardstyle Maromba</strong>
+                                    </div>
+                                    <button type="button" class="btn-bt-next" onclick="alternarMusicaGym()" data-tip="Trocar Playlist / Estação Bluetooth do Salão">
+                                        <span class="material-icons-round" id="icon-visor-musica">skip_next</span>
+                                    </button>
                                 </div>
                             </div>
 
-                            <div class="glass-card cmd-card glow-hover" onclick="abrirModalCadastroAluno()">
-                                <div class="cmd-icon bg-purple-soft"><span class="material-icons-round text-purple">person_add</span></div>
-                                <div>
-                                    <h4>Matricular Novo Atleta</h4>
-                                    <p>Cadastra aluno e libera passagem imediata na catraca</p>
+                            <!-- Card 3: Radar de Busca Rápida de Atletas -->
+                            <div class="glass-card bento-mini-card">
+                                <div class="bento-mini-header">
+                                    <span><i class="material-icons-round text-cyan" style="font-size: 14px; vertical-align: middle;">person_search</i> LOCALIZAR ATLETA NA BASE</span>
+                                    <span class="bento-tag-purple">BUSCA RÁPIDA</span>
+                                </div>
+                                <div class="bento-search-body">
+                                    <div class="arena-quick-search" style="width: 100%; height: 38px;">
+                                        <span class="material-icons-round text-volt" style="font-size: 16px;">search</span>
+                                        <input type="text" id="input-busca-rapida-balcao" oninput="buscarAlunoRapidoBalcao(this.value)" placeholder="Digite o nome ou #ID do atleta...">
+                                        <div id="dropdown-busca-balcao" class="quick-search-results" style="top: auto; bottom: 112%;"></div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 9.5px; color: var(--text-muted); margin-top: 6px;">
+                                        <span>Inspecione fichas sem sair da tela</span>
+                                        <strong class="text-volt" style="cursor: pointer;" onclick="navegarPara('alunos')">Ver Todos &rarr;</strong>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
+                        </div>
+                    
 
-                    </div>
-
-                    <!-- COLUNA DIREITA: REGISTRO DE PASSAGENS PELA CATRACA -->
+                    <!-- COLUNA DIREITA: PASSAGENS & VENCIMENTOS -->
                     <div class="glass-card live-feed-column">
-                        <div class="feed-header">
+                        <div class="feed-header" style="margin-bottom: 8px; padding-bottom: 8px;">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="material-icons-round text-volt">bolt</span>
-                                <h3>Passagens na Catraca Hoje</h3>
+                                <span class="material-icons-round text-volt">sensors</span>
+                                <h3>Passagens & Vencimentos</h3>
                             </div>
                             <div class="feed-counters">
                                 <span class="pill-ok" id="count-liberados-hoje">0 Entraram</span>
@@ -436,11 +642,29 @@
                             </div>
                         </div>
 
-                        <div class="simulator-bar">
-                            <select id="select-simular-aluno" class="premium-input" style="padding: 8px 12px; font-size: 11px;"></select>
-                            <button class="btn-volt-sm" onclick="simularBipCatraca('selecionado')" title="Simular este aluno passando na catraca">
-                                <span class="material-icons-round" style="font-size: 15px;">sensors</span> PASSAR NA CATRACA
+                        <div class="simulator-bar" style="position: relative;">
+                            <div class="custom-sim-dropdown-wrap" id="wrap-sim-dropdown">
+                                <button type="button" class="custom-sim-trigger" onclick="toggleDropdownSimulador(event)">
+                                    <div class="sim-trigger-left">
+                                        <span class="sim-dot-status" id="sim-trigger-dot"></span>
+                                        <span id="sim-trigger-text">Selecionar Atleta...</span>
+                                    </div>
+                                    <span class="material-icons-round" style="font-size: 16px; color: var(--neon-volt);">expand_more</span>
+                                </button>
+                                <div id="lista-custom-simulador" class="custom-sim-menu"></div>
+                                <input type="hidden" id="select-simular-aluno" value="101">
+                            </div>
+
+                            <button class="btn-volt-sm" onclick="simularBipCatraca('selecionado')" data-tip="Registrar passagem deste atleta na catraca">
+                                <span class="material-icons-round" style="font-size: 15px;">bolt</span> BIPAR
                             </button>
+                        </div>
+
+                        <div class="feed-filter-tabs">
+                            <button class="feed-tab active" data-filter="todos" onclick="filtrarFeedPassagens('todos', this)">⚡ Todos</button>
+                            <button class="feed-tab" data-filter="liberados" onclick="filtrarFeedPassagens('liberados', this)">✅ Em Dia</button>
+                            <button class="feed-tab" data-filter="alerta" onclick="filtrarFeedPassagens('alerta', this)">⚠️ Vence Logo</button>
+                            <button class="feed-tab" data-filter="retidos" onclick="filtrarFeedPassagens('retidos', this)">🚫 Retidos</button>
                         </div>
 
                         <div id="lista-giros-recepcao" class="feed-list"></div>
@@ -448,22 +672,23 @@
 
                 </div>
             </section>
+            
 
             <!-- ==========================================================
-                 TELA 2: GESTÃO DE ALUNOS & MATRÍCULAS
+                 TELA 2: GESTÃO DE ALUNOS & MATRÍCULAS (COM WHATSAPP DIRETO E RÉGUA D-1 / D+1)
                  ========================================================== -->
             <section id="view-alunos" class="spa-view">
                 <header class="balcao-topbar">
                     <div>
-                        <div class="live-pill"><span class="pulse-dot"></span> GESTÃO DE ATLETAS, ANIVERSARIANTES E RETENÇÃO</div>
+                        <div class="live-pill"><span class="pulse-dot"></span> GESTÃO DE ATLETAS, WHATSAPP DIRETO E RÉGUA DE VENCIMENTO</div>
                         <h1>Base de Alunos & <span class="text-cyan">Matrículas</span></h1>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="text" id="filtro-texto-alunos" oninput="renderizarTabelaAlunos()" class="premium-input" placeholder="Buscar por nome, CPF ou objetivo..." style="width: 250px;">
-                        <select id="filtro-status-alunos" onchange="renderizarTabelaAlunos()" class="premium-input" style="width: 185px;">
+                        <input type="text" id="filtro-texto-alunos" oninput="renderizarTabelaAlunos()" class="premium-input" placeholder="Buscar por nome, CPF ou objetivo..." style="width: 240px;">
+                        <select id="filtro-status-alunos" onchange="renderizarTabelaAlunos()" class="premium-input" style="width: 195px;">
                             <option value="todos">Todos os Alunos</option>
+                            <option value="vence_amanha">🔔 Vence Amanhã / Logo</option>
                             <option value="ativo">✅ Liberados na Catraca</option>
-                            <option value="alerta">⚠️ Vencendo em 5 dias</option>
                             <option value="vencido">🚫 Retidos na Catraca</option>
                             <option value="aniversariantes">🎂 Aniversariantes do Mês</option>
                         </select>
@@ -472,6 +697,21 @@
                         </button>
                     </div>
                 </header>
+
+                <!-- BARRA DE STATUS DA RÉGUA AUTOMÁTICA DE WHATSAPP (VENCE AMANHÃ E PÓS-VENCIMENTO) -->
+                <div class="whatsapp-automation-strip">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="material-icons-round text-volt" style="font-size: 20px;">mark_chat_read</span>
+                        <div>
+                            <strong style="font-size: 11.5px; color: white; display: block;">Régua Inteligente de Retenção & Bloqueio (WhatsApp 1-Clique)</strong>
+                            <span id="txt-status-regua-alunos" style="font-size: 10px; color: var(--text-muted);">Monitorando vencimentos de amanhã (D-1) e bloqueios pós-vencimento na catraca.</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <span id="pill-regua-d1" class="pill-ok">🔔 Vence Amanhã: Ativo</span>
+                        <span id="pill-regua-pos1" class="pill-err">⚠️ Aviso Pós-Venc.: Ativo</span>
+                    </div>
+                </div>
 
                 <div class="glass-card table-container">
                     <div id="grid-alunos-crm" class="crm-students-grid"></div>
@@ -749,28 +989,62 @@
                         </div>
 
                         <div class="modules-toggle-list">
+
+                            <!-- 1. MÓDULOS ATIVOS E CONFIGURÁVEIS -->
+                             <label class="module-switch-row" style="border-color: rgba(0, 245, 155, 0.4);">
+                                <div>
+                                    <strong class="text-volt">🤝 Vitrine de Marcas Parceiras & Co-Branding (Retail Media B2B)</strong>
+                                    <span>Exibe barra de patrocinadores oficiais (Growth, Dark Lab, WePink, etc.) e Logo no topo</span>
+                                </div>
+                                <input type="checkbox" id="flag-parceiros" class="neon-switch" checked onchange="aplicarFlagsModulos()">
+                            </label>
+
                             <label class="module-switch-row">
                                 <div>
                                     <strong>🔊 Voz Neural + Bip Sonoro da Catraca</strong>
                                     <span>Emite som de catraca e dá boas-vindas ao atleta na passagem</span>
                                 </div>
-                                <input type="checkbox" id="flag-voz" class="neon-switch" onchange="aplicarFlagsModulos()">
+                                <input type="checkbox" id="flag-voz" class="neon-switch" checked onchange="aplicarFlagsModulos()">
                             </label>
 
                             <label class="module-switch-row">
                                 <div>
-                                    <strong>💡 Botão de Recomendação Comercial (Upsell Anual)</strong>
-                                    <span>Exibe atalho de upgrade para alunos do plano Mensal</span>
+                                    <strong>🎵 Botão de Música / Rádio Gym no Topo da Catraca</strong>
+                                    <span>Exibe controlador de Playlist / BPM no cabeçalho do monitor de passagem</span>
                                 </div>
-                                <input type="checkbox" id="flag-upsell" class="neon-switch" onchange="aplicarFlagsModulos()">
+                                <input type="checkbox" id="flag-musica" class="neon-switch" checked onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>🛡️ Bloquear Múltiplas Passagens no Mesmo Dia (Anti-Empréstimo)</strong>
+                                    <span>Retém na catraca caso o atleta ultrapasse o limite diário de giros configurado ao lado</span>
+                                </div>
+                                <input type="checkbox" id="flag-limite-diario" class="neon-switch" checked onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>🔔 Regra WhatsApp: Aviso "Vence Amanhã!" (Preventivo D-1)</strong>
+                                    <span>Habilita disparo preventivo 1 dia antes do plano vencer para evitar atrasos</span>
+                                </div>
+                                <input type="checkbox" id="flag-whats-d1" class="neon-switch" checked onchange="aplicarFlagsModulos()">
+                            </label>
+
+                            <label class="module-switch-row">
+                                <div>
+                                    <strong>⚠️ Regra WhatsApp: Cobrança "1 Dia Após Vencimento" (D+1)</strong>
+                                    <span>Se desativado, o sistema não envia cobrança D+1 e apenas bloqueia na catraca</span>
+                                </div>
+                                <input type="checkbox" id="flag-whats-pos1" class="neon-switch" checked onchange="aplicarFlagsModulos()">
                             </label>
 
                             <label class="module-switch-row">
                                 <div>
                                     <strong>🧘‍♀️ Módulo Studio Pilates (Empresa Parceira)</strong>
-                                    <span>Exibe barra de lotação para o espaço de Pilates</span>
+                                    <span>Exibe barra de lotação exclusiva para o espaço de Pilates</span>
                                 </div>
-                                <input type="checkbox" id="flag-pilates" class="neon-switch" onchange="aplicarFlagsModulos()">
+                                <input type="checkbox" id="flag-pilates" class="neon-switch" checked onchange="aplicarFlagsModulos()">
                             </label>
 
                             <label class="module-switch-row">
@@ -778,47 +1052,65 @@
                                     <strong>📲 Exportar Ficha de Treino p/ WhatsApp</strong>
                                     <span>Habilita o envio da ficha de treino formatada direto no WhatsApp</span>
                                 </div>
-                                <input type="checkbox" id="flag-export-whats" class="neon-switch" onchange="aplicarFlagsModulos()">
+                                <input type="checkbox" id="flag-export-whats" class="neon-switch" checked onchange="aplicarFlagsModulos()">
                             </label>
 
                             <label class="module-switch-row">
                                 <div>
-                                    <strong>🥤 PDV Express no Balcão (Pré-Treino / Água)</strong>
-                                    <span>Desativado por padrão. Ative se a academia vender bebidas/doses</span>
+                                    <strong>📋 Termo Jurídico PAR-Q (Cupom 80mm + Cofre de Laudos)</strong>
+                                    <span>Imprime cláusula de aptidão física no cupom e arquiva em Documentos</span>
                                 </div>
-                                <input type="checkbox" id="flag-pdv" class="neon-switch" onchange="aplicarFlagsModulos()">
+                                <input type="checkbox" id="flag-parq" class="neon-switch" checked onchange="aplicarFlagsModulos()">
                             </label>
 
-                            <label class="module-switch-row">
+                            <!-- ÚLTIMO HABILITÁVEL: CHAT FLUTUANTE (BORDA CIANO) -->
+                            <label class="module-switch-row switch-row-cyan">
                                 <div>
-                                    <strong>🎟️ Check-in de Convénios (Gympass / Wellhub / TotalPass)</strong>
-                                    <span>Desativado por padrão. Ative se a academia aceitar convénios</span>
+                                    <strong class="text-cyan">💬 Titan Chat Flutuante (Piso, Professores & IA)</strong>
+                                    <span>Exibe bolha de comunicação rápida entre recepção, instrutores e IA</span>
                                 </div>
-                                <input type="checkbox" id="flag-convenios" class="neon-switch" onchange="aplicarFlagsModulos()">
+                                <input type="checkbox" id="flag-chat" class="neon-switch" checked onchange="aplicarFlagsModulos()">
                             </label>
 
-                            <label class="module-switch-row">
+                            <!-- 2. MÓDULOS DE EXPANSÃO FUTURA (BORDA LARANJA NO FINAL) -->
+                            <label class="module-switch-row switch-row-orange">
                                 <div>
-                                    <strong>📋 Termo Jurídico PAR-Q no Comprovante</strong>
-                                    <span>Imprime declaração de aptidão física no cupom de matrícula</span>
+                                    <strong>🔑 Smart Locker / Gerador de Chave de Armário <span class="badge-roadmap-lock">🔒 EXPANSÃO FUTURA</span></strong>
+                                    <span>Controle digital de chaves de armário numeradas no visor da recepção</span>
                                 </div>
-                                <input type="checkbox" id="flag-parq" class="neon-switch" onchange="aplicarFlagsModulos()">
+                                <input type="checkbox" id="flag-armario" class="neon-switch" disabled>
                             </label>
 
-                            <label class="module-switch-row">
+                            <label class="module-switch-row switch-row-orange">
                                 <div>
-                                    <strong>🎨 Ícone Fitness Desportivo (Quando sem foto)</strong>
-                                    <span>Usa haltere neon quando o aluno ainda não tem foto de rosto</span>
+                                    <strong>💪 Grupamento Muscular & Foco no Visor <span class="badge-roadmap-lock">🔒 EXPANSÃO FUTURA</span></strong>
+                                    <span>Exibe seletor de músculos treinados no dia integrado ao app do professor</span>
                                 </div>
-                                <input type="checkbox" id="flag-avatar-vip" class="neon-switch" onchange="aplicarFlagsModulos()">
+                                <input type="checkbox" id="flag-musculos" class="neon-switch" disabled>
                             </label>
 
-                            <label class="module-switch-row" style="border-color: rgba(245,158,11,0.35);">
+                            <label class="module-switch-row switch-row-orange">
                                 <div>
-                                    <strong class="text-yellow">🚀 Modo Auto-Pitch (Piloto Automático de Vendas)</strong>
-                                    <span>Simula alunos passando na catraca a cada 8s para apresentação</span>
+                                    <strong>💡 Botão de Recomendação Comercial (Upsell Anual) <span class="badge-roadmap-lock">🔒 EXPANSÃO FUTURA</span></strong>
+                                    <span>Sugere upgrade automático na tela de recepção para alunos do plano Mensal</span>
                                 </div>
-                                <input type="checkbox" id="flag-autopitch" class="neon-switch" onchange="alternarAutoPitch(this.checked)">
+                                <input type="checkbox" id="flag-upsell" class="neon-switch" disabled>
+                            </label>
+
+                            <label class="module-switch-row switch-row-orange">
+                                <div>
+                                    <strong>🥤 PDV Express no Balcão (Pré-Treino / Água) <span class="badge-roadmap-lock">🔒 EXPANSÃO FUTURA</span></strong>
+                                    <span>Venda rápida de bebidas e doses no balcão integrada ao Livro Caixa</span>
+                                </div>
+                                <input type="checkbox" id="flag-pdv" class="neon-switch" disabled>
+                            </label>
+
+                            <label class="module-switch-row switch-row-orange">
+                                <div>
+                                    <strong>🎟️ Check-in de Convênios (Gympass / Wellhub / TotalPass) <span class="badge-roadmap-lock">🔒 EXPANSÃO FUTURA</span></strong>
+                                    <span>Validação de tokens de aplicativos parceiros com repasse automático</span>
+                                </div>
+                                <input type="checkbox" id="flag-convenios" class="neon-switch" disabled>
                             </label>
                         </div>
                     </div>
@@ -868,6 +1160,56 @@
                                 <div style="display: flex; gap: 6px;">
                                     <input type="number" id="hw-preco-trimestral" class="premium-input" value="99.90" step="0.01">
                                     <input type="number" id="hw-preco-anual" class="premium-input" value="89.90" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NOVO: AUTOMAÇÕES BILIONÁRIAS & EXPERIÊNCIA VIP (PREENCHE O CARD DIREITO) -->
+                        <div class="billion-automation-box">
+                            <div class="billion-box-header">
+                                <span class="material-icons-round text-volt" style="font-size: 18px;">auto_awesome</span>
+                                <span>AUTOMAÇÕES DE RETENÇÃO & EXPERIÊNCIA VIP</span>
+                            </div>
+                            <div class="hw-form-grid">
+                                <div>
+                                    <label class="field-label">META MENSAL DE TREINOS (GAMIFICAÇÃO)</label>
+                                    <input type="number" id="hw-meta-treinos" class="premium-input text-volt" value="20" min="1" max="31">
+                                </div>
+                                <div>
+                                    <label class="field-label">MÁX. PASSAGENS POR DIA / ATLETA</label>
+                                    <input type="number" id="hw-max-giros-dia" class="premium-input text-cyan" value="1" min="1" max="10">
+                                </div>
+                                <div>
+                                    <label class="field-label">DIÁRIA / AULA EXPERIMENTAL (R$)</label>
+                                    <input type="number" id="hw-preco-diaria" class="premium-input text-volt" value="25.00" step="1.00">
+                                </div>
+                                <div>
+                                    <label class="field-label">PIN DE SEGURANÇA DO CEO (4 DÍGITOS)</label>
+                                    <input type="password" id="hw-pin-ceo" class="premium-input text-yellow text-center" value="1234" maxlength="6" style="letter-spacing: 4px;">
+                                </div>
+                                <div>
+                                    <label class="field-label">META DE FATURAMENTO MENSAL (R$)</label>
+                                    <input type="number" id="hw-meta-receita" class="premium-input text-volt" value="25000" step="500">
+                                </div>
+                                <div>
+                                    <label class="field-label">CHAVE PIX OFICIAL (CNPJ / CELULAR)</label>
+                                    <input type="text" id="hw-chave-pix" class="premium-input text-cyan" value="pix@titanfitness.com.br">
+                                </div>
+                                <div>
+                                    <label class="field-label">RÉGUA PREVENTIVA WHATSAPP</label>
+                                    <select id="hw-regua-cobranca" class="premium-input">
+                                        <option value="d3">Automática: 3 Dias Antes + Dia do Venc.</option>
+                                        <option value="d1">Suave: Apenas no Dia do Vencimento</option>
+                                        <option value="manual">Manual pela Recepção</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="field-label">CASHBACK ASSIDUIDADE (20 TREINOS/MÊS)</label>
+                                    <select id="hw-cashback-vip" class="premium-input">
+                                        <option value="10pct">Ativo: 10% OFF na Renovação / Suplemento</option>
+                                        <option value="shake">Ativo: 1 Dose de Whey / Pré-Treino Grátis</option>
+                                        <option value="off">Desativado</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1107,19 +1449,34 @@
         </div>
     </div>
 
-    <!-- MODAL 4: TECLADO NUMÉRICO DE CHECK-IN -->
+    <!-- MODAL 4: CENTRAL UNIFICADA [ABRIR CATRACA / DIGITAR PIN DO ATLETA] -->
     <div id="modal-keypad" class="custom-modal-overlay">
         <div class="glass-panel modal-box-sm text-center">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="material-icons-round text-volt">dialpad</span>
-                    <h2>Check-in na Catraca (PIN / CPF)</h2>
+                    <span class="material-icons-round text-yellow">dialpad</span>
+                    <h2>Abrir Catraca / Bipar por PIN</h2>
                 </div>
                 <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
             </div>
-            <div style="padding: 20px;">
-                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Digite a matrícula (ex: 101) ou primeiros números do CPF:</p>
-                <input type="text" id="keypad-display" class="premium-input text-center" placeholder="---" readonly style="font-size: 24px; font-weight: 900; letter-spacing: 4px; margin-bottom: 14px; color: var(--neon-volt);">
+            <div style="padding: 18px 20px;">
+                <!-- Opção 1: Giro Livre Imediato -->
+                <button class="btn-giro-livre-modal w-100" onclick="acionarGiroManualCatraca(); fecharTodosModais();">
+                    <span class="material-icons-round">lock_open</span>
+                    <div>
+                        <strong>DESTRAVAR CATRACA AGORA (GIRO LIVRE)</strong>
+                        <span>Abre o braço imediatamente pela recepção</span>
+                    </div>
+                </button>
+
+                <div style="display: flex; align-items: center; gap: 10px; margin: 14px 0 10px 0;">
+                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
+                    <span style="font-size: 9px; font-weight: 900; color: var(--text-muted); letter-spacing: 1px;">OU DIGITE O PIN / ID PARA REGISTRAR O ALUNO</span>
+                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
+                </div>
+
+                <!-- Opção 2: Digitar Código do Aluno para Não Perder o Registro de Presença -->
+                <input type="text" id="keypad-display" class="premium-input text-center" placeholder="ID (Ex: 101) ou CPF" readonly style="font-size: 22px; font-weight: 900; letter-spacing: 3px; margin-bottom: 12px; color: var(--neon-volt);">
                 
                 <div class="numpad-grid">
                     <button onclick="digitarKeypad('1')">1</button>
@@ -1133,7 +1490,7 @@
                     <button onclick="digitarKeypad('9')">9</button>
                     <button onclick="limparKeypad()" class="text-red">C</button>
                     <button onclick="digitarKeypad('0')">0</button>
-                    <button onclick="confirmarCheckinKeypad()" class="btn-numpad-ok">OK</button>
+                    <button onclick="confirmarCheckinKeypad()" class="btn-numpad-ok">BIPAR</button>
                 </div>
             </div>
         </div>
@@ -1529,6 +1886,181 @@
         </div>
     </div>
     
+    <!-- ==============================================================
+         WIDGET: TITAN CHAT FLUTUANTE (RECEPÇÃO, PISO & IA ADVISOR)
+         ============================================================== -->
+    <div id="titan-chat-wrapper">
+        <!-- Botão Redondo Flutuante (FAB) -->
+        <button id="titan-chat-fab" class="titan-chat-fab" onclick="alternarJanelaChat()">
+            <span class="material-icons-round" id="titan-chat-fab-icon">forum</span>
+            <span class="chat-unread-dot" id="chat-unread-badge">2</span>
+        </button>
+
+        <!-- Janela do Chat -->
+        <div id="titan-chat-window" class="titan-chat-window">
+            <div class="chat-win-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="pulse-dot"></span>
+                    <div>
+                        <strong style="font-size: 12px; color: white; display: block;">Titan Comms & IA</strong>
+                        <span style="font-size: 9px; color: var(--neon-volt); font-weight: 700;">Piso Musculação &bull; Recepção &bull; Copiloto</span>
+                    </div>
+                </div>
+                <button class="btn-close" onclick="alternarJanelaChat()"><span class="material-icons-round" style="font-size: 18px;">close</span></button>
+            </div>
+
+            <!-- Abas do Chat -->
+            <div class="chat-tabs-bar">
+                <button id="tab-chat-piso" class="chat-tab-btn active" onclick="trocarCanalChat('piso')">🏋️ Rádio Piso</button>
+                <button id="tab-chat-ia" class="chat-tab-btn" onclick="trocarCanalChat('ia')">🤖 Titan IA (CEO)</button>
+            </div>
+
+            <!-- Mensagens -->
+            <div id="titan-chat-messages" class="chat-messages-area"></div>
+
+            <!-- Atalhos de Disparo em 1 Clique -->
+            <div class="chat-quick-chips" id="chat-chips-container">
+                <span onclick="enviarAtalhoChat('👋 Novo aluno subiu p/ avaliação')">👋 Avaliar Aluno</span>
+                <span onclick="enviarAtalhoChat('🏋️ Auxiliar aluno no Supino/Agachamento')">🏋️ Apoio Salão</span>
+                <span onclick="enviarAtalhoChat('📊 Resumo do caixa e lotação agora')">📊 Resumo IA</span>
+            </div>
+
+            <!-- Input de Digitação -->
+            <div class="chat-input-row">
+                <input type="text" id="titan-chat-input" class="premium-input" placeholder="Mensagem p/ equipe ou pergunte à IA..." onkeypress="if(event.key === 'Enter') enviarMensagemChat()">
+                <button class="btn-volt-sm" onclick="enviarMensagemChat()">
+                    <span class="material-icons-round" style="font-size: 16px;">send</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==============================================================
+         MODAL 11: CENTRAL DE MARCAS PARCEIRAS, PATROCÍNIOS & CO-BRANDING
+         ============================================================== -->
+    <div id="modal-parceiros-gym" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-lg">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-icons-round text-volt">storefront</span>
+                    <h2>Vitrine Comercial: Marcas Parceiras & Co-Branding</h2>
+                </div>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+
+            <div class="modal-body-scroll" style="display: flex; flex-direction: column; gap: 16px;">
+                
+                <!-- 1. Co-Branding: Logo Oficial da Academia / Licenciamento Comercial -->
+                <div class="biometria-capture-box" style="margin-bottom: 0;">
+                    <div class="bio-preview-circle" id="preview-logo-academia" onclick="document.getElementById('input-logo-academia').click()" style="cursor: pointer; width: 64px; height: 64px; border-radius: 14px;">
+                        <span class="material-icons-round">add_photo_alternate</span>
+                    </div>
+                    <div class="bio-controls" style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4>Logo Oficial da Academia (White-Label / Co-Branding)</h4>
+                            <span class="badge-lock" style="color: var(--neon-volt); border-color: var(--neon-volt); background: rgba(0,245,155,0.12);">LICENÇA COMERCIAL ATIVA</span>
+                        </div>
+                        <p>Personalize a assinatura visual do topo da recepção com a marca da academia ou Patrocinador Master.</p>
+                        <div style="display: flex; gap: 8px; margin-top: 8px; align-items: center;">
+                            <input type="text" id="input-sigla-academia" class="premium-input" placeholder="Nome curto (Ex: IRONBERG CT)" style="max-width: 210px; padding: 6px 10px; font-size: 11px;">
+                            <button type="button" class="btn-volt-sm" onclick="document.getElementById('input-logo-academia').click()">
+                                <span class="material-icons-round" style="font-size: 14px;">upload</span> SUBIR LOGO (PNG/JPG)
+                            </button>
+                            <input type="file" id="input-logo-academia" accept="image/*" style="display: none;" onchange="carregarLogoAcademia(event)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Marcas Parceiras Ativas (Clique para Ligar / Desligar da Tela Inicial) -->
+                <div>
+                    <label class="field-label">MARCAS & PARCEIROS EXIBIDOS NO TOPO DA RECEPÇÃO (CLIQUE PARA ATIVAR/DESATIVAR)</label>
+                    <div id="grid-marcas-parceiras-modal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;"></div>
+                </div>
+
+                <!-- 3. Adicionar Novo Patrocinador Institucional (Sem poluição de cupom) -->
+                <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(0, 210, 255, 0.35); padding: 12px 14px; border-radius: 12px;">
+                    <label class="field-label" style="color: var(--neon-cyan);">+ CADASTRAR MARCA PARCEIRA / PATROCINADOR OFICIAL (MÁX 4 NO TOPO)</label>
+                    <div style="display: grid; grid-template-columns: 1.2fr 1fr 0.8fr auto; gap: 8px; margin-top: 6px;">
+                        <input type="text" id="novo-parc-nome" class="premium-input" placeholder="Nome da Marca (Ex: Growth)" style="padding: 7px 10px; font-size: 11px;">
+                        <input type="text" id="novo-parc-cupom" class="premium-input" placeholder="Categoria (Ex: Suplementação Oficial)" style="padding: 7px 10px; font-size: 11px;">
+                        <select id="novo-parc-cor" class="premium-input" style="padding: 7px 26px 7px 8px; font-size: 11px;">
+                            <option value="volt">🟢 Verde Neon</option>
+                            <option value="cyan">🔵 Azul Ciano</option>
+                            <option value="pink">🩷 Pink / Rose</option>
+                            <option value="gold">🟡 Ouro VIP</option>
+                            <option value="purple">🟣 Roxo</option>
+                        </select>
+                        <button type="button" class="btn-outline-cyan" onclick="adicionarParceiroCustom()" style="padding: 7px 12px;">+ ADICIONAR</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="fecharTodosModais()">FECHAR</button>
+                <button class="btn-volt" onclick="salvarCoBrandingParceiros()">
+                    SALVAR VITRINE DE PARCEIROS <span class="material-icons-round">verified</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================================
+         MODAL 12: GERADOR DE CARD STORIES DO ATLETA (MARKETING VIRAL)
+         ============================================================== -->
+    <div id="modal-stories-atleta" class="custom-modal-overlay">
+        <div class="glass-panel modal-box-sm" style="max-width: 380px; align-items: center;">
+            <div class="modal-header w-100">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-icons-round text-volt">auto_awesome</span>
+                    <h2>Card Stories Instagram (9:16)</h2>
+                </div>
+                <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
+            </div>
+
+            <div id="stories-card-capture" class="ig-stories-canvas">
+                <div class="ig-stories-top">
+                    <span id="ig-card-academia">TITAN FITNESS CENTER</span>
+                    <span id="ig-card-data">OUTUBRO 2026</span>
+                </div>
+
+                <div class="ig-stories-avatar-wrap">
+                    <div id="ig-card-avatar" class="ig-stories-avatar">LS</div>
+                    <div class="ig-stories-Input-badge" id="ig-card-nivel">💎 BLACK VIP</div>
+                </div>
+
+                <h3 id="ig-card-nome" class="ig-stories-name">LUCAS MENDES</h3>
+                <p id="ig-card-foco" class="ig-stories-sub">MODALIDADE: MUSCULAÇÃO &bull; HIPERTROFIA</p>
+
+                <div class="ig-stories-stats-grid">
+                    <div class="ig-stat-box">
+                        <span>TREINOS NO MÊS</span>
+                        <strong id="ig-card-treinos" class="text-volt">🔥 21</strong>
+                    </div>
+                    <div class="ig-stat-box">
+                        <span>ENERGIA QUEIMADA</span>
+                        <strong id="ig-card-kcal" class="text-cyan">⚡ 6.510 kcal</strong>
+                    </div>
+                </div>
+
+                <div class="ig-stories-sponsor-bar" id="ig-card-sponsor">
+                    <span>PARCEIRO OFICIAL</span>
+                    <strong>🧪 GROWTH SUPPLEMENTS &bull; CUPOM: TITAN10</strong>
+                </div>
+            </div>
+
+            <div class="modal-footer w-100" style="margin-top: 12px; display: flex; gap: 8px;">
+                <button class="btn-outline-cyan w-100" onclick="compartilharStoriesWhatsApp()">
+                    <span class="material-icons-round" style="font-size: 15px;">send</span> ENVIAR NO WHATSAPP
+                </button>
+                <button class="btn-volt w-100" onclick="baixarCardStoriesPDF()">
+                    <span class="material-icons-round" style="font-size: 15px;">download</span> SALVAR CARD
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container"></div>
 
     <script src="app.js"></script>
