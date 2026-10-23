@@ -237,28 +237,6 @@
                         </div>
                         <h1>Monitor de <span class="text-volt">Passagem & Recepção</span></h1>
                     </div>
-
-                    <!-- VITRINE INSTITUCIONAL DE MARCAS PARCEIRAS (ZERO CUPOM / PURO PRESTÍGIO) -->
-                    <div id="arena-sponsors-ribbon" class="prestige-sponsors-dock">
-                        <div class="prestige-host-badge" onclick="abrirModalParceirosGym()" data-tip="Clique para alterar Nome/Logo da Academia e Marcas Parceiras">
-                            <div id="gym-custom-logo-box" class="prestige-host-logo">
-                                <span class="material-icons-round">fitness_center</span>
-                            </div>
-                            <div class="prestige-host-txt">
-                                <span>ARENA OFICIAL</span>
-                                <strong id="ribbon-gym-name">CORPO E MENTE</strong>
-                            </div>
-                        </div>
-
-                        <div class="prestige-divider"></div>
-
-                        <!-- 4 Placas de Patrocínio Oficial (Sem texto de cupom!) -->
-                        <div id="ribbon-sponsors-list" class="prestige-brands-row"></div>
-
-                        <button type="button" class="btn-prestige-config" onclick="abrirModalParceirosGym()" data-tip="Gerenciar Marcas Patrocinadoras (Máx 4)">
-                            <span class="material-icons-round">tune</span>
-                        </button>
-                    </div>
                     
                     <!-- NOVO TOPO GYM: DOCK BARRA OLÍMPICA (EMOLDURADA POR ANILHAS NEON NAS PONTAS!) -->
                     <div class="gym-barbell-dock">
@@ -356,12 +334,21 @@
                                 </div>
 
                                 <div class="spotlight-info">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                    <div class="spotlight-header-brand-row">
                                         <div id="spotlight-status-banner" class="status-banner banner-liberado" style="margin-bottom: 0;">
                                             <span class="material-icons-round" id="spotlight-status-icon">verified</span>
                                             <span id="spotlight-status-text">PASSAGEM LIBERADA NA CATRACA &bull; BOM TREINO!</span>
                                         </div>
 
+                                        <!-- NOVO: OUTDOOR DE MARCA PARCEIRA DENTRO DO CARD (NO CANTO SUPERIOR DIREITO!) -->
+                                        <div id="arena-sponsors-ribbon" class="card-inline-sponsor-billboard">
+                                            <div id="ribbon-sponsors-list" class="inline-sponsor-Active" onclick="alternarProximoParceiroCard()" data-tip="Clique para alternar entre as Marcas Parceiras ativas">
+                                                <!-- Renderizado pelo JS: Ex: GROWTH • MARCA PARCEIRA -->
+                                            </div>
+                                            <button type="button" class="btn-inline-sponsor-cfg" onclick="abrirModalParceirosGym()" data-tip="Configurar Marcas Parceiras e Logo">
+                                                <span class="material-icons-round">tune</span>
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <h2 id="spotlight-nome" class="spotlight-student-name">LUCAS MENDES SILVA</h2>
@@ -527,26 +514,25 @@
                                         </div>
                                     </div>
 
-                                    <!-- 3. Ações Táticas Limpas: Apenas WhatsApp e Dar Férias (Sem Mimo VIP) -->
-                                    <div class="tactical-action-cards-2">
-                                        <button type="button" class="tactical-btn tac-whats" onclick="dispararWhatsAppAluno()" data-tip="Enviar mensagem inteligente ou lembrete no WhatsApp do atleta">
-                                            <div class="tac-icon"><span class="material-icons-round">chat</span></div>
-                                            <div class="tac-txt">
-                                                <strong>WhatsApp</strong>
-                                                <span>Aviso Rápido</span>
+                                    <!-- 3. Ações Táticas Reformuladas (Cápsulas Horizontais que Nunca Quebram Linha!) -->
+                                    <div class="tactical-action-stack">
+                                        <button type="button" class="btn-tactical-pill pill-whats-pro" onclick="dispararWhatsAppAluno()" data-tip="Enviar mensagem rápida ou aviso de vencimento no WhatsApp do atleta">
+                                            <div class="pill-pro-left">
+                                                <span class="material-icons-round">chat</span>
+                                                <strong>ENVIAR WHATSAPP</strong>
                                             </div>
+                                            <span class="pill-pro-tag">1-CLIQUE &rarr;</span>
                                         </button>
 
-                                        <button type="button" class="tactical-btn tac-ferias" onclick="abrirModalFerias()" data-tip="Congelar matrícula e acrescentar dias de férias ao plano">
-                                            <div class="tac-icon"><span class="material-icons-round">flight_takeoff</span></div>
-                                            <div class="tac-txt">
-                                                <strong>Dar Férias</strong>
-                                                <span>Pausar Dias</span>
+                                        <button type="button" class="btn-tactical-pill pill-ferias-pro" onclick="abrirModalFerias()" data-tip="Congelar plano e adiar a data de vencimento por férias">
+                                            <div class="pill-pro-left">
+                                                <span class="material-icons-round">flight_takeoff</span>
+                                                <strong>CONGELAR FÉRIAS</strong>
                                             </div>
+                                            <span class="pill-pro-tag">+DIAS &rarr;</span>
                                         </button>
                                     </div>
-
-                                </div>
+                                    </div>
 
                                 <!-- Botões de Expansão Futura Ocultos -->
                                 <div style="display: none;">
@@ -1937,70 +1923,113 @@
 
 
     <!-- ==============================================================
-         MODAL 11: CENTRAL DE MARCAS PARCEIRAS, PATROCÍNIOS & CO-BRANDING
+         MODAL 11: STUDIO DE PATROCINADORES & MARCAS PARCEIRAS (REFORMULADO)
          ============================================================== -->
     <div id="modal-parceiros-gym" class="custom-modal-overlay">
-        <div class="glass-panel modal-box-lg">
+        <div class="glass-panel modal-box-lg" style="max-width: 680px;">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-icons-round text-volt">storefront</span>
-                    <h2>Vitrine Comercial: Marcas Parceiras & Co-Branding</h2>
+                    <span class="material-icons-round text-volt">Handshake</span>
+                    <div>
+                        <h2 style="line-height: 1.1;">Studio de Marcas Parceiras & Patrocínio Oficial</h2>
+                        <span style="font-size: 10px; color: var(--text-muted); font-weight: 600;">Gerencie até 4 marcas exibidas na quina superior do cartão do atleta</span>
+                    </div>
                 </div>
                 <button class="btn-close" onclick="fecharTodosModais()"><span class="material-icons-round">close</span></button>
             </div>
 
             <div class="modal-body-scroll" style="display: flex; flex-direction: column; gap: 16px;">
                 
-                <!-- 1. Co-Branding: Logo Oficial da Academia / Licenciamento Comercial -->
-                <div class="biometria-capture-box" style="margin-bottom: 0;">
-                    <div class="bio-preview-circle" id="preview-logo-academia" onclick="document.getElementById('input-logo-academia').click()" style="cursor: pointer; width: 64px; height: 64px; border-radius: 14px;">
-                        <span class="material-icons-round">add_photo_alternate</span>
-                    </div>
-                    <div class="bio-controls" style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h4>Logo Oficial da Academia (White-Label / Co-Branding)</h4>
-                            <span class="badge-lock" style="color: var(--neon-volt); border-color: var(--neon-volt); background: rgba(0,245,155,0.12);">LICENÇA COMERCIAL ATIVA</span>
+                <!-- 1. PREVIEW AO VIVO DA ASA MESCLADA + VELOCIDADE DE TRANSIÇÃO -->
+                <div class="sponsor-studio-preview-bar">
+                    <div>
+                        <span class="spot-label" style="color: var(--neon-volt); margin-bottom: 4px;">⚡ PREVIEW EM TEMPO REAL (PONTA DO CARD)</span>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
+                            <span style="font-size: 10px; color: var(--text-muted); font-weight: 700;">Rotação no Visor:</span>
+                            <select id="select-velocidade-parceiros" class="premium-input" style="width: 165px; padding: 5px 28px 5px 10px; font-size: 10.5px;" onchange="alterarVelocidadeRotacaoParceiros(this.value)">
+                                <option value="5000">⚡ Dinâmica (A cada 5s)</option>
+                                <option value="8000" selected>🔄 Padrão Arena (A cada 8s)</option>
+                                <option value="15000">⏱️ Suave (A cada 15s)</option>
+                                <option value="0">📌 Estática (Só troca no clique)</option>
+                            </select>
                         </div>
-                        <p>Personalize a assinatura visual do topo da recepção com a marca da academia ou Patrocinador Master.</p>
-                        <div style="display: flex; gap: 8px; margin-top: 8px; align-items: center;">
-                            <input type="text" id="input-sigla-academia" class="premium-input" placeholder="Nome curto (Ex: IRONBERG CT)" style="max-width: 210px; padding: 6px 10px; font-size: 11px;">
-                            <button type="button" class="btn-volt-sm" onclick="document.getElementById('input-logo-academia').click()">
-                                <span class="material-icons-round" style="font-size: 14px;">upload</span> SUBIR LOGO (PNG/JPG)
-                            </button>
-                            <input type="file" id="input-logo-academia" accept="image/*" style="display: none;" onchange="carregarLogoAcademia(event)">
+                    </div>
+
+                    <!-- Simulação exata da quina superior direita do card -->
+                    <div id="modal-live-wing-preview" class="wing-preview-mockup">
+                        <div class="sponsor-inline-texts">
+                            <span id="prev-wing-cat" class="sponsor-inline-kicker" style="color: #00d2ff;">SUPLEMENTAÇÃO OFICIAL</span>
+                            <strong id="prev-wing-nome" class="sponsor-inline-name">GROWTH SUPPLEMENTS</strong>
+                        </div>
+                        <div id="prev-wing-icon" class="sponsor-inline-icon" style="color: #00d2ff;">
+                            <span class="material-icons-round" style="font-size: 18px;">science</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. Marcas Parceiras Ativas (Clique para Ligar / Desligar da Tela Inicial) -->
+                <!-- 2. AS 4 VAGAS DE PATROCÍNIO NO CARD (CLIQUE PARA ATIVAR/PAUSAR OU EXCLUIR) -->
                 <div>
-                    <label class="field-label">MARCAS & PARCEIROS EXIBIDOS NO TOPO DA RECEPÇÃO (CLIQUE PARA ATIVAR/DESATIVAR)</label>
-                    <div id="grid-marcas-parceiras-modal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label class="field-label" style="margin: 0;">MARCAS CADASTRADAS (CLIQUE NO CARD PARA ATIVAR / PAUSAR EXIBIÇÃO)</label>
+                        <span id="contador-slots-modal" style="font-size: 10px; font-weight: 900; color: var(--neon-volt); font-family: monospace;">4/4 ATIVAS</span>
+                    </div>
+                    <div id="grid-marcas-parceiras-modal" class="studio-partners-grid"></div>
                 </div>
 
-                <!-- 3. Adicionar Novo Patrocinador Institucional (Sem poluição de cupom) -->
-                <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(0, 210, 255, 0.35); padding: 12px 14px; border-radius: 12px;">
-                    <label class="field-label" style="color: var(--neon-cyan);">+ CADASTRAR MARCA PARCEIRA / PATROCINADOR OFICIAL (MÁX 4 NO TOPO)</label>
-                    <div style="display: grid; grid-template-columns: 1.2fr 1fr 0.8fr auto; gap: 8px; margin-top: 6px;">
-                        <input type="text" id="novo-parc-nome" class="premium-input" placeholder="Nome da Marca (Ex: Growth)" style="padding: 7px 10px; font-size: 11px;">
-                        <input type="text" id="novo-parc-cupom" class="premium-input" placeholder="Categoria (Ex: Suplementação Oficial)" style="padding: 7px 10px; font-size: 11px;">
-                        <select id="novo-parc-cor" class="premium-input" style="padding: 7px 26px 7px 8px; font-size: 11px;">
-                            <option value="volt">🟢 Verde Neon</option>
-                            <option value="cyan">🔵 Azul Ciano</option>
-                            <option value="pink">🩷 Pink / Rose</option>
-                            <option value="gold">🟡 Ouro VIP</option>
-                            <option value="purple">🟣 Roxo</option>
-                        </select>
-                        <button type="button" class="btn-outline-cyan" onclick="adicionarParceiroCustom()" style="padding: 7px 12px;">+ ADICIONAR</button>
+                <!-- 3. CRIADOR DE MARCA COM GALERIA DE ÍCONES VETORIAIS NEON -->
+                <div class="studio-creator-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <label class="field-label" style="color: var(--neon-cyan); margin: 0;">+ ADICIONAR OU PERSONALIZAR MARCA PARCEIRA</label>
+                        <span style="font-size: 9px; color: var(--text-muted); font-family: monospace;">Máx 18 letras (Tamanho Travado)</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1.15fr 1fr 0.85fr; gap: 8px; margin-bottom: 10px;">
+                        <div>
+                            <label class="field-label">NOME DA MARCA (MÁX 18)</label>
+                            <input type="text" id="novo-parc-nome" maxlength="18" oninput="atualizarPreviewStudioParceiro()" class="premium-input" placeholder="Ex: GROWTH SUPPLEMENTS" style="padding: 8px 10px; font-size: 11px;">
+                        </div>
+                        <div>
+                            <label class="field-label">CHANCELA / TÍTULO (MÁX 20)</label>
+                            <input type="text" id="novo-parc-cupom" maxlength="20" oninput="atualizarPreviewStudioParceiro()" class="premium-input" placeholder="Ex: PARCEIRO OFICIAL" style="padding: 8px 10px; font-size: 11px;">
+                        </div>
+                        <div>
+                            <label class="field-label">COR DO FEIXE NEON</label>
+                            <select id="novo-parc-cor" onchange="atualizarPreviewStudioParceiro()" class="premium-input" style="padding: 8px 26px 8px 10px; font-size: 11px;">
+                                <option value="cyan">🔵 Azul Ciano (Growth)</option>
+                                <option value="volt">🟢 Verde Volt (Academia)</option>
+                                <option value="pink">🩷 Pink Neon (WePink)</option>
+                                <option value="gold">🟡 Ouro VIP (Dark Lab)</option>
+                                <option value="purple">🟣 Roxo Pro (Estética)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Seletor Visual de Ícones Vetoriais + Busca Livre -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label class="field-label" style="margin: 0;">ESCOLHA O ÍCONE VETORIAL DA MARCA (OU DIGITE QUALQUER ÍCONE AO LADO):</label>
+                        <input type="text" id="novo-parc-icone-custom" oninput="selecionarIconeStudio(this.value.trim().toLowerCase())" class="premium-input" placeholder="Código (Ex: bolt, star, spa)..." style="width: 175px; padding: 4px 8px; font-size: 10px;">
+                    </div>
+
+                    <input type="hidden" id="novo-parc-icone" value="science">
+
+                    <div id="studio-icon-picker-grid" class="studio-icon-matrix">
+                        <!-- Preenchido via JS com 24 ícones vetoriais fitness/business -->
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                        <button type="button" class="btn-volt-sm" onclick="adicionarParceiroCustom()" style="padding: 8px 16px;">
+                            <span class="material-icons-round" style="font-size: 15px;">add_circle</span> FIXAR MARCA NA VITRINE
+                        </button>
                     </div>
                 </div>
 
             </div>
 
             <div class="modal-footer">
+                <span style="font-size: 9.5px; color: var(--text-muted); margin-right: auto;">💡 Para ativar/desativar a vitrine inteira, use a chave em <strong>Módulos & Configurações</strong>.</span>
                 <button class="btn-cancel" onclick="fecharTodosModais()">FECHAR</button>
-                <button class="btn-volt" onclick="salvarCoBrandingParceiros()">
-                    SALVAR VITRINE DE PARCEIROS <span class="material-icons-round">verified</span>
+                <button class="btn-volt" onclick="fecharTodosModais(); mostrarToast('Vitrine de Patrocinadores salva!', 'success');">
+                    CONCLUIR E APLICAR <span class="material-icons-round">verified</span>
                 </button>
             </div>
         </div>
