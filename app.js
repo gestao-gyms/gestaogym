@@ -3966,3 +3966,522 @@ window.adicionarParceiroCustom = function() {
 setTimeout(() => {
     renderizarBarraParceirosTopo();
 }, 300);
+
+// ==============================================================
+// 28. CALIBRAGEM AUTOMÁTICA (NOTEBOOK 15" = MONITOR 27") + MARCA PARCEIRA NO CARD
+// ==============================================================
+
+// 1. Motor que faz o Notebook de 15" em 100% refletir exatamente a proporção do Monitor de 27"
+function calibrarEscalaUniversalTela() {
+    const largura = window.innerWidth;
+    const altura = window.innerHeight;
+
+    // Se a tela for de notebook (ex: 15.6" com escala Windows 125% -> ~1536x864 ou 1366x768)
+    let fatorZoom = 1;
+    if (largura <= 1400 || altura <= 780) {
+        fatorZoom = 0.84;
+    } else if (largura <= 1620 || altura <= 880) {
+        fatorZoom = 0.90; // Equivale exatamente ao 90% que ficou perfeito no seu notebook de 15"!
+    } else if (largura <= 1780) {
+        fatorZoom = 0.95;
+    } else {
+        fatorZoom = 1; // Monitor 27" Full HD / QHD
+    }
+
+    document.body.style.zoom = fatorZoom;
+    // Corrige 100vh/100vw quando o zoom automático está ativo para nunca sobrar faixa preta
+    const appMain = document.getElementById('app-main');
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    const hCompensada = `${Math.round(100 / fatorZoom)}vh`;
+    const wCompensada = `${Math.round(100 / fatorZoom)}vw`;
+
+    document.documentElement.style.height = hCompensada;
+    document.body.style.height = hCompensada;
+    if (appMain) {
+        appMain.style.height = hCompensada;
+        appMain.style.width = wCompensada;
+    }
+    if (sidebar) sidebar.style.height = hCompensada;
+    if (mainContent) mainContent.style.height = hCompensada;
+}
+
+window.addEventListener('resize', calibrarEscalaUniversalTela);
+
+// 2. Renderiza a Marca Parceira Grande dentro do Card do Aluno (Ao lado direito de Passagem Liberada)
+window.renderizarBarraParceirosTopo = function() {
+    const nomeAcademiaAtual = (CONFIG_HW.siglaAcademia || CONFIG_HW.nomeAcademia || 'TITAN FITNESS CENTER').toUpperCase();
+
+    const txtTopo = document.getElementById('txt-status-catraca-topo');
+    if (txtTopo && !catracaPausadaGeral && !catracaModoLivreAlmoco) {
+        txtTopo.innerHTML = `SEJA BEM-VINDO À <strong>${nomeAcademiaAtual}</strong> &bull; BIOMETRIA ATIVA`;
+    }
+
+    const billboard = document.getElementById('arena-sponsors-ribbon');
+    if (!billboard) return;
+
+    const mostrar = CONFIG_HW.flags.parceiros ?? true;
+    billboard.style.display = mostrar ? 'inline-flex' : 'none';
+
+    const container = document.getElementById('ribbon-sponsors-list');
+    if (!container) return;
+
+    const ativos = (typeof PARCEIROS_GYM !== 'undefined') ? PARCEIROS_GYM.filter(p => p.ativo) : [];
+    if (ativos.length === 0) {
+        container.innerHTML = `
+            <div class="sponsor-inline-texts">
+                <span class="sponsor-inline-kicker">ARENA OFICIAL</span>
+                <strong class="sponsor-inline-name">${nomeAcademiaAtual}</strong>
+            </div>
+        `;
+        return;
+    }
+
+    const idxAtual = parceiroSelecionadoIdx % ativos.length;
+    const p = ativos[idxAtual];
+
+    const mapaCores = {
+        volt: '#00f59b',
+        cyan: '#00d2ff',
+        pink: '#f472b6',
+        gold: '#ffb800',
+        purple: '#c084fc'
+    };
+    const corHex = mapaCores[p.cor] || '#00f59b';
+    billboard.style.borderColor = corHex;
+
+    const bolinhasHtml = ativos.map((_, i) => `<span class="${i === idxAtual ? 'active' : ''}" style="${i === idxAtual ? `background:${corHex}` : ''}"></span>`).join('');
+
+    container.innerHTML = `
+        <div class="sponsor-inline-icon" style="border: 1px solid ${corHex};">${p.icone || '🏆'}</div>
+        <div class="sponsor-inline-texts">
+            <span class="sponsor-inline-kicker" style="color: ${corHex};">${p.categoria || 'MARCA PARCEIRA'}</span>
+            <strong class="sponsor-inline-name">${p.nome}</strong>
+            <div class="sponsor-dots-indicator">${bolinhasHtml}</div>
+        </div>
+    `;
+};
+
+window.alternarProximoParceiroCard = function() {
+    parceiroSelecionadoIdx++;
+    renderizarBarraParceirosTopo();
+};
+
+// Rotaciona suavemente as marcas parceiras no card a cada 8 segundos
+if (!window.timerCarrosselParceiroCard) {
+    window.timerCarrosselParceiroCard = setInterval(() => {
+        const ativos = (typeof PARCEIROS_GYM !== 'undefined') ? PARCEIROS_GYM.filter(p => p.ativo) : [];
+        if (ativos.length > 1) {
+            parceiroSelecionadoIdx++;
+            renderizarBarraParceirosTopo();
+        }
+    }, 8000);
+}
+
+setTimeout(() => {
+    calibrarEscalaUniversalTela();
+    renderizarBarraParceirosTopo();
+}, 150);
+
+// ==============================================================
+// 29. ASA MESCLADA DE TAMANHO FIXO (15 CHARS) + MODO SEM PARCEIROS
+// ==============================================================
+
+// 1. Limpa a distorção de altura (vh) anterior para nunca cortar embaixo nem criar faixa preta
+window.removeEventListener('resize', calibrarEscalaUniversalTela);
+window.calibrarEscalaUniversalTela = function() {
+    document.body.style.zoom = 1;
+    document.documentElement.style.height = '100vh';
+    document.body.style.height = '100vh';
+    const appMain = document.getElementById('app-main');
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    if (appMain) { appMain.style.height = '100vh'; appMain.style.width = '100vw'; }
+    if (sidebar) sidebar.style.height = '100vh';
+    if (mainContent) mainContent.style.height = '100vh';
+};
+calibrarEscalaUniversalTela();
+
+// Limita os nomes das marcas padrão a no máximo 15 caracteres para tamanho 100% uniforme
+const MARCAS_TAMANHO_TRAVADO = [
+    { id: 'growth', icone: '🧪', nome: 'GROWTH SUPPS', categoria: 'NUTRIÇÃO OFICIAL', cor: 'cyan', ativo: true },
+    { id: 'wepink', icone: '💖', nome: 'WEPINK BEAUTY', categoria: 'WELLNESS PARTNER', cor: 'pink', ativo: true },
+    { id: 'darklab', icone: '⚡', nome: 'DARK LAB PRO', categoria: 'HIGH PERFORMANCE', cor: 'gold', ativo: true },
+    { id: 'ironberg', icone: '🏆', nome: 'MAX TITANIUM', categoria: 'PRO SERIES GYM', cor: 'volt', ativo: true }
+];
+
+PARCEIROS_GYM = PARCEIROS_GYM.map((p, i) => ({
+    ...p,
+    nome: (p.nome || MARCAS_TAMANHO_TRAVADO[i]?.nome || 'PARCEIRO').substring(0, 15).toUpperCase(),
+    categoria: (p.categoria || MARCAS_TAMANHO_TRAVADO[i]?.categoria || 'PARCEIRO OFICIAL').substring(0, 18).toUpperCase()
+}));
+salvarParceirosLocal();
+
+// 2. Renderiza a Asa Mesclada (Ou oculta 100% se a academia não tiver parceiros)
+window.renderizarBarraParceirosTopo = function() {
+    const nomeAcademiaAtual = (CONFIG_HW.siglaAcademia || CONFIG_HW.nomeAcademia || 'TITAN FITNESS').toUpperCase();
+
+    const txtTopo = document.getElementById('txt-status-catraca-topo');
+    if (txtTopo && !catracaPausadaGeral && !catracaModoLivreAlmoco) {
+        txtTopo.innerHTML = `SEJA BEM-VINDO À <strong>${nomeAcademiaAtual}</strong> &bull; BIOMETRIA ATIVA`;
+    }
+
+    // Trava de maxlength nos inputs do modal para nunca passar de 15 caracteres
+    const inNome = document.getElementById('novo-parc-nome');
+    const inCat = document.getElementById('novo-parc-cupom');
+    if (inNome) inNome.setAttribute('maxlength', '15');
+    if (inCat) inCat.setAttribute('maxlength', '18');
+
+    const billboard = document.getElementById('arena-sponsors-ribbon');
+    if (!billboard) return;
+
+    const ativos = (typeof PARCEIROS_GYM !== 'undefined') ? PARCEIROS_GYM.filter(p => p.ativo) : [];
+    const mostrarParceiros = (CONFIG_HW.flags.parceiros ?? true) && ativos.length > 0;
+
+    // Se a empresa desativou os parceiros nas configurações ou desmarcou todos, oculta a asa!
+    if (!mostrarParceiros) {
+        billboard.style.display = 'none';
+        return;
+    }
+
+    billboard.style.display = 'inline-flex';
+    const container = document.getElementById('ribbon-sponsors-list');
+    if (!container) return;
+
+    const idxAtual = parceiroSelecionadoIdx % ativos.length;
+    const p = ativos[idxAtual];
+
+    const mapaCores = {
+        volt: { hex: '#00f59b', rgba: 'rgba(0, 245, 155, 0.14)' },
+        cyan: { hex: '#00d2ff', rgba: 'rgba(0, 210, 255, 0.14)' },
+        pink: { hex: '#f472b6', rgba: 'rgba(244, 114, 182, 0.15)' },
+        gold: { hex: '#ffb800', rgba: 'rgba(255, 184, 0, 0.14)' },
+        purple: { hex: '#c084fc', rgba: 'rgba(192, 132, 252, 0.15)' }
+    };
+    const tema = mapaCores[p.cor] || mapaCores.volt;
+
+    // Aplica o gradiente mesclado que nasce transparente e brilha na direita
+    billboard.style.background = `linear-gradient(90deg, rgba(14, 22, 38, 0) 0%, ${tema.rgba} 100%)`;
+    billboard.style.borderRightColor = tema.hex;
+
+    const nomeCurto = (p.nome || '').substring(0, 15).toUpperCase();
+    const catCurta = (p.categoria || 'PARCEIRO OFICIAL').substring(0, 18).toUpperCase();
+
+    container.innerHTML = `
+        <div class="sponsor-inline-texts">
+            <span class="sponsor-inline-kicker" style="color: ${tema.hex};">${catCurta}</span>
+            <strong class="sponsor-inline-name">${nomeCurto}</strong>
+        </div>
+        <div class="sponsor-inline-icon" style="color: ${tema.hex};">${p.icone || '🏆'}</div>
+    `;
+};
+
+// 3. Adiciona Chave Liga/Desliga Geral dentro do próprio Modal de Parceiros (Caso a academia não tenha parceiros)
+const abrirModalParceirosBase29 = window.abrirModalParceirosGym;
+window.abrirModalParceirosGym = function() {
+    abrirModalParceirosBase29();
+    const grid = document.getElementById('grid-marcas-parceiras-modal');
+    if (grid && !document.getElementById('switch-sem-parceiros-bar')) {
+        const barraToggle = document.createElement('div');
+        barraToggle.id = 'switch-sem-parceiros-bar';
+        barraToggle.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(0,245,155,0.07); border:1px solid rgba(0,245,155,0.3); border-radius:10px; margin-bottom:10px;';
+        barraToggle.innerHTML = `
+            <div>
+                <strong style="font-size:12px; color:white; display:block;">Exibir Marcas Parceiras no Card do Atleta</strong>
+                <span style="font-size:10px; color:var(--text-muted);">Desative esta chave caso a academia não possua empresas parceiras</span>
+            </div>
+            <input type="checkbox" id="chk-modal-parceiros-ativo" class="neon-switch" ${CONFIG_HW.flags.parceiros ?? true ? 'checked' : ''} onchange="alternarExibicaoGeralParceiros(this.checked)">
+        `;
+        grid.parentNode.insertBefore(barraToggle, grid);
+    } else {
+        const chk = document.getElementById('chk-modal-parceiros-ativo');
+        if (chk) chk.checked = CONFIG_HW.flags.parceiros ?? true;
+    }
+};
+
+window.alternarExibicaoGeralParceiros = function(ativo) {
+    CONFIG_HW.flags.parceiros = ativo;
+    const chkHw = document.getElementById('flag-parceiros');
+    if (chkHw) chkHw.checked = ativo;
+    salvarLocal();
+    renderizarBarraParceirosTopo();
+    mostrarToast(ativo ? "Vitrine de Parceiros ativada!" : "Parceiros ocultados (Modo sem patrocinadores).", "success");
+};
+
+// Garante limite de 15 caracteres ao cadastrar nova marca
+const addParceiroBase29 = window.adicionarParceiroCustom;
+window.adicionarParceiroCustom = function() {
+    const inNome = document.getElementById('novo-parc-nome');
+    const inCat = document.getElementById('novo-parc-cupom');
+    if (inNome) inNome.value = inNome.value.trim().substring(0, 15).toUpperCase();
+    if (inCat) inCat.value = inCat.value.trim().substring(0, 18).toUpperCase();
+    addParceiroBase29();
+};
+
+setTimeout(() => {
+    calibrarEscalaUniversalTela();
+    renderizarBarraParceirosTopo();
+}, 120);
+
+// ==============================================================
+// 30. STUDIO DE PATROCINADORES COM ÍCONES VETORIAIS & ASA NA PONTA DO CARD
+// ==============================================================
+const ICONES_VETORIAIS_STUDIO = [
+    { cod: 'science', nome: 'Suplemento / Lab' },
+    { cod: 'bolt', nome: 'Pré-Treino / Energia' },
+    { cod: 'emoji_events', nome: 'Troféu / Pro Series' },
+    { cod: 'favorite', nome: 'Saúde / Wellness' },
+    { cod: 'diamond', nome: 'Marca Luxury / VIP' },
+    { cod: 'fitness_center', nome: 'Equipamentos / CT' },
+    { cod: 'local_fire_department', nome: 'Termogênico / HIIT' },
+    { cod: 'restaurant', nome: 'Nutrição / Marmita Fit' },
+    { cod: 'medical_services', nome: 'Clínica / Medicina' },
+    { cod: 'spa', nome: 'Estética / Beleza' },
+    { cod: 'checkroom', nome: 'Moda Fitness / Roupa' },
+    { cod: 'verified', nome: 'Parceiro Oficial' },
+    { cod: 'workspace_premium', nome: 'Selo Ouro / Elite' },
+    { cod: 'rocket_launch', nome: 'Performance Max' },
+    { cod: 'self_improvement', nome: 'Pilates / Yoga' },
+    { cod: 'sports_mma', nome: 'Artes Marciais / Luta' },
+    { cod: 'water_drop', nome: 'Hidratação / Bebidas' },
+    { cod: 'storefront', nome: 'Loja Parceira' },
+    { cod: 'medication', nome: 'Farmácia / Manipulação' },
+    { cod: 'monitor_heart', nome: 'Cardio / Check-up' },
+    { cod: 'star', nome: 'Destaque Master' },
+    { cod: 'shield', nome: 'Proteção / Seguro' },
+    { cod: 'auto_awesome', nome: 'Cosméticos / Glow' },
+    { cod: 'Handshake', nome: 'Aliança B2B' }
+];
+
+const PADRAO_4_MARCAS_VETORIAIS = [
+    { id: 'growth', icone: 'science', nome: 'GROWTH SUPPLEMENTS', categoria: 'NUTRIÇÃO OFICIAL', cor: 'cyan', ativo: true },
+    { id: 'wepink', icone: 'auto_awesome', nome: 'WEPINK WELLNESS', categoria: 'BEAUTY & CARE', cor: 'pink', ativo: true },
+    { id: 'darklab', icone: 'bolt', nome: 'DARK LAB PRO', categoria: 'HIGH PERFORMANCE', cor: 'gold', ativo: true },
+    { id: 'maxtit', icone: 'emoji_events', nome: 'MAX TITANIUM', categoria: 'PRO SERIES GYM', cor: 'volt', ativo: true }
+];
+
+// Atualiza nomes cortados ("GROWTH SUPPLEME") e migra emojis antigos para Ícones Vetoriais
+PARCEIROS_GYM = PADRAO_4_MARCAS_VETORIAIS.map((padrao, i) => {
+    const atual = PARCEIROS_GYM[i];
+    if (!atual) return padrao;
+    const nomeCorrigido = (atual.nome === 'GROWTH SUPPLEME' || atual.nome === 'GROWTH SUPPS')
+        ? 'GROWTH SUPPLEMENTS'
+        : (atual.nome || padrao.nome).substring(0, 18).toUpperCase();
+    const iconeVetorial = (atual.icone && /^[a-z0-9_]+$/i.test(atual.icone)) ? atual.icone : padrao.icone;
+    return {
+        ...atual,
+        nome: nomeCorrigido,
+        categoria: (atual.categoria || padrao.categoria).substring(0, 20).toUpperCase(),
+        icone: iconeVetorial
+    };
+});
+salvarParceirosLocal();
+
+function renderizarIconeMarcaHtml(iconeStr) {
+    if (!iconeStr) return `<span class="material-icons-round" style="font-size:18px;">verified</span>`;
+    if (/^[a-z0-9_]+$/i.test(iconeStr)) {
+        return `<span class="material-icons-round" style="font-size:18px;">${iconeStr}</span>`;
+    }
+    return `<span style="font-size:15px;">${iconeStr}</span>`;
+}
+
+// 1. Renderiza a Asa Mesclada na Quina Superior Direita do Card do Atleta
+window.renderizarBarraParceirosTopo = function() {
+    const nomeAcademiaAtual = (CONFIG_HW.siglaAcademia || CONFIG_HW.nomeAcademia || 'TITAN FITNESS').toUpperCase();
+    const txtTopo = document.getElementById('txt-status-catraca-topo');
+    if (txtTopo && !catracaPausadaGeral && !catracaModoLivreAlmoco) {
+        txtTopo.innerHTML = `SEJA BEM-VINDO À <strong>${nomeAcademiaAtual}</strong> &bull; BIOMETRIA ATIVA`;
+    }
+
+    const billboard = document.getElementById('arena-sponsors-ribbon');
+    if (!billboard) return;
+
+    const ativos = PARCEIROS_GYM.filter(p => p.ativo);
+    const mostrar = (CONFIG_HW.flags.parceiros ?? true) && ativos.length > 0;
+    if (!mostrar) {
+        billboard.style.display = 'none';
+        return;
+    }
+
+    billboard.style.display = 'inline-flex';
+    const container = document.getElementById('ribbon-sponsors-list');
+    if (!container) return;
+
+    const p = ativos[parceiroSelecionadoIdx % ativos.length];
+    const mapaCores = {
+        volt: { hex: '#00f59b', rgba: 'rgba(0, 245, 155, 0.16)' },
+        cyan: { hex: '#00d2ff', rgba: 'rgba(0, 210, 255, 0.16)' },
+        pink: { hex: '#f472b6', rgba: 'rgba(244, 114, 182, 0.18)' },
+        gold: { hex: '#ffb800', rgba: 'rgba(255, 184, 0, 0.16)' },
+        purple: { hex: '#c084fc', rgba: 'rgba(192, 132, 252, 0.18)' }
+    };
+    const tema = mapaCores[p.cor] || mapaCores.cyan;
+
+    billboard.style.background = `linear-gradient(90deg, rgba(14, 22, 38, 0) 0%, ${tema.rgba} 100%)`;
+    billboard.style.borderRightColor = tema.hex;
+
+    container.innerHTML = `
+        <div class="sponsor-inline-texts">
+            <span class="sponsor-inline-kicker" style="color: ${tema.hex};">${(p.categoria || 'PARCEIRO OFICIAL').substring(0, 20)}</span>
+            <strong class="sponsor-inline-name">${(p.nome || '').substring(0, 18)}</strong>
+        </div>
+        <div class="sponsor-inline-icon" style="color: ${tema.hex};">
+            ${renderizarIconeMarcaHtml(p.icone)}
+        </div>
+    `;
+};
+
+// 2. Abre o Novo Studio de Patrocinadores (Sem Logo Oficial e Sem Chave Duplicada)
+window.abrirModalParceirosGym = function() {
+    renderizarMatrizIconesStudio();
+    renderizarGridParceirosModal();
+    atualizarPreviewStudioParceiro();
+    document.getElementById('modal-parceiros-gym')?.classList.add('active');
+};
+
+function renderizarMatrizIconesStudio() {
+    const matrix = document.getElementById('studio-icon-picker-grid');
+    if (!matrix) return;
+    const atual = document.getElementById('novo-parc-icone')?.value || 'science';
+
+    matrix.innerHTML = ICONES_VETORIAIS_STUDIO.map(ic => `
+        <button type="button" class="icon-matrix-btn ${ic.cod === atual ? 'active' : ''}" onclick="selecionarIconeStudio('${ic.cod}')" data-tip="${ic.nome}">
+            <span class="material-icons-round">${ic.cod}</span>
+        </button>
+    `).join('');
+}
+
+window.selecionarIconeStudio = function(codIcone) {
+    if (!codIcone) return;
+    const inputHid = document.getElementById('novo-parc-icone');
+    if (inputHid) inputHid.value = codIcone;
+    document.querySelectorAll('#studio-icon-picker-grid .icon-matrix-btn').forEach(btn => {
+        const iconSpan = btn.querySelector('.material-icons-round');
+        btn.classList.toggle('active', iconSpan && iconSpan.innerText === codIcone);
+    });
+    atualizarPreviewStudioParceiro();
+};
+
+window.atualizarPreviewStudioParceiro = function() {
+    const nome = (document.getElementById('novo-parc-nome')?.value.trim() || 'GROWTH SUPPLEMENTS').substring(0, 18).toUpperCase();
+    const cat = (document.getElementById('novo-parc-cupom')?.value.trim() || 'PARCEIRO OFICIAL').substring(0, 20).toUpperCase();
+    const cor = document.getElementById('novo-parc-cor')?.value || 'cyan';
+    const icone = document.getElementById('novo-parc-icone')?.value || 'science';
+
+    const mapaCores = {
+        volt: { hex: '#00f59b', rgba: 'rgba(0, 245, 155, 0.18)' },
+        cyan: { hex: '#00d2ff', rgba: 'rgba(0, 210, 255, 0.18)' },
+        pink: { hex: '#f472b6', rgba: 'rgba(244, 114, 182, 0.2)' },
+        gold: { hex: '#ffb800', rgba: 'rgba(255, 184, 0, 0.18)' },
+        purple: { hex: '#c084fc', rgba: 'rgba(192, 132, 252, 0.2)' }
+    };
+    const t = mapaCores[cor] || mapaCores.cyan;
+
+    const box = document.getElementById('modal-live-wing-preview');
+    const elCat = document.getElementById('prev-wing-cat');
+    const elNome = document.getElementById('prev-wing-nome');
+    const elIcon = document.getElementById('prev-wing-icon');
+
+    if (box) {
+        box.style.background = `linear-gradient(90deg, rgba(14, 22, 38, 0) 0%, ${t.rgba} 100%)`;
+        box.style.borderRightColor = t.hex;
+    }
+    if (elCat) { elCat.innerText = cat; elCat.style.color = t.hex; }
+    if (elNome) elNome.innerText = nome;
+    if (elIcon) { elIcon.style.color = t.hex; elIcon.innerHTML = renderizarIconeMarcaHtml(icone); }
+};
+
+window.renderizarGridParceirosModal = function() {
+    const grid = document.getElementById('grid-marcas-parceiras-modal');
+    if (!grid) return;
+
+    const qtdAtivos = PARCEIROS_GYM.filter(p => p.ativo).length;
+    const elCont = document.getElementById('contador-slots-modal');
+    if (elCont) elCont.innerText = `${qtdAtivos}/4 ATIVAS NO CARD`;
+
+    const mapaHex = { volt: '#00f59b', cyan: '#00d2ff', pink: '#f472b6', gold: '#ffb800', purple: '#c084fc' };
+
+    grid.innerHTML = PARCEIROS_GYM.map((p, idx) => {
+        const corHex = mapaHex[p.cor] || '#00f59b';
+        return `
+            <div class="studio-partner-slot ${p.ativo ? 'slot-active' : ''}" onclick="alternarAtivoParceiro(${idx})">
+                <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+                    <div style="width:34px; height:34px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid ${corHex}; color:${corHex}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        ${renderizarIconeMarcaHtml(p.icone)}
+                    </div>
+                    <div style="min-width:0;">
+                        <strong style="font-size:11.5px; color:white; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.nome}</strong>
+                        <span style="font-size:9px; color:${corHex}; font-weight:800; letter-spacing:0.6px;">${p.categoria || 'PARCEIRO OFICIAL'}</span>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                    <span style="font-size:8.5px; font-weight:900; padding:3px 7px; border-radius:5px; background:${p.ativo ? 'var(--neon-volt)' : 'rgba(255,255,255,0.08)'}; color:${p.ativo ? '#04060b' : 'var(--text-muted)'};">
+                        ${p.ativo ? 'ATIVA' : 'PAUSADA'}
+                    </span>
+                    <button type="button" class="btn-icon-danger" style="padding:4px;" onclick="event.stopPropagation(); removerMarcaParceira(${idx});" data-tip="Excluir esta marca">
+                        <span class="material-icons-round" style="font-size:14px;">delete</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+};
+
+window.removerMarcaParceira = function(idx) {
+    if (PARCEIROS_GYM.length <= 1) return mostrarToast("Mantenha pelo menos 1 marca cadastrada!", "warning");
+    PARCEIROS_GYM.splice(idx, 1);
+    salvarParceirosLocal();
+    renderizarGridParceirosModal();
+    renderizarBarraParceirosTopo();
+    mostrarToast("Marca removida da vitrine.", "warning");
+};
+
+window.adicionarParceiroCustom = function() {
+    const nome = (document.getElementById('novo-parc-nome')?.value || '').trim().substring(0, 18).toUpperCase();
+    const categoria = (document.getElementById('novo-parc-cupom')?.value || '').trim().substring(0, 20).toUpperCase() || 'PARCEIRO OFICIAL';
+    const cor = document.getElementById('novo-parc-cor')?.value || 'cyan';
+    const icone = document.getElementById('novo-parc-icone')?.value || 'science';
+
+    if (!nome) return mostrarToast("Digite o nome da marca parceira!", "warning");
+
+    const ativos = PARCEIROS_GYM.filter(p => p.ativo);
+    if (ativos.length >= 4) ativos[ativos.length - 1].ativo = false;
+
+    PARCEIROS_GYM.unshift({
+        id: 'brand_' + Date.now(),
+        icone: icone,
+        nome: nome,
+        categoria: categoria,
+        cor: cor,
+        ativo: true
+    });
+
+    document.getElementById('novo-parc-nome').value = '';
+    document.getElementById('novo-parc-cupom').value = '';
+    parceiroSelecionadoIdx = 0;
+    salvarParceirosLocal();
+    renderizarGridParceirosModal();
+    renderizarBarraParceirosTopo();
+    mostrarToast(`Marca "${nome}" fixada na ponta do card!`, 'success');
+};
+
+window.alterarVelocidadeRotacaoParceiros = function(msStr) {
+    const ms = parseInt(msStr);
+    if (window.timerCarrosselParceiroCard) clearInterval(window.timerCarrosselParceiroCard);
+    if (ms > 0) {
+        window.timerCarrosselParceiroCard = setInterval(() => {
+            const ativos = PARCEIROS_GYM.filter(p => p.ativo);
+            if (ativos.length > 1) {
+                parceiroSelecionadoIdx++;
+                renderizarBarraParceirosTopo();
+            }
+        }, ms);
+        mostrarToast(`Rotação automática ajustada para ${ms / 1000}s!`, 'success');
+    } else {
+        mostrarToast("Rotação pausada: marca fixa no card!", "success");
+    }
+};
+
+setTimeout(() => {
+    renderizarBarraParceirosTopo();
+}, 150);
